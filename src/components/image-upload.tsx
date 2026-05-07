@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Upload, X } from "lucide-react";
+import { Upload, X, ArrowLeft, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
 type Props = {
@@ -85,12 +85,23 @@ export function MultiImageUpload({
     setBusy(false);
   }
 
+  function move(i: number, dir: -1 | 1) {
+    const j = i + dir;
+    if (j < 0 || j >= values.length) return;
+    const next = [...values];
+    [next[i], next[j]] = [next[j], next[i]];
+    onChange(next);
+  }
+
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-3">
         {values.map((url, i) => (
           <div key={url} className="relative">
             <img src={url} alt="" className="h-24 w-24 rounded-lg border object-cover" />
+            <span className="absolute left-1 top-1 rounded bg-background/80 px-1.5 py-0.5 text-[10px] font-semibold">
+              {i + 1}
+            </span>
             <button
               type="button"
               onClick={() => onChange(values.filter((_, idx) => idx !== i))}
@@ -98,6 +109,26 @@ export function MultiImageUpload({
             >
               <X className="h-3 w-3" />
             </button>
+            <div className="absolute inset-x-0 bottom-0 flex justify-between rounded-b-lg bg-background/80">
+              <button
+                type="button"
+                onClick={() => move(i, -1)}
+                disabled={i === 0}
+                className="grid h-6 w-1/2 place-items-center disabled:opacity-30"
+                aria-label="Mover para esquerda"
+              >
+                <ArrowLeft className="h-3 w-3" />
+              </button>
+              <button
+                type="button"
+                onClick={() => move(i, 1)}
+                disabled={i === values.length - 1}
+                className="grid h-6 w-1/2 place-items-center disabled:opacity-30"
+                aria-label="Mover para direita"
+              >
+                <ArrowRight className="h-3 w-3" />
+              </button>
+            </div>
           </div>
         ))}
         <label className="flex h-24 w-24 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-border text-xs text-muted-foreground transition hover:bg-accent">
@@ -112,9 +143,7 @@ export function MultiImageUpload({
           />
         </label>
       </div>
-      <Button type="button" variant="ghost" size="sm" disabled>
-        Arraste para reordenar (em breve)
-      </Button>
+      <p className="text-xs text-muted-foreground">A primeira imagem é a capa. Use as setas para reordenar.</p>
     </div>
   );
 }
