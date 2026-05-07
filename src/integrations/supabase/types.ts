@@ -46,6 +46,38 @@ export type Database = {
           },
         ]
       }
+      product_color_images: {
+        Row: {
+          color: string
+          created_at: string
+          id: string
+          image_url: string
+          product_id: string
+        }
+        Insert: {
+          color: string
+          created_at?: string
+          id?: string
+          image_url: string
+          product_id: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          id?: string
+          image_url?: string
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_color_images_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       product_images: {
         Row: {
           created_at: string

@@ -28,7 +28,7 @@ function ProductPage() {
     queryFn: async () => {
       const { data } = await supabase
         .from("products")
-        .select("*, product_images(*), product_variants(*)")
+        .select("*, product_images(*), product_variants(*), product_color_images(*)")
         .eq("id", productId)
         .eq("active", true)
         .maybeSingle();
@@ -39,6 +39,12 @@ function ProductPage() {
   const images = useMemo(() => (product?.product_images ?? []).sort((a: any, b: any) => a.position - b.position), [product]);
   const variants: any[] = product?.product_variants ?? [];
   const hasVariants = variants.length > 0;
+  const colorImageMap = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const c of (product as any)?.product_color_images ?? []) m.set(c.color, c.image_url);
+    return m;
+  }, [product]);
+  const colorImage = selectedColor ? colorImageMap.get(selectedColor) : undefined;
 
   // Distinct colors with stock info
   const colors = useMemo(() => {
@@ -112,7 +118,9 @@ function ProductPage() {
       <div className="mt-4 grid gap-8 md:grid-cols-2">
         <div>
           <div className="relative aspect-square overflow-hidden rounded-2xl bg-muted">
-            {images[imgIdx] ? (
+            {colorImage ? (
+              <img src={colorImage} alt={`${product.name} - ${selectedColor}`} className="h-full w-full object-cover" />
+            ) : images[imgIdx] ? (
               <>
                 <img src={images[imgIdx].url} alt={product.name} className="h-full w-full object-cover" />
                 {selectedColor && colorToCss(selectedColor) && (
@@ -160,6 +168,7 @@ function ProductPage() {
                 {colors.map((c) => {
                   const out = c.totalStock <= 0;
                   const css = colorToCss(c.color);
+                  const photo = colorImageMap.get(c.color);
                   const active = selectedColor === c.color;
                   return (
                     <button
@@ -174,9 +183,13 @@ function ProductPage() {
                         className={`grid h-14 w-14 place-items-center overflow-hidden rounded-full border-2 transition ${
                           active ? "border-foreground ring-2 ring-foreground/20" : "border-border hover:border-foreground"
                         }`}
-                        style={css ? { backgroundColor: css } : undefined}
+                        style={!photo && css ? { backgroundColor: css } : undefined}
                       >
-                        {!css && <span className="text-[10px] font-medium">{c.color.slice(0, 3)}</span>}
+                        {photo ? (
+                          <img src={photo} alt={c.color} className="h-full w-full object-cover" />
+                        ) : !css ? (
+                          <span className="text-[10px] font-medium">{c.color.slice(0, 3)}</span>
+                        ) : null}
                       </span>
                       <span className="max-w-16 truncate text-[11px] text-muted-foreground">{c.color}</span>
                     </button>

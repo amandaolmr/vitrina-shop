@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { MultiImageUpload } from "@/components/image-upload";
+import { ImageUpload, MultiImageUpload } from "@/components/image-upload";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -24,6 +24,7 @@ function ProductEditor() {
   const [form, setForm] = useState<any>(null);
   const [images, setImages] = useState<string[]>([]);
   const [variants, setVariants] = useState<Variant[]>([]);
+  const [colorImages, setColorImages] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
 
   const { data: product, refetch } = useQuery({
@@ -31,7 +32,7 @@ function ProductEditor() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("*, product_images(*), product_variants(*)")
+        .select("*, product_images(*), product_variants(*), product_color_images(*)")
         .eq("id", id)
         .single();
       if (error) throw error;
@@ -62,6 +63,9 @@ function ProductEditor() {
           id: v.id, size: v.size ?? "", color: v.color ?? "", numbering: v.numbering ?? "", stock: v.stock, sku: v.sku ?? "",
         })),
       );
+      const ci: Record<string, string> = {};
+      for (const c of (product as any).product_color_images ?? []) ci[c.color] = c.image_url;
+      setColorImages(ci);
     }
   }, [product]);
 
@@ -104,6 +108,16 @@ function ProductEditor() {
         })),
       );
     }
+
+    // Sync color images
+    await supabase.from("product_color_images").delete().eq("product_id", id);
+    const colorRows = Object.entries(colorImages)
+      .filter(([color, url]) => color && url)
+      .map(([color, image_url]) => ({ product_id: id, color, image_url }));
+    if (colorRows.length) {
+      await supabase.from("product_color_images").insert(colorRows);
+    }
+
     setBusy(false);
     toast.success("Produto salvo");
     refetch();
@@ -141,6 +155,8 @@ function ProductEditor() {
           </div>
 
           <VariantsEditor variants={variants} setVariants={setVariants} />
+
+          <ColorImagesEditor variants={variants} colorImages={colorImages} setColorImages={setColorImages} />
         </section>
 
         <aside className="space-y-6 rounded-2xl border border-border bg-card p-6">
@@ -300,6 +316,57 @@ function CustomSizeInput({ onAdd, existing }: { onAdd: (s: string) => void; exis
           }
         }}
       />
+    </div>
+  );
+}
+
+function ColorImagesEditor({
+  variants,
+  colorImages,
+  setColorImages,
+}: {
+  variants: Variant[];
+  colorImages: Record<string, string>;
+  setColorImages: (v: Record<string, string>) => void;
+}) {
+  const colors = Array.from(
+    new Set(variants.map((v) => (v.color ?? "").trim()).filter(Boolean)),
+  );
+
+  if (colors.length === 0) {
+    return (
+      <div>
+        <Label>Imagens por cor</Label>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Adicione cores nas variações acima para enviar uma imagem específica para cada cor.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <Label>Imagens por cor</Label>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Envie uma foto representando cada cor. Ela será exibida na vitrine quando o cliente selecionar a cor.
+      </p>
+      <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
+        {colors.map((color) => (
+          <div key={color} className="flex flex-col items-center gap-2 rounded-lg border border-border p-3">
+            <span className="text-sm font-medium">{color}</span>
+            <ImageUpload
+              label="Foto"
+              value={colorImages[color] ?? null}
+              onChange={(url) => {
+                const next = { ...colorImages };
+                if (url) next[color] = url;
+                else delete next[color];
+                setColorImages(next);
+              }}
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
