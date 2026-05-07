@@ -5,16 +5,18 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/categorias")({
   component: CategoriesPage,
 });
 
+type Category = { id: string; name: string; parent_id: string | null; store_id: string; position: number };
+
 function CategoriesPage() {
   const { user } = useAuth();
-  const [name, setName] = useState("");
+  const [deptName, setDeptName] = useState("");
 
   const { data: store } = useQuery({
     queryKey: ["my-store", user?.id],
@@ -25,40 +27,127 @@ function CategoriesPage() {
   const { data: cats, refetch } = useQuery({
     queryKey: ["categories", store?.id],
     enabled: !!store,
-    queryFn: async () => (await supabase.from("categories").select("*").eq("store_id", store!.id).order("position")).data ?? [],
+    queryFn: async () =>
+      ((await supabase.from("categories").select("*").eq("store_id", store!.id).order("position")).data ?? []) as Category[],
   });
 
-  async function add(e: React.FormEvent) {
+  const departments = (cats ?? []).filter((c) => !c.parent_id);
+  const childrenOf = (id: string) => (cats ?? []).filter((c) => c.parent_id === id);
+
+  async function addDepartment(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim() || !store) return;
-    const { error } = await supabase.from("categories").insert({ store_id: store.id, name: name.trim() });
+    if (!deptName.trim() || !store) return;
+    const { error } = await supabase.from("categories").insert({ store_id: store.id, name: deptName.trim(), parent_id: null });
     if (error) toast.error(error.message);
-    else { setName(""); refetch(); }
+    else { setDeptName(""); refetch(); }
+  }
+
+  async function addSub(parentId: string, name: string) {
+    if (!name.trim() || !store) return;
+    const { error } = await supabase
+      .from("categories")
+      .insert({ store_id: store.id, name: name.trim(), parent_id: parentId });
+    if (error) toast.error(error.message);
+    else refetch();
   }
 
   async function remove(id: string) {
-    if (!confirm("Excluir categoria?")) return;
+    if (!confirm("Excluir? Subcategorias também serão removidas.")) return;
     const { error } = await supabase.from("categories").delete().eq("id", id);
     if (error) toast.error(error.message);
     else refetch();
   }
 
   return (
-    <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold">Categorias</h1>
-      <form onSubmit={add} className="mt-6 flex gap-2">
-        <Input placeholder="Nova categoria (ex: Vestidos)" value={name} onChange={(e) => setName(e.target.value)} />
-        <Button type="submit">Adicionar</Button>
+    <div className="max-w-3xl space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold">Categorias</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Crie departamentos (ex: Masculino, Feminino) e adicione subcategorias dentro deles (ex: Blusas, Shorts, Saias).
+        </p>
+      </div>
+
+      <form onSubmit={addDepartment} className="flex gap-2">
+        <Input
+          placeholder="Novo departamento (ex: Masculino)"
+          value={deptName}
+          onChange={(e) => setDeptName(e.target.value)}
+        />
+        <Button type="submit">
+          <Plus className="mr-1 h-4 w-4" /> Departamento
+        </Button>
       </form>
-      <div className="mt-6 divide-y rounded-2xl border border-border bg-card">
-        {cats?.length === 0 && <p className="p-6 text-sm text-muted-foreground">Nenhuma categoria ainda.</p>}
-        {cats?.map((c) => (
-          <div key={c.id} className="flex items-center justify-between px-4 py-3">
-            <span>{c.name}</span>
-            <Button variant="ghost" size="icon" onClick={() => remove(c.id)}><Trash2 className="h-4 w-4" /></Button>
+
+      <div className="space-y-4">
+        {departments.length === 0 && (
+          <p className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+            Nenhum departamento ainda.
+          </p>
+        )}
+        {departments.map((dept) => (
+          <DepartmentCard
+            key={dept.id}
+            dept={dept}
+            subs={childrenOf(dept.id)}
+            onAddSub={(name) => addSub(dept.id, name)}
+            onRemove={remove}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function DepartmentCard({
+  dept,
+  subs,
+  onAddSub,
+  onRemove,
+}: {
+  dept: Category;
+  subs: Category[];
+  onAddSub: (name: string) => void;
+  onRemove: (id: string) => void;
+}) {
+  const [val, setVal] = useState("");
+
+  function submit(e: React.FormEvent) {
+    e.preventDefault();
+    onAddSub(val);
+    setVal("");
+  }
+
+  return (
+    <div className="rounded-2xl border border-border bg-card p-5">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold">{dept.name}</h2>
+        <Button variant="ghost" size="icon" onClick={() => onRemove(dept.id)}>
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </div>
+
+      <div className="mt-4 divide-y rounded-xl border border-border">
+        {subs.length === 0 && <p className="p-4 text-sm text-muted-foreground">Nenhuma subcategoria.</p>}
+        {subs.map((s) => (
+          <div key={s.id} className="flex items-center justify-between px-4 py-2.5">
+            <span className="text-sm">{s.name}</span>
+            <Button variant="ghost" size="icon" onClick={() => onRemove(s.id)}>
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
         ))}
       </div>
+
+      <form onSubmit={submit} className="mt-3 flex gap-2">
+        <Input
+          placeholder="Nova subcategoria (ex: Blusas)"
+          value={val}
+          onChange={(e) => setVal(e.target.value)}
+        />
+        <Button type="submit" variant="outline">
+          <Plus className="mr-1 h-4 w-4" /> Adicionar
+        </Button>
+      </form>
     </div>
   );
 }
