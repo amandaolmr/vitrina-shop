@@ -118,7 +118,9 @@ function ProductPage() {
       <div className="mt-4 grid gap-8 md:grid-cols-2">
         <div>
           <div className="relative aspect-square overflow-hidden rounded-2xl bg-muted">
-            {images[imgIdx] ? (
+            {colorImage ? (
+              <img src={colorImage} alt={`${product.name} - ${selectedColor}`} className="h-full w-full object-cover" />
+            ) : images[imgIdx] ? (
               <>
                 <img src={images[imgIdx].url} alt={product.name} className="h-full w-full object-cover" />
                 {selectedColor && colorToCss(selectedColor) && (
