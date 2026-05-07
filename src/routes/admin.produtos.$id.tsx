@@ -400,8 +400,8 @@ function ColorImagesEditor({
   setColorImages,
 }: {
   variants: Variant[];
-  colorImages: Record<string, string>;
-  setColorImages: (v: Record<string, string>) => void;
+  colorImages: Record<string, string[]>;
+  setColorImages: (v: Record<string, string[]>) => void;
 }) {
   const colors = Array.from(
     new Set(variants.map((v) => (v.color ?? "").trim()).filter(Boolean)),
@@ -412,7 +412,7 @@ function ColorImagesEditor({
       <div>
         <Label>Imagens por cor</Label>
         <p className="mt-2 text-sm text-muted-foreground">
-          Adicione cores nas variações acima para enviar uma imagem específica para cada cor.
+          Adicione cores nas variações acima para enviar imagens específicas para cada cor.
         </p>
       </div>
     );
@@ -422,18 +422,17 @@ function ColorImagesEditor({
     <div>
       <Label>Imagens por cor</Label>
       <p className="mt-1 text-sm text-muted-foreground">
-        Envie uma foto representando cada cor. Ela será exibida na vitrine quando o cliente selecionar a cor.
+        Envie uma ou mais fotos para cada cor. Elas serão exibidas na vitrine quando o cliente selecionar a cor.
       </p>
-      <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
+      <div className="mt-4 space-y-4">
         {colors.map((color) => (
-          <div key={color} className="flex flex-col items-center gap-2 rounded-lg border border-border p-3">
-            <span className="text-sm font-medium">{color}</span>
-            <ImageUpload
-              label="Foto"
-              value={colorImages[color] ?? null}
-              onChange={(url) => {
+          <div key={color} className="rounded-lg border border-border p-4">
+            <p className="mb-3 text-sm font-semibold">{color}</p>
+            <MultiImageUpload
+              values={colorImages[color] ?? []}
+              onChange={(urls) => {
                 const next = { ...colorImages };
-                if (url) next[color] = url;
+                if (urls.length) next[color] = urls;
                 else delete next[color];
                 setColorImages(next);
               }}
