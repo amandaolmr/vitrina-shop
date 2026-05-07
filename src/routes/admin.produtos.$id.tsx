@@ -32,7 +32,7 @@ function ProductEditor() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("*, product_images(*), product_variants(*)")
+        .select("*, product_images(*), product_variants(*), product_color_images(*)")
         .eq("id", id)
         .single();
       if (error) throw error;
