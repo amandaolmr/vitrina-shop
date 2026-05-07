@@ -70,8 +70,13 @@ function ProductEditor() {
           id: v.id, size: v.size ?? "", color: v.color ?? "", numbering: v.numbering ?? "", stock: v.stock, sku: v.sku ?? "",
         })),
       );
-      const ci: Record<string, string> = {};
-      for (const c of (product as any).product_color_images ?? []) ci[c.color] = c.image_url;
+      const ci: Record<string, string[]> = {};
+      const sorted = [...((product as any).product_color_images ?? [])].sort(
+        (a: any, b: any) => (a.position ?? 0) - (b.position ?? 0),
+      );
+      for (const c of sorted) {
+        ci[c.color] = ci[c.color] ? [...ci[c.color], c.image_url] : [c.image_url];
+      }
       setColorImages(ci);
     }
   }, [product]);
