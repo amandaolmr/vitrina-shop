@@ -43,8 +43,15 @@ function ProductEditor() {
   const { data: cats } = useQuery({
     queryKey: ["cats-for-product", product?.store_id],
     enabled: !!product?.store_id,
-    queryFn: async () => (await supabase.from("categories").select("*").eq("store_id", product!.store_id).order("name")).data ?? [],
+    queryFn: async () =>
+      (await supabase.from("categories").select("id,name,parent_id").eq("store_id", product!.store_id).order("name")).data ?? [],
   });
+
+  const [deptOverride, setDeptOverride] = useState<string>("");
+  const departments = (cats ?? []).filter((c: any) => !c.parent_id);
+  const selectedCat = (cats ?? []).find((c: any) => c.id === form?.category_id);
+  const departmentId = deptOverride || selectedCat?.parent_id || "";
+  const subcategories = (cats ?? []).filter((c: any) => c.parent_id === departmentId);
 
   useEffect(() => {
     if (product) {
