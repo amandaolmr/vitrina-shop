@@ -8,6 +8,7 @@ import { formatBRL } from "@/lib/format";
 import { useCart } from "@/lib/cart";
 import { toast } from "sonner";
 import { ArrowLeft, ShoppingBag } from "lucide-react";
+import { colorToCss } from "@/lib/color-map";
 
 export const Route = createFileRoute("/loja/$slug/produto/$productId")({
   component: ProductPage,
@@ -74,9 +75,18 @@ function ProductPage() {
 
       <div className="mt-4 grid gap-8 md:grid-cols-2">
         <div>
-          <div className="aspect-square overflow-hidden rounded-2xl bg-muted">
+          <div className="relative aspect-square overflow-hidden rounded-2xl bg-muted">
             {images[imgIdx] ? (
-              <img src={images[imgIdx].url} alt={product.name} className="h-full w-full object-cover" />
+              <>
+                <img src={images[imgIdx].url} alt={product.name} className="h-full w-full object-cover" />
+                {selectedVariant?.color && colorToCss(selectedVariant.color) && (
+                  <div
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 mix-blend-multiply transition-colors duration-300"
+                    style={{ backgroundColor: colorToCss(selectedVariant.color)!, opacity: 0.45 }}
+                  />
+                )}
+              </>
             ) : (
               <div className="grid h-full w-full place-items-center text-muted-foreground">Sem imagem</div>
             )}
