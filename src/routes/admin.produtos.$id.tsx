@@ -140,27 +140,7 @@ function ProductEditor() {
             <MultiImageUpload values={images} onChange={setImages} />
           </div>
 
-          <div>
-            <div className="mb-3 flex items-center justify-between">
-              <Label>Variações (tamanho / cor / numeração)</Label>
-              <Button type="button" variant="outline" size="sm" onClick={() => setVariants([...variants, { size: "", color: "", numbering: "", stock: 0, sku: "" }])}>
-                <Plus className="mr-1 h-4 w-4" /> Adicionar
-              </Button>
-            </div>
-            {variants.length === 0 && <p className="text-sm text-muted-foreground">Sem variações. O produto será vendido como item único.</p>}
-            <div className="space-y-2">
-              {variants.map((v, i) => (
-                <div key={i} className="grid grid-cols-2 gap-2 rounded-lg border border-border p-3 sm:grid-cols-6">
-                  <Input placeholder="Tamanho" value={v.size} onChange={(e) => setVariants(variants.map((x, idx) => idx === i ? { ...x, size: e.target.value } : x))} />
-                  <Input placeholder="Cor" value={v.color} onChange={(e) => setVariants(variants.map((x, idx) => idx === i ? { ...x, color: e.target.value } : x))} />
-                  <Input placeholder="Nº" value={v.numbering} onChange={(e) => setVariants(variants.map((x, idx) => idx === i ? { ...x, numbering: e.target.value } : x))} />
-                  <Input type="number" placeholder="Estoque" value={v.stock} onChange={(e) => setVariants(variants.map((x, idx) => idx === i ? { ...x, stock: Number(e.target.value) } : x))} />
-                  <Input placeholder="SKU" value={v.sku} onChange={(e) => setVariants(variants.map((x, idx) => idx === i ? { ...x, sku: e.target.value } : x))} />
-                  <Button variant="ghost" size="icon" onClick={() => setVariants(variants.filter((_, idx) => idx !== i))}><Trash2 className="h-4 w-4" /></Button>
-                </div>
-              ))}
-            </div>
-          </div>
+          <VariantsEditor variants={variants} setVariants={setVariants} />
         </section>
 
         <aside className="space-y-6 rounded-2xl border border-border bg-card p-6">
