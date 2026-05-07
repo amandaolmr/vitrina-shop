@@ -47,6 +47,7 @@ function ProductPage() {
   }
 
   function addToCart(then?: "cart") {
+    if (!product) return;
     if (hasVariants && !selectedVariant) {
       toast.error("Selecione uma variação");
       return;
