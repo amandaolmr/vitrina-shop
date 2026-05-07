@@ -84,9 +84,10 @@ function ProductPage() {
 
   function addToCart(then?: "cart") {
     if (!product) return;
-    if (hasVariants && !selectedVariant) {
-      toast.error("Selecione uma variação");
-      return;
+    if (hasVariants) {
+      if (hasColors && !selectedColor) { toast.error("Selecione uma cor"); return; }
+      if (sizesForColor.length > 0 && !selectedSize) { toast.error("Selecione um tamanho"); return; }
+      if (!selectedVariant) { toast.error("Combinação indisponível"); return; }
     }
     const v = selectedVariant ?? { id: `single-${product.id}`, size: null, color: null, numbering: null };
     cart.add({
