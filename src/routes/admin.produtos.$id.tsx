@@ -328,21 +328,28 @@ function VariantsEditor({ variants, setVariants }: { variants: Variant[]; setVar
 
 function AddColorInput({ onAdd, existing }: { onAdd: (s: string) => void; existing: string[] }) {
   const [val, setVal] = useState("");
+  function submit() {
+    const v = val.trim();
+    if (v && !existing.includes(v)) onAdd(v);
+    setVal("");
+  }
   return (
-    <div className="flex gap-1">
+    <div className="flex gap-2">
       <Input
         value={val}
         onChange={(e) => setVal(e.target.value)}
-        placeholder="Outro"
-        className="h-9 w-24"
+        placeholder="Adicionar cor (ex: Preto)"
+        className="h-9 max-w-[240px]"
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault();
-            if (val && !existing.includes(val)) onAdd(val);
-            setVal("");
+            submit();
           }
         }}
       />
+      <Button type="button" variant="outline" size="sm" onClick={submit}>
+        <Plus className="mr-1 h-4 w-4" /> Cor
+      </Button>
     </div>
   );
 }
