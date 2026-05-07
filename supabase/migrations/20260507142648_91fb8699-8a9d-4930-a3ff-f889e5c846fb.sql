@@ -1,0 +1,2 @@
+ALTER TABLE public.product_color_images DROP CONSTRAINT IF EXISTS product_color_images_product_id_color_key;
+ALTER TABLE public.product_color_images ADD COLUMN IF NOT EXISTS position integer NOT NULL DEFAULT 0;

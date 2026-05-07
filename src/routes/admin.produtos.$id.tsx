@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { ImageUpload, MultiImageUpload } from "@/components/image-upload";
+import { MultiImageUpload } from "@/components/image-upload";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -24,7 +24,7 @@ function ProductEditor() {
   const [form, setForm] = useState<any>(null);
   const [images, setImages] = useState<string[]>([]);
   const [variants, setVariants] = useState<Variant[]>([]);
-  const [colorImages, setColorImages] = useState<Record<string, string>>({});
+  const [colorImages, setColorImages] = useState<Record<string, string[]>>({});
   const [busy, setBusy] = useState(false);
 
   const { data: product, refetch } = useQuery({
@@ -70,8 +70,13 @@ function ProductEditor() {
           id: v.id, size: v.size ?? "", color: v.color ?? "", numbering: v.numbering ?? "", stock: v.stock, sku: v.sku ?? "",
         })),
       );
-      const ci: Record<string, string> = {};
-      for (const c of (product as any).product_color_images ?? []) ci[c.color] = c.image_url;
+      const ci: Record<string, string[]> = {};
+      const sorted = [...((product as any).product_color_images ?? [])].sort(
+        (a: any, b: any) => (a.position ?? 0) - (b.position ?? 0),
+      );
+      for (const c of sorted) {
+        ci[c.color] = ci[c.color] ? [...ci[c.color], c.image_url] : [c.image_url];
+      }
       setColorImages(ci);
     }
   }, [product]);
@@ -118,9 +123,13 @@ function ProductEditor() {
 
     // Sync color images
     await supabase.from("product_color_images").delete().eq("product_id", id);
-    const colorRows = Object.entries(colorImages)
-      .filter(([color, url]) => color && url)
-      .map(([color, image_url]) => ({ product_id: id, color, image_url }));
+    const colorRows: { product_id: string; color: string; image_url: string; position: number }[] = [];
+    for (const [color, urls] of Object.entries(colorImages)) {
+      if (!color) continue;
+      urls.forEach((image_url, position) => {
+        if (image_url) colorRows.push({ product_id: id, color, image_url, position });
+      });
+    }
     if (colorRows.length) {
       await supabase.from("product_color_images").insert(colorRows);
     }
@@ -391,8 +400,8 @@ function ColorImagesEditor({
   setColorImages,
 }: {
   variants: Variant[];
-  colorImages: Record<string, string>;
-  setColorImages: (v: Record<string, string>) => void;
+  colorImages: Record<string, string[]>;
+  setColorImages: (v: Record<string, string[]>) => void;
 }) {
   const colors = Array.from(
     new Set(variants.map((v) => (v.color ?? "").trim()).filter(Boolean)),
@@ -403,7 +412,7 @@ function ColorImagesEditor({
       <div>
         <Label>Imagens por cor</Label>
         <p className="mt-2 text-sm text-muted-foreground">
-          Adicione cores nas variações acima para enviar uma imagem específica para cada cor.
+          Adicione cores nas variações acima para enviar imagens específicas para cada cor.
         </p>
       </div>
     );
@@ -413,18 +422,17 @@ function ColorImagesEditor({
     <div>
       <Label>Imagens por cor</Label>
       <p className="mt-1 text-sm text-muted-foreground">
-        Envie uma foto representando cada cor. Ela será exibida na vitrine quando o cliente selecionar a cor.
+        Envie uma ou mais fotos para cada cor. Elas serão exibidas na vitrine quando o cliente selecionar a cor.
       </p>
-      <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
+      <div className="mt-4 space-y-4">
         {colors.map((color) => (
-          <div key={color} className="flex flex-col items-center gap-2 rounded-lg border border-border p-3">
-            <span className="text-sm font-medium">{color}</span>
-            <ImageUpload
-              label="Foto"
-              value={colorImages[color] ?? null}
-              onChange={(url) => {
+          <div key={color} className="rounded-lg border border-border p-4">
+            <p className="mb-3 text-sm font-semibold">{color}</p>
+            <MultiImageUpload
+              values={colorImages[color] ?? []}
+              onChange={(urls) => {
                 const next = { ...colorImages };
-                if (url) next[color] = url;
+                if (urls.length) next[color] = urls;
                 else delete next[color];
                 setColorImages(next);
               }}
