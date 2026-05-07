@@ -46,6 +46,18 @@ function ProductPage() {
   }, [product]);
   const colorImage = selectedColor ? colorImageMap.get(selectedColor) : undefined;
 
+  // Gallery includes color image (if not already in product images) as first item
+  const gallery = useMemo(() => {
+    const base = images.map((i: any) => ({ id: i.id, url: i.url }));
+    if (colorImage && !base.some((b) => b.url === colorImage)) {
+      return [{ id: `color-${selectedColor}`, url: colorImage }, ...base];
+    }
+    return base;
+  }, [images, colorImage, selectedColor]);
+
+  // Reset image index when color changes
+  useMemo(() => { setImgIdx(0); }, [selectedColor]);
+
   // Distinct colors with stock info
   const colors = useMemo(() => {
     const map = new Map<string, { color: string; totalStock: number }>();
