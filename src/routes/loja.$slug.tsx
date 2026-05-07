@@ -2,15 +2,9 @@ import { createFileRoute, Outlet, notFound } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { StoreHeader } from "@/components/store-header";
-import { createContext, useContext } from "react";
+import { StoreCtx, useStore } from "@/lib/store-context";
 
-type StoreCtx = { id: string; slug: string; name: string; description: string | null; logo_url: string | null; banner_url: string | null; whatsapp: string | null; theme_color: string | null };
-const Ctx = createContext<StoreCtx | null>(null);
-export const useStore = () => {
-  const v = useContext(Ctx);
-  if (!v) throw new Error("StoreCtx missing");
-  return v;
-};
+export { useStore };
 
 export const Route = createFileRoute("/loja/$slug")({
   component: StoreLayout,
@@ -32,7 +26,7 @@ function StoreLayout() {
   if (error || !store) return <div className="grid min-h-screen place-items-center text-muted-foreground">Loja não encontrada</div>;
 
   return (
-    <Ctx.Provider value={store as StoreCtx}>
+    <StoreCtx.Provider value={store as any}>
       <div className="min-h-screen bg-background">
         <StoreHeader store={store} />
         <Outlet />
@@ -40,6 +34,6 @@ function StoreLayout() {
           Powered by Vitrina
         </footer>
       </div>
-    </Ctx.Provider>
+    </StoreCtx.Provider>
   );
 }
