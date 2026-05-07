@@ -63,6 +63,9 @@ function ProductEditor() {
           id: v.id, size: v.size ?? "", color: v.color ?? "", numbering: v.numbering ?? "", stock: v.stock, sku: v.sku ?? "",
         })),
       );
+      const ci: Record<string, string> = {};
+      for (const c of (product as any).product_color_images ?? []) ci[c.color] = c.image_url;
+      setColorImages(ci);
     }
   }, [product]);
 
