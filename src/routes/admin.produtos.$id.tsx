@@ -123,9 +123,13 @@ function ProductEditor() {
 
     // Sync color images
     await supabase.from("product_color_images").delete().eq("product_id", id);
-    const colorRows = Object.entries(colorImages)
-      .filter(([color, url]) => color && url)
-      .map(([color, image_url]) => ({ product_id: id, color, image_url }));
+    const colorRows: { product_id: string; color: string; image_url: string; position: number }[] = [];
+    for (const [color, urls] of Object.entries(colorImages)) {
+      if (!color) continue;
+      urls.forEach((image_url, position) => {
+        if (image_url) colorRows.push({ product_id: id, color, image_url, position });
+      });
+    }
     if (colorRows.length) {
       await supabase.from("product_color_images").insert(colorRows);
     }
