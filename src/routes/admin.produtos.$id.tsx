@@ -108,6 +108,16 @@ function ProductEditor() {
         })),
       );
     }
+
+    // Sync color images
+    await supabase.from("product_color_images").delete().eq("product_id", id);
+    const colorRows = Object.entries(colorImages)
+      .filter(([color, url]) => color && url)
+      .map(([color, image_url]) => ({ product_id: id, color, image_url }));
+    if (colorRows.length) {
+      await supabase.from("product_color_images").insert(colorRows);
+    }
+
     setBusy(false);
     toast.success("Produto salvo");
     refetch();
