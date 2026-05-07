@@ -66,6 +66,8 @@ export function MultiImageUpload({
   onChange: (urls: string[]) => void;
 }) {
   const [busy, setBusy] = useState(false);
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+  const [overIdx, setOverIdx] = useState<number | null>(null);
 
   async function uploadAll(files: FileList) {
     setBusy(true);
@@ -85,11 +87,11 @@ export function MultiImageUpload({
     setBusy(false);
   }
 
-  function move(i: number, dir: -1 | 1) {
-    const j = i + dir;
-    if (j < 0 || j >= values.length) return;
+  function reorder(from: number, to: number) {
+    if (from === to || from < 0 || to < 0) return;
     const next = [...values];
-    [next[i], next[j]] = [next[j], next[i]];
+    const [item] = next.splice(from, 1);
+    next.splice(to, 0, item);
     onChange(next);
   }
 
@@ -97,8 +99,32 @@ export function MultiImageUpload({
     <div className="space-y-3">
       <div className="flex flex-wrap gap-3">
         {values.map((url, i) => (
-          <div key={url} className="relative">
-            <img src={url} alt="" className="h-24 w-24 rounded-lg border object-cover" />
+          <div
+            key={url}
+            draggable
+            onDragStart={(e) => {
+              setDragIdx(i);
+              e.dataTransfer.effectAllowed = "move";
+            }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              e.dataTransfer.dropEffect = "move";
+              if (overIdx !== i) setOverIdx(i);
+            }}
+            onDragLeave={() => overIdx === i && setOverIdx(null)}
+            onDrop={(e) => {
+              e.preventDefault();
+              if (dragIdx !== null) reorder(dragIdx, i);
+              setDragIdx(null);
+              setOverIdx(null);
+            }}
+            onDragEnd={() => {
+              setDragIdx(null);
+              setOverIdx(null);
+            }}
+            className={`relative cursor-move transition ${dragIdx === i ? "opacity-40" : ""} ${overIdx === i && dragIdx !== i ? "ring-2 ring-primary rounded-lg" : ""}`}
+          >
+            <img src={url} alt="" className="h-24 w-24 rounded-lg border object-cover pointer-events-none" />
             <span className="absolute left-1 top-1 rounded bg-background/80 px-1.5 py-0.5 text-[10px] font-semibold">
               {i + 1}
             </span>
@@ -109,26 +135,6 @@ export function MultiImageUpload({
             >
               <X className="h-3 w-3" />
             </button>
-            <div className="absolute inset-x-0 bottom-0 flex justify-between rounded-b-lg bg-background/80">
-              <button
-                type="button"
-                onClick={() => move(i, -1)}
-                disabled={i === 0}
-                className="grid h-6 w-1/2 place-items-center disabled:opacity-30"
-                aria-label="Mover para esquerda"
-              >
-                <ArrowLeft className="h-3 w-3" />
-              </button>
-              <button
-                type="button"
-                onClick={() => move(i, 1)}
-                disabled={i === values.length - 1}
-                className="grid h-6 w-1/2 place-items-center disabled:opacity-30"
-                aria-label="Mover para direita"
-              >
-                <ArrowRight className="h-3 w-3" />
-              </button>
-            </div>
           </div>
         ))}
         <label className="flex h-24 w-24 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed border-border text-xs text-muted-foreground transition hover:bg-accent">
@@ -143,7 +149,7 @@ export function MultiImageUpload({
           />
         </label>
       </div>
-      <p className="text-xs text-muted-foreground">A primeira imagem é a capa. Use as setas para reordenar.</p>
+      <p className="text-xs text-muted-foreground">A primeira imagem é a capa. Arraste para reordenar.</p>
     </div>
   );
 }
