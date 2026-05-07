@@ -28,7 +28,7 @@ function ProductPage() {
     queryFn: async () => {
       const { data } = await supabase
         .from("products")
-        .select("*, product_images(*), product_variants(*)")
+        .select("*, product_images(*), product_variants(*), product_color_images(*)")
         .eq("id", productId)
         .eq("active", true)
         .maybeSingle();
