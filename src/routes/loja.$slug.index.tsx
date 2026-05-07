@@ -14,6 +14,7 @@ export const Route = createFileRoute("/loja/$slug/")({
 function StorefrontPage() {
   const store = useStore();
   const [q, setQ] = useState("");
+  const [activeDept, setActiveDept] = useState<string | null>(null);
   const [activeCat, setActiveCat] = useState<string | null>(null);
 
   const { data: products = [] } = useQuery({
@@ -31,16 +32,25 @@ function StorefrontPage() {
 
   const { data: cats = [] } = useQuery({
     queryKey: ["public-cats", store.id],
-    queryFn: async () => (await supabase.from("categories").select("*").eq("store_id", store.id).order("position")).data ?? [],
+    queryFn: async () =>
+      (await supabase.from("categories").select("id,name,parent_id").eq("store_id", store.id).order("position")).data ?? [],
   });
+
+  const departments = (cats as any[]).filter((c) => !c.parent_id);
+  const subcats = (cats as any[]).filter((c) => c.parent_id === activeDept);
+  const subcatIds = useMemo(() => new Set(subcats.map((c) => c.id)), [subcats]);
 
   const filtered = useMemo(() => {
     return products.filter((p: any) => {
-      if (activeCat && p.category_id !== activeCat) return false;
+      if (activeCat) {
+        if (p.category_id !== activeCat) return false;
+      } else if (activeDept) {
+        if (!subcatIds.has(p.category_id)) return false;
+      }
       if (q && !p.name.toLowerCase().includes(q.toLowerCase())) return false;
       return true;
     });
-  }, [products, q, activeCat]);
+  }, [products, q, activeCat, activeDept, subcatIds]);
 
   const featured = products.filter((p: any) => p.featured).slice(0, 6);
 
@@ -60,11 +70,40 @@ function StorefrontPage() {
           <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar produtos..." className="pl-9" />
         </div>
 
-        {cats.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2 overflow-x-auto">
-            <button onClick={() => setActiveCat(null)} className={`rounded-full border px-3 py-1 text-sm ${!activeCat ? "border-foreground bg-foreground text-background" : "border-border"}`}>Todos</button>
-            {cats.map((c: any) => (
-              <button key={c.id} onClick={() => setActiveCat(c.id)} className={`rounded-full border px-3 py-1 text-sm whitespace-nowrap ${activeCat === c.id ? "border-foreground bg-foreground text-background" : "border-border"}`}>
+        {departments.length > 0 && (
+          <div className="mt-4 flex flex-wrap gap-2">
+            <button
+              onClick={() => { setActiveDept(null); setActiveCat(null); }}
+              className={`rounded-full border px-4 py-1.5 text-sm font-medium ${!activeDept ? "border-foreground bg-foreground text-background" : "border-border"}`}
+            >
+              Todos
+            </button>
+            {departments.map((d: any) => (
+              <button
+                key={d.id}
+                onClick={() => { setActiveDept(d.id); setActiveCat(null); }}
+                className={`rounded-full border px-4 py-1.5 text-sm font-medium ${activeDept === d.id ? "border-foreground bg-foreground text-background" : "border-border"}`}
+              >
+                {d.name}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {activeDept && subcats.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button
+              onClick={() => setActiveCat(null)}
+              className={`rounded-full border px-3 py-1 text-xs ${!activeCat ? "border-foreground bg-foreground text-background" : "border-border"}`}
+            >
+              Todas
+            </button>
+            {subcats.map((c: any) => (
+              <button
+                key={c.id}
+                onClick={() => setActiveCat(c.id)}
+                className={`rounded-full border px-3 py-1 text-xs whitespace-nowrap ${activeCat === c.id ? "border-foreground bg-foreground text-background" : "border-border"}`}
+              >
                 {c.name}
               </button>
             ))}
