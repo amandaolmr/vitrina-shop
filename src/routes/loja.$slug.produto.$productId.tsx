@@ -56,7 +56,7 @@ function ProductPage() {
   }, [images, colorImage, selectedColor]);
 
   // Reset image index when color changes
-  useMemo(() => { setImgIdx(0); }, [selectedColor]);
+  useEffect(() => { setImgIdx(0); }, [selectedColor]);
 
   // Distinct colors with stock info
   const colors = useMemo(() => {
