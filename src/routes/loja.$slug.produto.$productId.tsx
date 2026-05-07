@@ -168,6 +168,7 @@ function ProductPage() {
                 {colors.map((c) => {
                   const out = c.totalStock <= 0;
                   const css = colorToCss(c.color);
+                  const photo = colorImageMap.get(c.color);
                   const active = selectedColor === c.color;
                   return (
                     <button
@@ -182,9 +183,13 @@ function ProductPage() {
                         className={`grid h-14 w-14 place-items-center overflow-hidden rounded-full border-2 transition ${
                           active ? "border-foreground ring-2 ring-foreground/20" : "border-border hover:border-foreground"
                         }`}
-                        style={css ? { backgroundColor: css } : undefined}
+                        style={!photo && css ? { backgroundColor: css } : undefined}
                       >
-                        {!css && <span className="text-[10px] font-medium">{c.color.slice(0, 3)}</span>}
+                        {photo ? (
+                          <img src={photo} alt={c.color} className="h-full w-full object-cover" />
+                        ) : !css ? (
+                          <span className="text-[10px] font-medium">{c.color.slice(0, 3)}</span>
+                        ) : null}
                       </span>
                       <span className="max-w-16 truncate text-[11px] text-muted-foreground">{c.color}</span>
                     </button>
