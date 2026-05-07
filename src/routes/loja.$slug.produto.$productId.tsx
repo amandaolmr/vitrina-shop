@@ -153,22 +153,57 @@ function ProductPage() {
 
           {product.description && <p className="mt-4 whitespace-pre-line text-muted-foreground">{product.description}</p>}
 
-          {hasVariants && (
+          {hasColors && (
             <div className="mt-6">
-              <p className="mb-2 text-sm font-medium">Selecione uma opção</p>
-              <div className="flex flex-wrap gap-2">
-                {variants.map((v: any) => {
-                  const out = v.stock <= 0;
+              <p className="mb-3 text-sm font-medium">Cores disponíveis:</p>
+              <div className="flex flex-wrap gap-3">
+                {colors.map((c) => {
+                  const out = c.totalStock <= 0;
+                  const css = colorToCss(c.color);
+                  const active = selectedColor === c.color;
                   return (
                     <button
-                      key={v.id}
+                      key={c.color}
+                      type="button"
                       disabled={out}
-                      onClick={() => setVariantId(v.id)}
-                      className={`rounded-full border px-3 py-1.5 text-sm transition ${
-                        variantId === v.id ? "border-foreground bg-foreground text-background" : "border-border"
-                      } ${out ? "cursor-not-allowed text-muted-foreground line-through" : "hover:border-foreground"}`}
+                      onClick={() => { setSelectedColor(c.color); setSelectedSize(null); }}
+                      title={c.color}
+                      className={`flex flex-col items-center gap-1 ${out ? "opacity-40" : ""}`}
                     >
-                      {variantLabel(v)} {out && "(esgotado)"}
+                      <span
+                        className={`grid h-14 w-14 place-items-center overflow-hidden rounded-full border-2 transition ${
+                          active ? "border-foreground ring-2 ring-foreground/20" : "border-border hover:border-foreground"
+                        }`}
+                        style={css ? { backgroundColor: css } : undefined}
+                      >
+                        {!css && <span className="text-[10px] font-medium">{c.color.slice(0, 3)}</span>}
+                      </span>
+                      <span className="max-w-16 truncate text-[11px] text-muted-foreground">{c.color}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {hasVariants && (hasColors ? selectedColor : true) && sizesForColor.length > 0 && (
+            <div className="mt-6">
+              <p className="mb-3 text-sm font-medium">Tamanho</p>
+              <div className="flex flex-wrap gap-2">
+                {sizesForColor.map((s) => {
+                  const out = s.stock <= 0;
+                  const active = selectedSize === s.label;
+                  return (
+                    <button
+                      key={s.key}
+                      type="button"
+                      disabled={out}
+                      onClick={() => setSelectedSize(s.label)}
+                      className={`min-w-14 rounded-md border px-4 py-2 text-sm font-medium transition ${
+                        active ? "border-foreground bg-foreground text-background" : "border-border hover:border-foreground"
+                      } ${out ? "cursor-not-allowed text-muted-foreground line-through" : ""}`}
+                    >
+                      {s.label}
                     </button>
                   );
                 })}
