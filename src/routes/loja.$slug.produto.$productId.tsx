@@ -8,6 +8,7 @@ import { formatBRL } from "@/lib/format";
 import { useCart } from "@/lib/cart";
 import { toast } from "sonner";
 import { ArrowLeft, ShoppingBag } from "lucide-react";
+import { colorToCss } from "@/lib/color-map";
 
 export const Route = createFileRoute("/loja/$slug/produto/$productId")({
   component: ProductPage,
