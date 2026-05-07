@@ -98,8 +98,54 @@ function CategoriesPage() {
             subs={childrenOf(dept.id)}
             onAddSub={(name) => addSub(dept.id, name)}
             onRemove={remove}
+            onRename={rename}
           />
         ))}
+      </div>
+    </div>
+  );
+}
+
+function EditableRow({
+  name,
+  onSave,
+  onRemove,
+  className = "",
+  textClass = "text-sm",
+}: {
+  name: string;
+  onSave: (v: string) => void;
+  onRemove: () => void;
+  className?: string;
+  textClass?: string;
+}) {
+  const [editing, setEditing] = useState(false);
+  const [val, setVal] = useState(name);
+
+  if (editing) {
+    return (
+      <div className={`flex items-center gap-2 ${className}`}>
+        <Input value={val} onChange={(e) => setVal(e.target.value)} autoFocus />
+        <Button variant="ghost" size="icon" onClick={() => { onSave(val); setEditing(false); }}>
+          <Check className="h-4 w-4" />
+        </Button>
+        <Button variant="ghost" size="icon" onClick={() => { setVal(name); setEditing(false); }}>
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className={`flex items-center justify-between ${className}`}>
+      <span className={textClass}>{name}</span>
+      <div className="flex items-center gap-1">
+        <Button variant="ghost" size="icon" onClick={() => { setVal(name); setEditing(true); }}>
+          <Pencil className="h-4 w-4" />
+        </Button>
+        <Button variant="ghost" size="icon" onClick={onRemove}>
+          <Trash2 className="h-4 w-4" />
+        </Button>
       </div>
     </div>
   );
@@ -110,11 +156,13 @@ function DepartmentCard({
   subs,
   onAddSub,
   onRemove,
+  onRename,
 }: {
   dept: Category;
   subs: Category[];
   onAddSub: (name: string) => void;
   onRemove: (id: string) => void;
+  onRename: (id: string, name: string) => void;
 }) {
   const [val, setVal] = useState("");
 
@@ -126,22 +174,23 @@ function DepartmentCard({
 
   return (
     <div className="rounded-2xl border border-border bg-card p-5">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">{dept.name}</h2>
-        <Button variant="ghost" size="icon" onClick={() => onRemove(dept.id)}>
-          <Trash2 className="h-4 w-4" />
-        </Button>
-      </div>
+      <EditableRow
+        name={dept.name}
+        textClass="text-lg font-semibold"
+        onSave={(v) => onRename(dept.id, v)}
+        onRemove={() => onRemove(dept.id)}
+      />
 
       <div className="mt-4 divide-y rounded-xl border border-border">
         {subs.length === 0 && <p className="p-4 text-sm text-muted-foreground">Nenhuma subcategoria.</p>}
         {subs.map((s) => (
-          <div key={s.id} className="flex items-center justify-between px-4 py-2.5">
-            <span className="text-sm">{s.name}</span>
-            <Button variant="ghost" size="icon" onClick={() => onRemove(s.id)}>
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
+          <EditableRow
+            key={s.id}
+            name={s.name}
+            className="px-4 py-2.5"
+            onSave={(v) => onRename(s.id, v)}
+            onRemove={() => onRemove(s.id)}
+          />
         ))}
       </div>
 
