@@ -43,8 +43,15 @@ function ProductEditor() {
   const { data: cats } = useQuery({
     queryKey: ["cats-for-product", product?.store_id],
     enabled: !!product?.store_id,
-    queryFn: async () => (await supabase.from("categories").select("*").eq("store_id", product!.store_id).order("name")).data ?? [],
+    queryFn: async () =>
+      (await supabase.from("categories").select("id,name,parent_id").eq("store_id", product!.store_id).order("name")).data ?? [],
   });
+
+  const [deptOverride, setDeptOverride] = useState<string>("");
+  const departments = (cats ?? []).filter((c: any) => !c.parent_id);
+  const selectedCat = (cats ?? []).find((c: any) => c.id === form?.category_id);
+  const departmentId = deptOverride || selectedCat?.parent_id || "";
+  const subcategories = (cats ?? []).filter((c: any) => c.parent_id === departmentId);
 
   useEffect(() => {
     if (product) {
@@ -163,12 +170,36 @@ function ProductEditor() {
           <div className="space-y-2"><Label>Preço (R$)</Label><Input type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} /></div>
           <div className="space-y-2"><Label>Preço comparativo</Label><Input type="number" step="0.01" value={form.compare_at_price} onChange={(e) => setForm({ ...form, compare_at_price: e.target.value })} placeholder="Opcional" /></div>
           <div className="space-y-2">
+            <Label>Departamento</Label>
+            <Select
+              value={departmentId || "none"}
+              onValueChange={(v) => {
+                const next = v === "none" ? "" : v;
+                setDeptOverride(next);
+                // clear subcategory when department changes
+                if (selectedCat && selectedCat.parent_id !== next) {
+                  setForm({ ...form, category_id: "" });
+                }
+              }}
+            >
+              <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Sem departamento</SelectItem>
+                {departments.map((d: any) => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
             <Label>Categoria</Label>
-            <Select value={form.category_id || "none"} onValueChange={(v) => setForm({ ...form, category_id: v === "none" ? "" : v })}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
+            <Select
+              value={form.category_id || "none"}
+              onValueChange={(v) => setForm({ ...form, category_id: v === "none" ? "" : v })}
+              disabled={!departmentId}
+            >
+              <SelectTrigger><SelectValue placeholder={departmentId ? "Selecione" : "Escolha um departamento"} /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">Sem categoria</SelectItem>
-                {cats?.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                {subcategories.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
