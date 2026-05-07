@@ -140,27 +140,7 @@ function ProductEditor() {
             <MultiImageUpload values={images} onChange={setImages} />
           </div>
 
-          <div>
-            <div className="mb-3 flex items-center justify-between">
-              <Label>Variações (tamanho / cor / numeração)</Label>
-              <Button type="button" variant="outline" size="sm" onClick={() => setVariants([...variants, { size: "", color: "", numbering: "", stock: 0, sku: "" }])}>
-                <Plus className="mr-1 h-4 w-4" /> Adicionar
-              </Button>
-            </div>
-            {variants.length === 0 && <p className="text-sm text-muted-foreground">Sem variações. O produto será vendido como item único.</p>}
-            <div className="space-y-2">
-              {variants.map((v, i) => (
-                <div key={i} className="grid grid-cols-2 gap-2 rounded-lg border border-border p-3 sm:grid-cols-6">
-                  <Input placeholder="Tamanho" value={v.size} onChange={(e) => setVariants(variants.map((x, idx) => idx === i ? { ...x, size: e.target.value } : x))} />
-                  <Input placeholder="Cor" value={v.color} onChange={(e) => setVariants(variants.map((x, idx) => idx === i ? { ...x, color: e.target.value } : x))} />
-                  <Input placeholder="Nº" value={v.numbering} onChange={(e) => setVariants(variants.map((x, idx) => idx === i ? { ...x, numbering: e.target.value } : x))} />
-                  <Input type="number" placeholder="Estoque" value={v.stock} onChange={(e) => setVariants(variants.map((x, idx) => idx === i ? { ...x, stock: Number(e.target.value) } : x))} />
-                  <Input placeholder="SKU" value={v.sku} onChange={(e) => setVariants(variants.map((x, idx) => idx === i ? { ...x, sku: e.target.value } : x))} />
-                  <Button variant="ghost" size="icon" onClick={() => setVariants(variants.filter((_, idx) => idx !== i))}><Trash2 className="h-4 w-4" /></Button>
-                </div>
-              ))}
-            </div>
-          </div>
+          <VariantsEditor variants={variants} setVariants={setVariants} />
         </section>
 
         <aside className="space-y-6 rounded-2xl border border-border bg-card p-6">
@@ -180,6 +160,146 @@ function ProductEditor() {
           <div className="flex items-center justify-between"><Label>Ativo (visível)</Label><Switch checked={form.active} onCheckedChange={(c) => setForm({ ...form, active: c })} /></div>
         </aside>
       </div>
+    </div>
+  );
+}
+
+const COMMON_SIZES = ["PP", "P", "M", "G", "GG", "XG"];
+
+function VariantsEditor({ variants, setVariants }: { variants: Variant[]; setVariants: (v: Variant[]) => void }) {
+  const sizes = Array.from(new Set(variants.map((v) => v.size).filter(Boolean)));
+  const numberOnly = variants.filter((v) => !v.size && (v.numbering || v.color));
+
+  function addSize(size: string) {
+    if (!size) return;
+    if (sizes.includes(size)) return;
+    setVariants([...variants, { size, color: "", numbering: "", stock: 0, sku: "" }]);
+  }
+
+  function updateRow(target: Variant, patch: Partial<Variant>) {
+    setVariants(variants.map((v) => (v === target ? { ...v, ...patch } : v)));
+  }
+  function removeRow(target: Variant) {
+    setVariants(variants.filter((v) => v !== target));
+  }
+
+  function addColorRow(size: string) {
+    setVariants([...variants, { size, color: "", numbering: "", stock: 0, sku: "" }]);
+  }
+
+  function removeSize(size: string) {
+    setVariants(variants.filter((v) => v.size !== size));
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <Label>Variações por tamanho</Label>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        {COMMON_SIZES.map((s) => (
+          <Button
+            key={s}
+            type="button"
+            variant={sizes.includes(s) ? "default" : "outline"}
+            size="sm"
+            onClick={() => (sizes.includes(s) ? removeSize(s) : addSize(s))}
+          >
+            {s}
+          </Button>
+        ))}
+        <CustomSizeInput onAdd={addSize} existing={sizes} />
+      </div>
+
+      {sizes.length === 0 && numberOnly.length === 0 && (
+        <p className="text-sm text-muted-foreground">
+          Selecione os tamanhos disponíveis. Para cada tamanho você poderá adicionar cores e estoque.
+        </p>
+      )}
+
+      <div className="space-y-3">
+        {sizes.map((size) => {
+          const rows = variants.filter((v) => v.size === size);
+          return (
+            <div key={size} className="rounded-xl border border-border p-4">
+              <div className="mb-3 flex items-center justify-between">
+                <span className="rounded-full bg-foreground px-3 py-1 text-sm font-semibold text-background">Tam {size}</span>
+                <div className="flex gap-2">
+                  <Button type="button" variant="outline" size="sm" onClick={() => addColorRow(size)}>
+                    <Plus className="mr-1 h-4 w-4" /> Cor
+                  </Button>
+                  <Button type="button" variant="ghost" size="sm" onClick={() => removeSize(size)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              <div className="space-y-2">
+                {rows.map((v, i) => (
+                  <div key={i} className="grid grid-cols-2 gap-2 sm:grid-cols-[1fr_1fr_120px_auto]">
+                    <Input placeholder="Cor (ex: Preto)" value={v.color} onChange={(e) => updateRow(v, { color: e.target.value })} />
+                    <Input placeholder="Nº (opcional)" value={v.numbering} onChange={(e) => updateRow(v, { numbering: e.target.value })} />
+                    <Input type="number" placeholder="Estoque" value={v.stock} onChange={(e) => updateRow(v, { stock: Number(e.target.value) })} />
+                    <Button type="button" variant="ghost" size="icon" onClick={() => removeRow(v)}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+
+        {numberOnly.length > 0 && (
+          <div className="rounded-xl border border-border p-4">
+            <div className="mb-3 flex items-center justify-between">
+              <span className="text-sm font-medium">Sem tamanho (calçados / numeração)</span>
+              <Button type="button" variant="outline" size="sm" onClick={() => setVariants([...variants, { size: "", color: "", numbering: "", stock: 0, sku: "" }])}>
+                <Plus className="mr-1 h-4 w-4" /> Linha
+              </Button>
+            </div>
+            <div className="space-y-2">
+              {numberOnly.map((v, i) => (
+                <div key={i} className="grid grid-cols-2 gap-2 sm:grid-cols-[1fr_1fr_120px_auto]">
+                  <Input placeholder="Cor" value={v.color} onChange={(e) => updateRow(v, { color: e.target.value })} />
+                  <Input placeholder="Nº (ex: 38)" value={v.numbering} onChange={(e) => updateRow(v, { numbering: e.target.value })} />
+                  <Input type="number" placeholder="Estoque" value={v.stock} onChange={(e) => updateRow(v, { stock: Number(e.target.value) })} />
+                  <Button type="button" variant="ghost" size="icon" onClick={() => removeRow(v)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {sizes.length === 0 && (
+        <Button type="button" variant="outline" size="sm" onClick={() => setVariants([...variants, { size: "", color: "", numbering: "", stock: 0, sku: "" }])}>
+          <Plus className="mr-1 h-4 w-4" /> Adicionar variação por numeração
+        </Button>
+      )}
+    </div>
+  );
+}
+
+function CustomSizeInput({ onAdd, existing }: { onAdd: (s: string) => void; existing: string[] }) {
+  const [val, setVal] = useState("");
+  return (
+    <div className="flex gap-1">
+      <Input
+        value={val}
+        onChange={(e) => setVal(e.target.value)}
+        placeholder="Outro"
+        className="h-9 w-24"
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            if (val && !existing.includes(val)) onAdd(val);
+            setVal("");
+          }
+        }}
+      />
     </div>
   );
 }
