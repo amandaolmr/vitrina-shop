@@ -39,6 +39,12 @@ function ProductPage() {
   const images = useMemo(() => (product?.product_images ?? []).sort((a: any, b: any) => a.position - b.position), [product]);
   const variants: any[] = product?.product_variants ?? [];
   const hasVariants = variants.length > 0;
+  const colorImageMap = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const c of (product as any)?.product_color_images ?? []) m.set(c.color, c.image_url);
+    return m;
+  }, [product]);
+  const colorImage = selectedColor ? colorImageMap.get(selectedColor) : undefined;
 
   // Distinct colors with stock info
   const colors = useMemo(() => {
