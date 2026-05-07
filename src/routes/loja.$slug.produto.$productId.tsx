@@ -115,11 +115,11 @@ function ProductPage() {
             {images[imgIdx] ? (
               <>
                 <img src={images[imgIdx].url} alt={product.name} className="h-full w-full object-cover" />
-                {selectedVariant?.color && colorToCss(selectedVariant.color) && (
+                {selectedColor && colorToCss(selectedColor) && (
                   <div
                     aria-hidden
                     className="pointer-events-none absolute inset-0 mix-blend-multiply transition-colors duration-300"
-                    style={{ backgroundColor: colorToCss(selectedVariant.color)!, opacity: 0.45 }}
+                    style={{ backgroundColor: colorToCss(selectedColor)!, opacity: 0.45 }}
                   />
                 )}
               </>
