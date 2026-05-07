@@ -110,7 +110,7 @@ function StorefrontPage() {
           </div>
         )}
 
-        {featured.length > 0 && !q && !activeCat && (
+        {featured.length > 0 && !q && !activeCat && !activeDept && (
           <section className="mt-8">
             <h2 className="mb-4 text-lg font-semibold">Destaques</h2>
             <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
@@ -120,7 +120,7 @@ function StorefrontPage() {
         )}
 
         <section className="mt-10">
-          <h2 className="mb-4 text-lg font-semibold">{q || activeCat ? "Resultados" : "Todos os produtos"}</h2>
+          <h2 className="mb-4 text-lg font-semibold">{q || activeCat || activeDept ? "Resultados" : "Todos os produtos"}</h2>
           {filtered.length === 0 ? (
             <p className="rounded-2xl border border-dashed border-border p-12 text-center text-muted-foreground">Nenhum produto encontrado.</p>
           ) : (
