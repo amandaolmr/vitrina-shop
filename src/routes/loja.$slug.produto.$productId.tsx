@@ -37,9 +37,43 @@ function ProductPage() {
   });
 
   const images = useMemo(() => (product?.product_images ?? []).sort((a: any, b: any) => a.position - b.position), [product]);
-  const variants = product?.product_variants ?? [];
-  const selectedVariant = variants.find((v: any) => v.id === variantId);
+  const variants: any[] = product?.product_variants ?? [];
   const hasVariants = variants.length > 0;
+
+  // Distinct colors with stock info
+  const colors = useMemo(() => {
+    const map = new Map<string, { color: string; totalStock: number }>();
+    for (const v of variants) {
+      const c = (v.color ?? "").trim();
+      if (!c) continue;
+      const cur = map.get(c) ?? { color: c, totalStock: 0 };
+      cur.totalStock += v.stock ?? 0;
+      map.set(c, cur);
+    }
+    return Array.from(map.values());
+  }, [variants]);
+
+  const hasColors = colors.length > 0;
+
+  // Sizes (ou numerações) disponíveis para a cor selecionada
+  const sizesForColor = useMemo(() => {
+    const list = hasColors
+      ? variants.filter((v) => (v.color ?? "").trim() === selectedColor)
+      : variants;
+    return list
+      .map((v) => ({
+        key: v.id,
+        label: v.size || v.numbering || "Único",
+        stock: v.stock ?? 0,
+      }))
+      .filter((s) => s.label);
+  }, [variants, selectedColor, hasColors]);
+
+  const selectedVariant = variants.find((v) => {
+    const colorOk = hasColors ? (v.color ?? "").trim() === selectedColor : true;
+    const sizeOk = (v.size || v.numbering || "Único") === selectedSize;
+    return colorOk && sizeOk;
+  });
 
   if (isLoading) return <div className="p-12 text-center text-muted-foreground">Carregando…</div>;
   if (!product) return <div className="p-12 text-center text-muted-foreground">Produto não encontrado</div>;
