@@ -183,123 +183,150 @@ function ProductEditor() {
 const COMMON_SIZES = ["PP", "P", "M", "G", "GG", "XG"];
 
 function VariantsEditor({ variants, setVariants }: { variants: Variant[]; setVariants: (v: Variant[]) => void }) {
-  const sizes = Array.from(new Set(variants.map((v) => v.size).filter(Boolean)));
-  const numberOnly = variants.filter((v) => !v.size && (v.numbering || v.color));
+  // group by color
+  const colors = Array.from(new Set(variants.map((v) => (v.color ?? "").trim()).filter(Boolean)));
 
-  function addSize(size: string) {
-    if (!size) return;
-    if (sizes.includes(size)) return;
-    setVariants([...variants, { size, color: "", numbering: "", stock: 0, sku: "" }]);
+  function addColor(name: string) {
+    const color = name.trim();
+    if (!color || colors.includes(color)) return;
+    setVariants([...variants, { size: "", color, numbering: "", stock: 0, sku: "" }]);
+  }
+
+  function removeColor(color: string) {
+    setVariants(variants.filter((v) => v.color !== color));
+  }
+
+  function renameColor(oldName: string, newName: string) {
+    const next = newName.trim();
+    if (!next) return;
+    setVariants(variants.map((v) => (v.color === oldName ? { ...v, color: next } : v)));
   }
 
   function updateRow(target: Variant, patch: Partial<Variant>) {
     setVariants(variants.map((v) => (v === target ? { ...v, ...patch } : v)));
   }
+
   function removeRow(target: Variant) {
     setVariants(variants.filter((v) => v !== target));
   }
 
-  function addColorRow(size: string) {
-    setVariants([...variants, { size, color: "", numbering: "", stock: 0, sku: "" }]);
+  function toggleSize(color: string, size: string) {
+    const existing = variants.find((v) => v.color === color && v.size === size);
+    if (existing) {
+      setVariants(variants.filter((v) => v !== existing));
+    } else {
+      setVariants([...variants, { color, size, numbering: "", stock: 0, sku: "" }]);
+    }
   }
 
-  function removeSize(size: string) {
-    setVariants(variants.filter((v) => v.size !== size));
+  function addNumberingRow(color: string) {
+    setVariants([...variants, { color, size: "", numbering: "", stock: 0, sku: "" }]);
   }
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <Label>Variações por tamanho</Label>
+        <Label>Cores e estoque</Label>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {COMMON_SIZES.map((s) => (
-          <Button
-            key={s}
-            type="button"
-            variant={sizes.includes(s) ? "default" : "outline"}
-            size="sm"
-            onClick={() => (sizes.includes(s) ? removeSize(s) : addSize(s))}
-          >
-            {s}
-          </Button>
-        ))}
-        <CustomSizeInput onAdd={addSize} existing={sizes} />
-      </div>
+      <AddColorInput onAdd={addColor} existing={colors} />
 
-      {sizes.length === 0 && numberOnly.length === 0 && (
+      {colors.length === 0 && (
         <p className="text-sm text-muted-foreground">
-          Selecione os tamanhos disponíveis. Para cada tamanho você poderá adicionar cores e estoque.
+          Cadastre as cores disponíveis. Para cada cor, escolha os tamanhos e informe a quantidade em estoque.
         </p>
       )}
 
       <div className="space-y-3">
-        {sizes.map((size) => {
-          const rows = variants.filter((v) => v.size === size);
+        {colors.map((color) => {
+          const rows = variants.filter((v) => v.color === color);
+          const sizeRows = rows.filter((r) => r.size);
+          const numberingRows = rows.filter((r) => !r.size);
           return (
-            <div key={size} className="rounded-xl border border-border p-4">
-              <div className="mb-3 flex items-center justify-between">
-                <span className="rounded-full bg-foreground px-3 py-1 text-sm font-semibold text-background">Tam {size}</span>
-                <div className="flex gap-2">
-                  <Button type="button" variant="outline" size="sm" onClick={() => addColorRow(size)}>
-                    <Plus className="mr-1 h-4 w-4" /> Cor
-                  </Button>
-                  <Button type="button" variant="ghost" size="sm" onClick={() => removeSize(size)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
+            <div key={color} className="rounded-xl border border-border p-4">
+              <div className="mb-3 flex items-center justify-between gap-2">
+                <Input
+                  defaultValue={color}
+                  onBlur={(e) => e.target.value !== color && renameColor(color, e.target.value)}
+                  className="h-8 max-w-[200px] font-semibold"
+                />
+                <Button type="button" variant="ghost" size="sm" onClick={() => removeColor(color)}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </div>
-              <div className="space-y-2">
-                {rows.map((v, i) => (
-                  <div key={i} className="grid grid-cols-2 gap-2 sm:grid-cols-[1fr_1fr_120px_auto]">
-                    <Input placeholder="Cor (ex: Preto)" value={v.color} onChange={(e) => updateRow(v, { color: e.target.value })} />
-                    <Input placeholder="Nº (opcional)" value={v.numbering} onChange={(e) => updateRow(v, { numbering: e.target.value })} />
-                    <Input type="number" placeholder="Estoque" value={v.stock} onChange={(e) => updateRow(v, { stock: Number(e.target.value) })} />
-                    <Button type="button" variant="ghost" size="icon" onClick={() => removeRow(v)}>
-                      <Trash2 className="h-4 w-4" />
+
+              <div className="mb-3 flex flex-wrap gap-2">
+                {COMMON_SIZES.map((s) => {
+                  const active = sizeRows.some((r) => r.size === s);
+                  return (
+                    <Button
+                      key={s}
+                      type="button"
+                      variant={active ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => toggleSize(color, s)}
+                    >
+                      {s}
                     </Button>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
+
+              {sizeRows.length > 0 && (
+                <div className="space-y-2">
+                  {sizeRows.map((v, i) => (
+                    <div key={i} className="grid grid-cols-[60px_1fr_auto] items-center gap-2">
+                      <span className="rounded-full bg-muted px-3 py-1 text-center text-xs font-semibold">{v.size}</span>
+                      <Input
+                        type="number"
+                        placeholder="Estoque"
+                        value={v.stock}
+                        onChange={(e) => updateRow(v, { stock: Number(e.target.value) })}
+                      />
+                      <Button type="button" variant="ghost" size="icon" onClick={() => removeRow(v)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {numberingRows.length > 0 && (
+                <div className="mt-3 space-y-2">
+                  <p className="text-xs text-muted-foreground">Numeração (calçados)</p>
+                  {numberingRows.map((v, i) => (
+                    <div key={i} className="grid grid-cols-[1fr_1fr_auto] items-center gap-2">
+                      <Input
+                        placeholder="Nº (ex: 38)"
+                        value={v.numbering}
+                        onChange={(e) => updateRow(v, { numbering: e.target.value })}
+                      />
+                      <Input
+                        type="number"
+                        placeholder="Estoque"
+                        value={v.stock}
+                        onChange={(e) => updateRow(v, { stock: Number(e.target.value) })}
+                      />
+                      <Button type="button" variant="ghost" size="icon" onClick={() => removeRow(v)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <Button type="button" variant="outline" size="sm" className="mt-3" onClick={() => addNumberingRow(color)}>
+                <Plus className="mr-1 h-4 w-4" /> Adicionar numeração
+              </Button>
             </div>
           );
         })}
-
-        {numberOnly.length > 0 && (
-          <div className="rounded-xl border border-border p-4">
-            <div className="mb-3 flex items-center justify-between">
-              <span className="text-sm font-medium">Sem tamanho (calçados / numeração)</span>
-              <Button type="button" variant="outline" size="sm" onClick={() => setVariants([...variants, { size: "", color: "", numbering: "", stock: 0, sku: "" }])}>
-                <Plus className="mr-1 h-4 w-4" /> Linha
-              </Button>
-            </div>
-            <div className="space-y-2">
-              {numberOnly.map((v, i) => (
-                <div key={i} className="grid grid-cols-2 gap-2 sm:grid-cols-[1fr_1fr_120px_auto]">
-                  <Input placeholder="Cor" value={v.color} onChange={(e) => updateRow(v, { color: e.target.value })} />
-                  <Input placeholder="Nº (ex: 38)" value={v.numbering} onChange={(e) => updateRow(v, { numbering: e.target.value })} />
-                  <Input type="number" placeholder="Estoque" value={v.stock} onChange={(e) => updateRow(v, { stock: Number(e.target.value) })} />
-                  <Button type="button" variant="ghost" size="icon" onClick={() => removeRow(v)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
-
-      {sizes.length === 0 && (
-        <Button type="button" variant="outline" size="sm" onClick={() => setVariants([...variants, { size: "", color: "", numbering: "", stock: 0, sku: "" }])}>
-          <Plus className="mr-1 h-4 w-4" /> Adicionar variação por numeração
-        </Button>
-      )}
     </div>
   );
 }
 
-function CustomSizeInput({ onAdd, existing }: { onAdd: (s: string) => void; existing: string[] }) {
+function AddColorInput({ onAdd, existing }: { onAdd: (s: string) => void; existing: string[] }) {
   const [val, setVal] = useState("");
   return (
     <div className="flex gap-1">
