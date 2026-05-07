@@ -155,6 +155,8 @@ function ProductEditor() {
           </div>
 
           <VariantsEditor variants={variants} setVariants={setVariants} />
+
+          <ColorImagesEditor variants={variants} colorImages={colorImages} setColorImages={setColorImages} />
         </section>
 
         <aside className="space-y-6 rounded-2xl border border-border bg-card p-6">
