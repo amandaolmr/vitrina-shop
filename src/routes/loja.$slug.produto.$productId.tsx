@@ -130,26 +130,15 @@ function ProductPage() {
       <div className="mt-4 grid gap-8 md:grid-cols-2">
         <div>
           <div className="relative aspect-square overflow-hidden rounded-2xl bg-muted">
-            {colorImage ? (
-              <img src={colorImage} alt={`${product.name} - ${selectedColor}`} className="h-full w-full object-cover" />
-            ) : images[imgIdx] ? (
-              <>
-                <img src={images[imgIdx].url} alt={product.name} className="h-full w-full object-cover" />
-                {selectedColor && colorToCss(selectedColor) && (
-                  <div
-                    aria-hidden
-                    className="pointer-events-none absolute inset-0 mix-blend-multiply transition-colors duration-300"
-                    style={{ backgroundColor: colorToCss(selectedColor)!, opacity: 0.45 }}
-                  />
-                )}
-              </>
+            {gallery[imgIdx] ? (
+              <img src={gallery[imgIdx].url} alt={product.name} className="h-full w-full object-cover" />
             ) : (
               <div className="grid h-full w-full place-items-center text-muted-foreground">Sem imagem</div>
             )}
           </div>
-          {images.length > 1 && (
+          {gallery.length > 1 && (
             <div className="mt-3 flex gap-2 overflow-x-auto">
-              {images.map((img: any, i: number) => (
+              {gallery.map((img: any, i: number) => (
                 <button
                   key={img.id}
                   onClick={() => setImgIdx(i)}
