@@ -40,20 +40,26 @@ function ProductPage() {
   const variants: any[] = product?.product_variants ?? [];
   const hasVariants = variants.length > 0;
   const colorImageMap = useMemo(() => {
-    const m = new Map<string, string>();
-    for (const c of (product as any)?.product_color_images ?? []) m.set(c.color, c.image_url);
+    const m = new Map<string, string[]>();
+    const sorted = [...((product as any)?.product_color_images ?? [])].sort(
+      (a: any, b: any) => (a.position ?? 0) - (b.position ?? 0),
+    );
+    for (const c of sorted) {
+      const cur = m.get(c.color) ?? [];
+      cur.push(c.image_url);
+      m.set(c.color, cur);
+    }
     return m;
   }, [product]);
-  const colorImage = selectedColor ? colorImageMap.get(selectedColor) : undefined;
+  const colorImages = selectedColor ? colorImageMap.get(selectedColor) ?? [] : [];
 
-  // Gallery includes color image (if not already in product images) as first item
+  // Gallery: when a color is selected, show only the color's images; otherwise all product images
   const gallery = useMemo(() => {
-    const base = images.map((i: any) => ({ id: i.id, url: i.url }));
-    if (colorImage && !base.some((b) => b.url === colorImage)) {
-      return [{ id: `color-${selectedColor}`, url: colorImage }, ...base];
+    if (selectedColor && colorImages.length > 0) {
+      return colorImages.map((url, i) => ({ id: `color-${selectedColor}-${i}`, url }));
     }
-    return base;
-  }, [images, colorImage, selectedColor]);
+    return images.map((i: any) => ({ id: i.id, url: i.url }));
+  }, [images, colorImages, selectedColor]);
 
   // Reset image index when color changes
   useEffect(() => { setImgIdx(0); }, [selectedColor]);
