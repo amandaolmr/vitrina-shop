@@ -175,7 +175,7 @@ function ProductPage() {
                 {colors.map((c) => {
                   const out = c.totalStock <= 0;
                   const css = colorToCss(c.color);
-                  const photo = colorImageMap.get(c.color);
+                  const photo = colorImageMap.get(c.color)?.[0];
                   const active = selectedColor === c.color;
                   return (
                     <button
