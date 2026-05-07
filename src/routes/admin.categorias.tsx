@@ -58,6 +58,13 @@ function CategoriesPage() {
     else refetch();
   }
 
+  async function rename(id: string, name: string) {
+    if (!name.trim()) return;
+    const { error } = await supabase.from("categories").update({ name: name.trim() }).eq("id", id);
+    if (error) toast.error(error.message);
+    else refetch();
+  }
+
   return (
     <div className="max-w-3xl space-y-6">
       <div>
