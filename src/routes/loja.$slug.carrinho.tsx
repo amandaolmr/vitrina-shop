@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useStore } from "./loja.$slug";
+import { useStore } from "@/lib/store-context";
 import { useCart, buildWhatsappMessage, whatsappLink } from "@/lib/cart";
 import { Button } from "@/components/ui/button";
 import { formatBRL } from "@/lib/format";

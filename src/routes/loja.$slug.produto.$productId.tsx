@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useMemo } from "react";
-import { useStore } from "./loja.$slug";
+import { useStore } from "@/lib/store-context";
 import { Button } from "@/components/ui/button";
 import { formatBRL } from "@/lib/format";
 import { useCart } from "@/lib/cart";
