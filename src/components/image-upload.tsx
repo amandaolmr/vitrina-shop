@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Upload, X } from "lucide-react";
+import { Upload, X, ArrowLeft, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 
 type Props = {
