@@ -24,7 +24,7 @@ function ProductEditor() {
   const [form, setForm] = useState<any>(null);
   const [images, setImages] = useState<string[]>([]);
   const [variants, setVariants] = useState<Variant[]>([]);
-  const [colorImages, setColorImages] = useState<Record<string, string>>({});
+  const [colorImages, setColorImages] = useState<Record<string, string[]>>({});
   const [busy, setBusy] = useState(false);
 
   const { data: product, refetch } = useQuery({
