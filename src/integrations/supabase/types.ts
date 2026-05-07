@@ -19,6 +19,7 @@ export type Database = {
           created_at: string
           id: string
           name: string
+          parent_id: string | null
           position: number
           store_id: string
         }
@@ -26,6 +27,7 @@ export type Database = {
           created_at?: string
           id?: string
           name: string
+          parent_id?: string | null
           position?: number
           store_id: string
         }
@@ -33,10 +35,18 @@ export type Database = {
           created_at?: string
           id?: string
           name?: string
+          parent_id?: string | null
           position?: number
           store_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "categories_store_id_fkey"
             columns: ["store_id"]
