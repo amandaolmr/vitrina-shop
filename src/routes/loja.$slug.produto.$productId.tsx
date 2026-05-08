@@ -293,7 +293,6 @@ function ProductPage() {
               <p className="mb-3 text-sm font-medium">Cores disponíveis:</p>
               <div className="flex flex-wrap gap-3">
                 {colors.map((c) => {
-                  const out = c.totalStock <= 0;
                   const css = colorToCss(c.color);
                   const photo = colorImageMap.get(c.color)?.[0];
                   const active = selectedColor === c.color;
@@ -301,13 +300,12 @@ function ProductPage() {
                     <button
                       key={c.color}
                       type="button"
-                      disabled={out}
                       onClick={() => {
                         setSelectedColor(c.color);
                         setSelectedSize(null);
                       }}
                       title={c.color}
-                      className={`flex flex-col items-center gap-1 ${out ? "opacity-40" : ""}`}
+                      className={`flex flex-col items-center gap-1`}
                     >
                       <span
                         className={`grid h-14 w-14 place-items-center overflow-hidden rounded-full border-2 transition ${
