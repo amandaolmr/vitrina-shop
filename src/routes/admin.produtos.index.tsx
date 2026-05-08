@@ -54,6 +54,8 @@ export const Route = createFileRoute("/admin/produtos/")({
   component: ProductsList,
 });
 
+import { Switch } from "@/components/ui/switch";
+
 function ProductsList() {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -492,23 +494,17 @@ function ProductRow({ p, store, navigate, duplicateProduct, deleteProduct, toggl
         <span className="font-bold text-sm text-foreground">{formatBRL(Number(p.price))}</span>
       </TableCell>
       <TableCell className="py-4">
-        <button
-          onClick={handleToggle}
-          disabled={loading}
-          className="flex items-center gap-1.5 focus:outline-none disabled:opacity-50"
-        >
-          {p.active ? (
-            <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200/60 h-6 px-2 text-[10px] font-bold uppercase tracking-wider hover:bg-emerald-100 transition-colors cursor-pointer">
-              {loading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-1" />}
-              Ativo
-            </Badge>
-          ) : (
-            <Badge variant="outline" className="bg-slate-50 text-slate-500 border-slate-200 h-6 px-2 text-[10px] font-bold uppercase tracking-wider hover:bg-slate-100 transition-colors cursor-pointer">
-              {loading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <div className="h-1.5 w-1.5 rounded-full bg-slate-400 mr-1" />}
-              Inativo
-            </Badge>
-          )}
-        </button>
+        <div className="flex items-center gap-2">
+          <Switch
+            checked={p.active}
+            onCheckedChange={handleToggle}
+            disabled={loading}
+            className="data-[state=checked]:bg-emerald-500"
+          />
+          <span className={`text-[10px] font-bold uppercase tracking-wider transition-colors ${p.active ? 'text-emerald-600' : 'text-slate-400'}`}>
+            {loading ? '...' : p.active ? 'Ativo' : 'Inativo'}
+          </span>
+        </div>
       </TableCell>
       <TableCell className="text-right py-4">
         <ProductActions p={p} store={store} navigate={navigate} duplicateProduct={duplicateProduct} deleteProduct={deleteProduct} />
@@ -542,24 +538,18 @@ function ProductMobileCard({ p, store, navigate, duplicateProduct, deleteProduct
         <div className="flex flex-col min-w-0">
           <span className="font-bold text-sm text-foreground truncate">{p.name}</span>
           <span className="font-bold text-xs text-muted-foreground mt-0.5">{formatBRL(Number(p.price))}</span>
-          <div className="flex gap-2 mt-2">
-            <button
-              onClick={handleToggle}
-              disabled={loading}
-              className="flex items-center gap-1 focus:outline-none"
-            >
-              {p.active ? (
-                <div className="flex items-center gap-1.5 bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full border border-emerald-100 text-[9px] font-bold uppercase tracking-wider">
-                  {loading ? <Loader2 className="h-2 w-2 animate-spin" /> : <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />}
-                  Ativo
-                </div>
-              ) : (
-                <div className="flex items-center gap-1.5 bg-slate-50 text-slate-500 px-2 py-0.5 rounded-full border border-slate-200 text-[9px] font-bold uppercase tracking-wider">
-                  {loading ? <Loader2 className="h-2 w-2 animate-spin" /> : <div className="h-1.5 w-1.5 rounded-full bg-slate-400" />}
-                  Inativo
-                </div>
-              )}
-            </button>
+          <div className="flex items-center gap-3 mt-2">
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={p.active}
+                onCheckedChange={handleToggle}
+                disabled={loading}
+                className="scale-75 origin-left data-[state=checked]:bg-emerald-500"
+              />
+              <span className={`text-[9px] font-bold uppercase tracking-wider transition-colors ${p.active ? 'text-emerald-600' : 'text-slate-400'}`}>
+                {p.active ? 'Ativo' : 'Inativo'}
+              </span>
+            </div>
             {p.featured && <Star className="h-3 w-3 text-amber-500 fill-amber-500" />}
             {p.product_variants?.length > 0 && <span className="text-[9px] text-emerald-600 font-bold leading-none bg-emerald-50 px-2 py-1 rounded-full border border-emerald-100">{p.product_variants.length} var</span>}
           </div>
