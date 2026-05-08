@@ -50,7 +50,8 @@ function ProductPage() {
     [product],
   );
   const variants: any[] = product?.product_variants ?? [];
-  const hasVariants = variants.length > 0;
+  const hasVariations = product?.has_variations;
+  const variantsAvailable = hasVariations && variants.length > 0;
   const colorImageMap = useMemo(() => {
     const m = new Map<string, string[]>();
     const sorted = [...((product as any)?.product_color_images ?? [])].sort(
