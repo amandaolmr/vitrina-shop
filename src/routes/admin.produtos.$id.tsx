@@ -381,13 +381,13 @@ function ProductEditor() {
             </CardContent>
           </Card>
 
-          {/* Variações e Estoque */}
+          {/* Grade e Variações */}
           <Card>
             <CardHeader>
               <CardTitle className="text-lg flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Settings className="h-5 w-5 text-primary" />
-                  Estoque e Grade
+                  Grade de Cores e Tamanhos
                 </div>
                 <div className="flex items-center gap-2">
                   <Label htmlFor="has_variations" className="text-xs font-normal">Possui variações?</Label>
@@ -400,8 +400,8 @@ function ProductEditor() {
               </CardTitle>
               <CardDescription>
                 {form.has_variations 
-                  ? "Gerencie cores, tamanhos e quantidades por variação" 
-                  : "Defina o estoque e identificadores únicos do produto"}
+                  ? "Gerencie as cores e tamanhos disponíveis para este produto" 
+                  : "Este produto será vendido como item único"}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -413,18 +413,9 @@ function ProductEditor() {
                   setColorImages={setColorImages}
                 />
               ) : (
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="stock">Quantidade em estoque</Label>
-                    <Input
-                      id="stock"
-                      type="number"
-                      placeholder="Ex: 10"
-                      value={form.stock}
-                      onChange={(e) => setForm({ ...form, stock: e.target.value })}
-                    />
-                  </div>
-                </div>
+                <p className="text-sm text-muted-foreground italic">
+                  O produto será exibido sem opções de escolha para o cliente.
+                </p>
               )}
             </CardContent>
           </Card>
