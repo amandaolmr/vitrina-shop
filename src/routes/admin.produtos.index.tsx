@@ -17,7 +17,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
-  ChevronsRight
+  ChevronsRight,
+  Loader2
 } from "lucide-react";
 import { formatBRL } from "@/lib/format";
 import { useMemo, useState } from "react";
