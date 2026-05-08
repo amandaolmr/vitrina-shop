@@ -33,7 +33,7 @@ export function ProductCard({ p, slug }: ProductCardProps) {
             src={cover}
             alt={p.name}
             loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+            className="h-full w-full object-contain p-4 transition-transform duration-700 group-hover:scale-110"
           />
         ) : (
           <div className="grid h-full w-full place-items-center text-xs text-muted-foreground bg-slate-100/50">
