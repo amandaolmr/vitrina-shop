@@ -157,6 +157,68 @@ function NewProduct() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Estoque e Grade */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Settings className="h-5 w-5 text-primary" />
+                  Estoque e Grade
+                </div>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="has_variations" className="text-xs font-normal">Possui variações?</Label>
+                  <Switch
+                    id="has_variations"
+                    checked={form.has_variations}
+                    onCheckedChange={(c) => setForm({ ...form, has_variations: c })}
+                  />
+                </div>
+              </CardTitle>
+              <CardDescription>
+                {form.has_variations 
+                  ? "Você poderá adicionar variações após salvar o produto." 
+                  : "Defina o estoque e identificadores únicos do produto."}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {!form.has_variations ? (
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="stock">Qtd em estoque</Label>
+                    <Input
+                      id="stock"
+                      type="number"
+                      value={form.stock}
+                      onChange={(e) => setForm({ ...form, stock: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="sku">SKU</Label>
+                    <Input
+                      id="sku"
+                      placeholder="Ex: CAM-PR-P"
+                      value={form.sku}
+                      onChange={(e) => setForm({ ...form, sku: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="barcode">Código de barras</Label>
+                    <Input
+                      id="barcode"
+                      placeholder="EAN-13, ISBN..."
+                      value={form.barcode}
+                      onChange={(e) => setForm({ ...form, barcode: e.target.value })}
+                    />
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground italic">
+                  Opções de grade (cor/tamanho) ficarão disponíveis na tela de edição logo após a criação.
+                </p>
+              )}
+            </CardContent>
+          </Card>
         </div>
 
         <div className="space-y-6">
