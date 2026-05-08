@@ -56,7 +56,7 @@ function StoreSettings() {
     }
 
     // Verificar se o slug já existe (se foi alterado)
-    if (form.slug !== store.slug) {
+    if (store && form.slug !== store.slug) {
       const { data: existingStore } = await supabase
         .from("stores")
         .select("id")

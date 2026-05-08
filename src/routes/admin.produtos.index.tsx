@@ -28,8 +28,11 @@ function ProductsList() {
   const { data: store } = useQuery({
     queryKey: ["my-store", user?.id],
     enabled: !!user,
-    queryFn: async () =>
-      (await supabase.from("stores").select("*").eq("owner_id", user!.id).maybeSingle()).data,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("stores").select("*").eq("owner_id", user!.id).maybeSingle();
+      if (error) throw error;
+      return data;
+    },
   });
 
   const { data: categories } = useQuery({
@@ -100,6 +103,10 @@ function ProductsList() {
     navigate({ to: "/admin/produtos/$id", params: { id: data.id } });
     refetch();
   }
+
+  if (!store && !user) return null; // Let AdminLayout handle auth redirect
+  
+  if (!store) return <div className="grid min-h-[50vh] place-items-center text-muted-foreground">Carregando loja…</div>;
 
   return (
     <div>
