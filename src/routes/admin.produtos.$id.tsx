@@ -619,12 +619,12 @@ function VariantsEditor({
     if (existing) {
       setVariants(variants.filter((v) => v !== existing));
     } else {
-      setVariants([...variants, { color, size, numbering: "", stock: 0 }]);
+      setVariants([...variants, { color, size, numbering: "" }]);
     }
   }
 
   function addNumberingRow(color: string) {
-    setVariants([...variants, { color, size: "", numbering: "", stock: 0 }]);
+    setVariants([...variants, { color, size: "", numbering: "" }]);
   }
 
   return (
