@@ -295,14 +295,6 @@ function ProductCard({ p, slug }: { p: any; slug: string }) {
       params={{ slug, productId: p.id }}
       className="group relative flex flex-col overflow-hidden rounded-xl bg-card transition hover:shadow-md"
     >
-      {hasDiscount && (
-        <div className="absolute left-2 top-2 z-10">
-          <span className="rounded-full bg-destructive px-2 py-0.5 text-[10px] font-bold text-destructive-foreground shadow-sm">
-            {discountPercent}% OFF
-          </span>
-        </div>
-      )}
-      
       <div className="aspect-[4/5] overflow-hidden bg-white rounded-xl flex items-center justify-center">
         {cover ? (
           <img
@@ -321,15 +313,22 @@ function ProductCard({ p, slug }: { p: any; slug: string }) {
         <h3 className="line-clamp-2 text-sm font-medium text-foreground group-hover:text-primary transition-colors">
           {p.name}
         </h3>
-        <div className="mt-2 flex flex-col">
+        <div className="mt-2 flex flex-col gap-0.5">
           {hasDiscount && (
-            <span className="text-xs text-muted-foreground line-through decoration-muted-foreground/50">
+            <span className="text-[10px] text-muted-foreground line-through decoration-muted-foreground/50">
               {formatBRL(comparePrice)}
             </span>
           )}
-          <span className={`font-bold ${hasDiscount ? "text-destructive" : "text-foreground"}`}>
-            {formatBRL(price)}
-          </span>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="font-bold text-foreground">
+              {formatBRL(price)}
+            </span>
+            {hasDiscount && (
+              <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">
+                {discountPercent}% OFF
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </Link>

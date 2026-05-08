@@ -276,7 +276,7 @@ function ProductPage() {
                 <span className="text-sm text-muted-foreground line-through decoration-muted-foreground/50">
                   {formatBRL(Number(product.compare_at_price))}
                 </span>
-                <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-bold text-destructive">
+                <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-bold text-emerald-600">
                   {Math.round(((Number(product.compare_at_price) - Number(product.price)) / Number(product.compare_at_price)) * 100)}% OFF
                 </span>
               </div>
