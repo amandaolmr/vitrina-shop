@@ -244,7 +244,6 @@ function ProductEditor() {
         featured: false, // Não deixar em destaque por padrão
         active: false, // Deixar inativo inicialmente
         has_variations: form.has_variations,
-        stock: Number(form.stock) || 0,
       })
       .select()
       .single();
@@ -270,7 +269,6 @@ function ProductEditor() {
           size: v.size || null,
           color: v.color || null,
           numbering: v.numbering || null,
-          stock: Number(v.stock) || 0,
         })),
       );
     }
