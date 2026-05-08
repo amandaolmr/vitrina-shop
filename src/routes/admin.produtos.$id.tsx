@@ -590,7 +590,7 @@ function VariantsEditor({
   function addColor(name: string) {
     const color = name.trim();
     if (!color || colors.includes(color)) return;
-    setVariants([...variants, { size: "", color, numbering: "", stock: 0, sku: "" }]);
+    setVariants([...variants, { size: "", color, numbering: "", stock: 0 }]);
   }
 
   function removeColor(color: string) {
@@ -616,12 +616,12 @@ function VariantsEditor({
     if (existing) {
       setVariants(variants.filter((v) => v !== existing));
     } else {
-      setVariants([...variants, { color, size, numbering: "", stock: 0, sku: "" }]);
+      setVariants([...variants, { color, size, numbering: "", stock: 0 }]);
     }
   }
 
   function addNumberingRow(color: string) {
-    setVariants([...variants, { color, size: "", numbering: "", stock: 0, sku: "" }]);
+    setVariants([...variants, { color, size: "", numbering: "", stock: 0 }]);
   }
 
   return (
