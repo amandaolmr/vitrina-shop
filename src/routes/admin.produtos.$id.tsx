@@ -67,14 +67,15 @@ function ProductEditor() {
   const { data: cats } = useQuery({
     queryKey: ["cats-for-product", product?.store_id],
     enabled: !!product?.store_id,
-    queryFn: async () =>
-      (
-        await supabase
-          .from("categories")
-          .select("id,name,parent_id")
-          .eq("store_id", product!.store_id)
-          .order("name")
-      ).data ?? [],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("categories")
+        .select("id,name,parent_id")
+        .eq("store_id", product!.store_id)
+        .order("name");
+      if (error) throw error;
+      return data ?? [];
+    },
   });
 
   const [deptOverride, setDeptOverride] = useState<string>("");
