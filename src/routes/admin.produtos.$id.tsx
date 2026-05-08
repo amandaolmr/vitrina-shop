@@ -67,7 +67,7 @@ function ProductEditor() {
   const [busy, setBusy] = useState(false);
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
 
-  const { data: product, refetch } = useQuery({
+  const { data: product, refetch, isLoading: loadingProduct } = useQuery({
     queryKey: ["product", id],
     queryFn: async () => {
       const { data, error } = await supabase
