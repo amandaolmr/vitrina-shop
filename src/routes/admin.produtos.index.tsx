@@ -545,12 +545,12 @@ function ProductMobileCard({ p, store, navigate, duplicateProduct, deleteProduct
           <span className="font-bold text-xs text-muted-foreground mt-1">{formatBRL(Number(p.price))}</span>
           
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mt-2.5">
-            <div className="flex items-center gap-2 bg-muted/30 rounded-full px-2 py-0.5 border border-border/20">
+            <div className="flex items-center gap-2 bg-muted/40 rounded-full pl-2 pr-3 py-1 border border-border/10">
               <Switch
                 checked={p.active}
                 onCheckedChange={handleToggle}
                 disabled={loading}
-                className="scale-[0.65] origin-left data-[state=checked]:bg-emerald-500"
+                className="scale-[0.8] origin-left data-[state=checked]:bg-emerald-500"
               />
               <span className={`text-[8px] sm:text-[9px] font-extrabold uppercase tracking-widest transition-colors ${p.active ? 'text-emerald-600' : 'text-slate-400'}`}>
                 {p.active ? 'Ativo' : 'Inativo'}
