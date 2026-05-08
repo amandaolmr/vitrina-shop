@@ -84,7 +84,6 @@ function NewProduct() {
         active: form.active,
         featured: form.featured,
         has_variations: form.has_variations,
-        stock: Number(form.stock) || 0,
       })
       .select()
       .single();
