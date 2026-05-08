@@ -123,7 +123,6 @@ function ProductEditor() {
         featured: product.featured,
         active: product.active,
         has_variations: product.has_variations,
-        stock: product.stock,
       });
       setImages(
         (product.product_images ?? [])
@@ -136,7 +135,6 @@ function ProductEditor() {
           size: v.size ?? "",
           color: v.color ?? "",
           numbering: v.numbering ?? "",
-          stock: v.stock,
         })),
       );
       const ci: Record<string, string[]> = {};
