@@ -28,8 +28,11 @@ function ProductsList() {
   const { data: store } = useQuery({
     queryKey: ["my-store", user?.id],
     enabled: !!user,
-    queryFn: async () =>
-      (await supabase.from("stores").select("*").eq("owner_id", user!.id).maybeSingle()).data,
+    queryFn: async () => {
+      const { data, error } = await supabase.from("stores").select("*").eq("owner_id", user!.id).maybeSingle();
+      if (error) throw error;
+      return data;
+    },
   });
 
   const { data: categories } = useQuery({
