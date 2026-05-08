@@ -291,10 +291,6 @@ function ProductsList() {
                 ) : (
                   filteredProducts.map((p: any) => {
                     const cover = p.product_images?.sort((a: any, b: any) => a.position - b.position)[0]?.url;
-                    const totalStock = p.has_variations 
-                      ? (p.product_variants?.reduce((acc: number, v: any) => acc + (v.stock || 0), 0) || 0)
-                      : (p.stock || 0);
-                    
                     return (
                       <TableRow key={p.id} className="border-border/40 hover:bg-muted/5 group transition-colors">
                         <TableCell className="py-4">
@@ -312,22 +308,15 @@ function ProductsList() {
                           <div className="flex flex-col max-w-[250px]">
                             <span className="font-bold text-sm text-foreground group-hover:text-primary transition-colors truncate">{p.name}</span>
                             <span className="text-[10px] font-medium text-muted-foreground tracking-tight">ID: {p.id.slice(0, 8)}</span>
-                          </div>
-                        </TableCell>
-                        <TableCell className="py-4">
-                          <span className="font-bold text-sm text-foreground">{formatBRL(Number(p.price))}</span>
-                        </TableCell>
-                        <TableCell className="py-4">
-                          <div className="flex flex-col gap-0.5">
-                            <span className={`text-sm font-bold ${totalStock <= 5 ? 'text-destructive' : 'text-foreground'}`}>
-                              {totalStock} un
-                            </span>
                             {p.product_variants?.length > 0 && (
-                              <span className="text-[10px] font-medium text-muted-foreground">
+                              <span className="text-[10px] font-medium text-emerald-600 mt-1">
                                 {p.product_variants.length} variações
                               </span>
                             )}
                           </div>
+                        </TableCell>
+                        <TableCell className="py-4">
+                          <span className="font-bold text-sm text-foreground">{formatBRL(Number(p.price))}</span>
                         </TableCell>
                         <TableCell className="py-4">
                           <div className="flex flex-wrap gap-1.5">
