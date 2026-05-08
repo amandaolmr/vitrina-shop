@@ -15,7 +15,6 @@ import {
   Sparkles,
   Filter
 } from "lucide-react";
-import { formatBRL } from "@/lib/format";
 import {
   Dialog,
   DialogContent,
@@ -93,7 +92,6 @@ function StorefrontPage() {
     });
   }, [products, q, activeCat, activeDept, subcatIds]);
 
-  // Agrupar produtos por categoria
   const productsByCategory = useMemo(() => {
     const grouped = new Map<string, any[]>();
 
@@ -123,274 +121,264 @@ function StorefrontPage() {
   };
 
   return (
-    <main>
-      {store.banner_url && (
-        <div className="relative h-44 w-full overflow-hidden md:h-64">
-          <img src={store.banner_url} alt="" className="h-full w-full object-cover" />
-        </div>
-      )}
+    <div className="min-h-screen bg-slate-50/30 pb-20 font-sans">
+      <StoreHeader />
+      
+      <main>
+        <StoreBanner />
 
-      <div className="mx-auto max-w-5xl px-4 py-6">
-        {store.description && (
-          <p className="text-center text-muted-foreground">{store.description}</p>
-        )}
-
-        <div className="mt-6 relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Buscar produtos..."
-            className="pl-9"
-          />
-        </div>
-
-        {departments.length > 0 && (
-          <div className="mt-4 flex flex-wrap gap-2">
-            <button
-              onClick={() => {
-                setActiveDept(null);
-                setActiveCat(null);
-              }}
-              className={`rounded-full border px-4 py-1.5 text-sm font-medium ${!activeDept ? "border-foreground bg-foreground text-background" : "border-border"}`}
-            >
-              Todos
-            </button>
-            {departments.map((d: any) => (
-              <button
-                key={d.id}
-                onClick={() => {
-                  setActiveDept(d.id);
-                  setActiveCat(null);
-                }}
-                className={`rounded-full border px-4 py-1.5 text-sm font-medium ${activeDept === d.id ? "border-foreground bg-foreground text-background" : "border-border"}`}
-              >
-                {d.name}
-              </button>
-            ))}
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+          {/* Search Bar - Pill Style */}
+          <div className="max-w-2xl mx-auto mb-10 sm:mb-16">
+            <div className="relative group">
+              <div className="absolute inset-0 bg-emerald-500/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+              <Search className="absolute left-6 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
+              <Input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="O que você está procurando hoje?"
+                className="h-14 sm:h-16 pl-14 pr-6 rounded-full border-slate-100 bg-white shadow-sm hover:shadow-md focus:shadow-xl focus:ring-slate-900 transition-all text-base sm:text-lg placeholder:text-slate-400 border-none"
+              />
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
+                <button className="hidden sm:flex bg-slate-900 text-white px-6 py-2 rounded-full hover:bg-slate-800 transition-colors font-bold text-sm h-10 items-center">
+                  Buscar
+                </button>
+              </div>
+            </div>
           </div>
-        )}
 
-        {activeDept && subcats.length > 0 && (
-          <div className="mt-3 flex flex-wrap gap-2">
-            <button
-              onClick={() => setActiveCat(null)}
-              className={`rounded-full border px-3 py-1 text-xs ${!activeCat ? "border-foreground bg-foreground text-background" : "border-border"}`}
-            >
-              Todas
-            </button>
-            {subcats.map((c: any) => (
-              <button
-                key={c.id}
-                onClick={() => setActiveCat(c.id)}
-                className={`rounded-full border px-3 py-1 text-xs whitespace-nowrap ${activeCat === c.id ? "border-foreground bg-foreground text-background" : "border-border"}`}
-              >
-                {c.name}
-              </button>
-            ))}
-          </div>
-        )}
+          {/* Category Pill Buttons */}
+          {departments.length > 0 && (
+            <div className="mb-12">
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <button
+                  onClick={() => {
+                    setActiveDept(null);
+                    setActiveCat(null);
+                  }}
+                  className={`flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all duration-300 shadow-sm hover:shadow-md ${
+                    !activeDept 
+                      ? "bg-slate-900 text-white" 
+                      : "bg-white text-slate-600 border border-slate-100 hover:border-slate-200"
+                  }`}
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                  Todos
+                </button>
+                {departments.map((d: any) => (
+                  <button
+                    key={d.id}
+                    onClick={() => {
+                      setActiveDept(d.id);
+                      setActiveCat(null);
+                    }}
+                    className={`flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all duration-300 shadow-sm hover:shadow-md ${
+                      activeDept === d.id 
+                        ? "bg-slate-900 text-white" 
+                        : "bg-white text-slate-600 border border-slate-100 hover:border-slate-200"
+                    }`}
+                  >
+                    {getCategoryIcon(d.name)}
+                    {d.name}
+                  </button>
+                ))}
+              </div>
 
-        {featured.length > 0 && !q && !activeCat && !activeDept && (
-          <section className="mt-8">
-            <h2 className="mb-4 text-lg font-semibold">Destaques</h2>
-            <div className="relative overflow-hidden">
-              {featured.length > 4 && (
-                <>
+              {/* Subcategories */}
+              {activeDept && subcats.length > 0 && (
+                <div className="mt-6 flex flex-wrap justify-center gap-2">
+                  <button
+                    onClick={() => setActiveCat(null)}
+                    className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all ${
+                      !activeCat 
+                        ? "bg-slate-100 text-slate-900 shadow-sm" 
+                        : "text-slate-500 hover:bg-slate-50"
+                    }`}
+                  >
+                    Todas
+                  </button>
+                  {subcats.map((c: any) => (
+                    <button
+                      key={c.id}
+                      onClick={() => setActiveCat(c.id)}
+                      className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all whitespace-nowrap ${
+                        activeCat === c.id 
+                          ? "bg-slate-100 text-slate-900 shadow-sm" 
+                          : "text-slate-500 hover:bg-slate-50"
+                      }`}
+                    >
+                      {c.name}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Featured Carousel */}
+          {featured.length > 0 && !q && !activeCat && !activeDept && (
+            <section className="mb-20">
+              <div className="mb-8 flex items-end justify-between px-2 sm:px-0">
+                <div>
+                  <h2 className="text-2xl sm:text-4xl font-black tracking-tighter text-slate-900 uppercase">Em Destaque</h2>
+                  <div className="h-1.5 w-16 bg-slate-900 mt-2 rounded-full" />
+                </div>
+                <div className="flex gap-2">
                   <Button
                     size="icon"
-                    variant="secondary"
-                    className="absolute left-0 top-1/2 -translate-y-1/2 z-50 h-12 w-12 rounded-full shadow-2xl bg-white border flex items-center justify-center"
+                    variant="outline"
+                    className="h-11 w-11 rounded-full bg-white border-slate-100 shadow-sm hover:shadow-md"
                     onClick={() => scroll("featured", "left")}
                   >
                     <ChevronLeft className="h-5 w-5" />
                   </Button>
                   <Button
                     size="icon"
-                    variant="secondary"
-                    className="absolute right-0 top-1/2 -translate-y-1/2 z-50 h-12 w-12 rounded-full shadow-2xl bg-white border flex items-center justify-center"
+                    variant="outline"
+                    className="h-11 w-11 rounded-full bg-white border-slate-100 shadow-sm hover:shadow-md"
                     onClick={() => scroll("featured", "right")}
                   >
                     <ChevronRight className="h-5 w-5" />
                   </Button>
-                </>
-              )}
+                </div>
+              </div>
+              
               <div
                 ref={(el) => {
                   scrollContainerRef.current["featured"] = el;
                 }}
-                className="flex gap-4 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory scrollbar-thin -mx-4 px-4"
-                style={{ scrollbarWidth: "auto" }}
+                className="flex gap-6 overflow-x-auto pb-8 pt-2 snap-x snap-mandatory scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0"
               >
                 {featured.map((p: any) => (
-                  <div key={p.id} className="flex-none w-[45%] sm:w-[30%] md:w-[23%] snap-start">
+                  <div key={p.id} className="flex-none w-[75%] sm:w-[45%] md:w-[30%] lg:w-[23%] snap-start">
                     <ProductCard p={p} slug={store.slug} />
                   </div>
                 ))}
               </div>
-              {featured.length > 4 && (
-                <div className="pointer-events-none absolute right-0 top-0 bottom-4 w-20 bg-gradient-to-l from-background to-transparent" />
-              )}
-            </div>
-          </section>
-        )}
+            </section>
+          )}
 
-        <section className="mt-10">
-          {filtered.length === 0 ? (
-            <>
-              <h2 className="mb-4 text-lg font-semibold">
-                {q || activeCat || activeDept ? "Resultados" : "Todos os produtos"}
-              </h2>
-              <p className="rounded-2xl border border-dashed border-border p-12 text-center text-muted-foreground">
-                Nenhum produto encontrado.
-              </p>
-            </>
-          ) : (
-            <div className="space-y-8">
-              {Array.from(productsByCategory.entries()).map(([categoryId, categoryProducts]) => {
-                const category = cats.find((c: any) => c.id === categoryId);
-                const categoryName = category?.name || "Sem categoria";
+          <section>
+            {filtered.length === 0 ? (
+              <div className="text-center py-24 bg-white rounded-[3rem] shadow-sm border border-slate-100">
+                <div className="bg-slate-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Search className="h-12 w-12 text-slate-300" />
+                </div>
+                <h2 className="text-2xl font-black text-slate-900 mb-2">Ops! Nada por aqui.</h2>
+                <p className="text-slate-500 max-w-xs mx-auto">
+                  Tente ajustar sua busca ou mudar os filtros para encontrar o que procura.
+                </p>
+                <Button 
+                  variant="link" 
+                  className="mt-4 text-slate-900 font-bold"
+                  onClick={() => {setQ(""); setActiveCat(null); setActiveDept(null);}}
+                >
+                  Limpar todos os filtros
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-24">
+                {Array.from(productsByCategory.entries()).map(([categoryId, categoryProducts]) => {
+                  const category = cats.find((c: any) => c.id === categoryId);
+                  const categoryName = category?.name || "Sem categoria";
 
-                return (
-                  <div key={categoryId}>
-                    <div className="mb-4 flex items-center justify-between">
-                      <h2 className="text-lg font-semibold">{categoryName}</h2>
-                      <button
-                        onClick={() => setViewAllCategory({ id: categoryId, name: categoryName })}
-                        className="group flex items-center gap-1 text-xs font-bold text-emerald-600 transition-colors hover:text-emerald-700"
-                      >
-                        Ver todos <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
-                      </button>
-                    </div>
-                    <div className="relative overflow-hidden">
-                      {categoryProducts.length > 4 && (
-                        <>
-                          <Button
-                            size="icon"
-                            variant="secondary"
-                            className="absolute left-0 top-1/2 -translate-y-1/2 z-50 h-12 w-12 rounded-full shadow-2xl bg-white border flex items-center justify-center"
-                            onClick={() => scroll(`cat-${categoryId}`, "left")}
-                          >
-                            <ChevronLeft className="h-5 w-5" />
-                          </Button>
-                          <Button
-                            size="icon"
-                            variant="secondary"
-                            className="absolute right-0 top-1/2 -translate-y-1/2 z-50 h-12 w-12 rounded-full shadow-2xl bg-white border flex items-center justify-center"
-                            onClick={() => scroll(`cat-${categoryId}`, "right")}
-                          >
-                            <ChevronRight className="h-5 w-5" />
-                          </Button>
-                        </>
-                      )}
-                      <div
-                        ref={(el) => {
-                          scrollContainerRef.current[`cat-${categoryId}`] = el;
-                        }}
-                        className="flex gap-4 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory scrollbar-thin -mx-4 px-4"
-                        style={{ scrollbarWidth: "auto" }}
-                      >
-                        {categoryProducts.map((p: any) => (
-                          <div
-                            key={p.id}
-                            className="flex-none w-[45%] sm:w-[30%] md:w-[23%] snap-start"
-                          >
-                            <ProductCard p={p} slug={store.slug} />
-                          </div>
-                        ))}
+                  return (
+                    <div key={categoryId}>
+                      <div className="mb-8 flex items-end justify-between px-2 sm:px-0">
+                        <div>
+                          <h2 className="text-2xl sm:text-4xl font-black tracking-tighter text-slate-900 uppercase">{categoryName}</h2>
+                          <div className="h-1.5 w-16 bg-slate-900 mt-2 rounded-full" />
+                        </div>
+                        <button
+                          onClick={() => setViewAllCategory({ id: categoryId, name: categoryName })}
+                          className="group flex items-center gap-2 text-sm font-bold text-emerald-600 transition-all hover:gap-3 bg-emerald-50 px-4 py-2 rounded-full"
+                        >
+                          Ver todos <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                        </button>
                       </div>
-                      {categoryProducts.length > 4 && (
-                        <div className="pointer-events-none absolute right-0 top-0 bottom-4 w-20 bg-gradient-to-l from-background to-transparent" />
-                      )}
+                      
+                      <div className="relative group">
+                        <div
+                          ref={(el) => {
+                            scrollContainerRef.current[`cat-${categoryId}`] = el;
+                          }}
+                          className="flex gap-6 overflow-x-auto pb-8 pt-2 snap-x snap-mandatory scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0"
+                        >
+                          {categoryProducts.map((p: any) => (
+                            <div
+                              key={p.id}
+                              className="flex-none w-[75%] sm:w-[45%] md:w-[30%] lg:w-[23%] snap-start"
+                            >
+                              <ProductCard p={p} slug={store.slug} />
+                            </div>
+                          ))}
+                        </div>
+
+                        {categoryProducts.length > 4 && (
+                          <>
+                            <Button
+                              size="icon"
+                              variant="outline"
+                              className="absolute -left-6 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full bg-white border-slate-100 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity hidden lg:flex"
+                              onClick={() => scroll(`cat-${categoryId}`, "left")}
+                            >
+                              <ChevronLeft className="h-6 w-6" />
+                            </Button>
+                            <Button
+                              size="icon"
+                              variant="outline"
+                              className="absolute -right-6 top-1/2 -translate-y-1/2 z-10 h-12 w-12 rounded-full bg-white border-slate-100 shadow-xl opacity-0 group-hover:opacity-100 transition-opacity hidden lg:flex"
+                              onClick={() => scroll(`cat-${categoryId}`, "right")}
+                            >
+                              <ChevronRight className="h-6 w-6" />
+                            </Button>
+                          </>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </section>
-      </div>
-
-      <Dialog open={!!viewAllCategory} onOpenChange={(open) => !open && setViewAllCategory(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0 rounded-2xl sm:rounded-2xl border-none shadow-2xl">
-          <DialogHeader className="p-6 border-b bg-white shrink-0">
-            <DialogTitle className="text-xl font-bold">
-              {viewAllCategory?.name}
-            </DialogTitle>
-          </DialogHeader>
-          
-          <div className="flex-1 overflow-y-auto p-4 sm:p-8 bg-slate-50">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
-              {viewAllCategory && productsByCategory.get(viewAllCategory.id)?.map((p: any) => (
-                <ProductCard key={p.id} p={p} slug={store.slug} />
-              ))}
-            </div>
-          </div>
-          
-          <div className="p-4 border-t bg-white shrink-0 text-center sm:hidden">
-            <Button 
-              variant="ghost" 
-              className="w-full text-emerald-600 font-bold hover:bg-emerald-50 hover:text-emerald-700"
-              onClick={() => setViewAllCategory(null)}
-            >
-              Fechar
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </main>
-  );
-}
-
-function ProductCard({ p, slug }: { p: any; slug: string }) {
-  const cover = p.product_images?.sort((a: any, b: any) => a.position - b.position)[0]?.url;
-  const price = Number(p.price);
-  const comparePrice = p.compare_at_price ? Number(p.compare_at_price) : null;
-  const hasDiscount = comparePrice && comparePrice > price;
-  const discountPercent = hasDiscount ? Math.round(((comparePrice - price) / comparePrice) * 100) : 0;
-
-  return (
-    <Link
-      to="/loja/$slug/produto/$productId"
-      params={{ slug, productId: p.id }}
-      className="group relative flex flex-col overflow-hidden rounded-2xl bg-white p-2 transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1 border border-slate-100/50"
-    >
-      <div className="aspect-[4/5] overflow-hidden bg-slate-50 rounded-xl flex items-center justify-center relative">
-        {cover ? (
-          <img
-            src={cover}
-            alt={p.name}
-            loading="lazy"
-            className="h-full w-full object-contain p-2 transition-transform duration-500 group-hover:scale-110"
-          />
-        ) : (
-          <div className="grid h-full w-full place-items-center text-xs text-muted-foreground">
-            Sem imagem
-          </div>
-        )}
-      </div>
-      <div className="p-2 sm:p-3 flex flex-col flex-1">
-        <h3 className="line-clamp-2 text-sm font-semibold text-slate-800 leading-tight group-hover:text-emerald-600 transition-colors">
-          {p.name}
-        </h3>
-        <div className="mt-auto pt-3 flex flex-col gap-0.5">
-          {hasDiscount && (
-            <span className="text-[10px] sm:text-xs text-slate-400 line-through decoration-slate-300">
-              {formatBRL(comparePrice)}
-            </span>
-          )}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="font-bold text-base sm:text-lg text-slate-900 tracking-tight">
-              {formatBRL(price)}
-            </span>
-            {hasDiscount && (
-              <span className="text-[10px] sm:text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-100/50">
-                {discountPercent}% OFF
-              </span>
+                  );
+                })}
+              </div>
             )}
-          </div>
+          </section>
         </div>
-      </div>
-    </Link>
+
+        <Dialog open={!!viewAllCategory} onOpenChange={(open) => !open && setViewAllCategory(null)}>
+          <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0 rounded-[2.5rem] sm:rounded-[3rem] border-none shadow-2xl">
+            <DialogHeader className="p-8 sm:p-12 border-b bg-white shrink-0">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                <div>
+                  <DialogTitle className="text-3xl sm:text-5xl font-black tracking-tighter text-slate-900 uppercase">
+                    {viewAllCategory?.name}
+                  </DialogTitle>
+                  <p className="text-slate-500 text-base mt-2 font-medium">Explore todos os produtos desta categoria</p>
+                </div>
+                <div className="text-slate-400 text-sm font-bold uppercase tracking-widest">
+                  {viewAllCategory && productsByCategory.get(viewAllCategory.id)?.length} Itens
+                </div>
+              </div>
+            </DialogHeader>
+            
+            <div className="flex-1 overflow-y-auto p-6 sm:p-12 bg-slate-50/50">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-10">
+                {viewAllCategory && productsByCategory.get(viewAllCategory.id)?.map((p: any) => (
+                  <ProductCard key={p.id} p={p} slug={store.slug} />
+                ))}
+              </div>
+            </div>
+            
+            <div className="p-6 border-t bg-white shrink-0 text-center lg:hidden">
+              <Button 
+                variant="outline" 
+                className="w-full rounded-full h-14 font-black text-slate-900 border-slate-200 uppercase tracking-tight"
+                onClick={() => setViewAllCategory(null)}
+              >
+                Fechar
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </main>
+    </div>
   );
 }
