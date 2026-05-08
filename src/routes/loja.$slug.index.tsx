@@ -123,8 +123,6 @@ function StorefrontPage() {
 
   return (
     <div className="min-h-screen bg-slate-50/30 pb-20 font-sans">
-      <StoreHeader />
-      
       <main>
         <StoreBanner />
 
