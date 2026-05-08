@@ -529,9 +529,9 @@ function ProductMobileCard({ p, store, navigate, duplicateProduct, deleteProduct
   };
 
   return (
-    <div className="p-4 flex items-center justify-between gap-3 hover:bg-muted/5 transition-colors">
-      <div className="flex items-center gap-3 min-w-0">
-        <div className="aspect-square w-16 h-16 shrink-0 overflow-hidden rounded-xl border border-border/40 bg-white p-1 shadow-sm">
+    <div className="p-3 sm:p-4 flex items-start justify-between gap-3 hover:bg-muted/5 transition-colors">
+      <div className="flex items-start gap-3 min-w-0 flex-1">
+        <div className="aspect-square w-14 h-14 sm:w-16 sm:h-16 shrink-0 overflow-hidden rounded-xl border border-border/40 bg-white p-1 shadow-sm mt-0.5">
           {cover ? (
             <img src={cover} alt={p.name} className="h-full w-full object-contain" />
           ) : (
@@ -540,28 +540,42 @@ function ProductMobileCard({ p, store, navigate, duplicateProduct, deleteProduct
             </div>
           )}
         </div>
-        <div className="flex flex-col min-w-0">
-          <span className="font-bold text-sm text-foreground truncate">{p.name}</span>
-          <span className="font-bold text-xs text-muted-foreground mt-0.5">{formatBRL(Number(p.price))}</span>
-          <div className="flex items-center gap-3 mt-2">
-            <div className="flex items-center gap-2">
+        <div className="flex flex-col min-w-0 flex-1">
+          <span className="font-bold text-sm text-foreground leading-tight line-clamp-2">{p.name}</span>
+          <span className="font-bold text-xs text-muted-foreground mt-1">{formatBRL(Number(p.price))}</span>
+          
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mt-2.5">
+            <div className="flex items-center gap-2 bg-muted/30 rounded-full px-2 py-0.5 border border-border/20">
               <Switch
                 checked={p.active}
                 onCheckedChange={handleToggle}
                 disabled={loading}
-                className="scale-75 origin-left data-[state=checked]:bg-emerald-500"
+                className="scale-[0.65] origin-left data-[state=checked]:bg-emerald-500"
               />
-              <span className={`text-[9px] font-bold uppercase tracking-wider transition-colors ${p.active ? 'text-emerald-600' : 'text-slate-400'}`}>
+              <span className={`text-[8px] sm:text-[9px] font-extrabold uppercase tracking-widest transition-colors ${p.active ? 'text-emerald-600' : 'text-slate-400'}`}>
                 {p.active ? 'Ativo' : 'Inativo'}
               </span>
             </div>
-            {p.featured && <Star className="h-3 w-3 text-amber-500 fill-amber-500" />}
-            {p.product_variants?.length > 0 && <span className="text-[9px] text-emerald-600 font-bold leading-none bg-emerald-50 px-2 py-1 rounded-full border border-emerald-100">{p.product_variants.length} var</span>}
+            
+            {p.featured && (
+              <div className="flex items-center gap-1 bg-amber-50 rounded-full px-2 py-0.5 border border-amber-100">
+                <Star className="h-2.5 w-2.5 text-amber-500 fill-amber-500" />
+                <span className="text-[8px] sm:text-[9px] font-extrabold text-amber-600 uppercase tracking-widest">Destaque</span>
+              </div>
+            )}
+            
+            {p.product_variants?.length > 0 && (
+              <span className="text-[8px] sm:text-[9px] text-emerald-600 font-extrabold uppercase tracking-widest bg-emerald-50 px-2 py-1 rounded-full border border-emerald-100">
+                {p.product_variants.length} var
+              </span>
+            )}
           </div>
         </div>
       </div>
       
-      <ProductActions p={p} store={store} navigate={navigate} duplicateProduct={duplicateProduct} deleteProduct={deleteProduct} />
+      <div className="flex flex-col justify-between items-end h-full py-0.5">
+        <ProductActions p={p} store={store} navigate={navigate} duplicateProduct={duplicateProduct} deleteProduct={deleteProduct} />
+      </div>
     </div>
   );
 }
