@@ -5,8 +5,14 @@ import { useState, useMemo, useRef } from "react";
 import { useStore } from "@/lib/store-context";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import { formatBRL } from "@/lib/format";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/loja/$slug/")({
   component: StorefrontPage,
