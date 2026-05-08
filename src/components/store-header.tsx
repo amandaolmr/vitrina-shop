@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useCart } from "@/lib/cart";
+import { useFavorites } from "@/lib/favorites";
 import { 
   ShoppingBag, 
   Info, 
@@ -18,7 +19,8 @@ import {
 import { Button } from "@/components/ui/button";
 
 export function StoreHeader({ store }: { store: any }) {
-  const { count } = useCart(store.slug);
+  const { count: cartCount } = useCart(store.slug);
+  const { count: favCount } = useFavorites(store.slug);
 
   function openWhatsApp() {
     if (!store.whatsapp) return;
@@ -165,10 +167,15 @@ export function StoreHeader({ store }: { store: any }) {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="hidden sm:flex rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 transition-all"
+              className="hidden sm:flex rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 transition-all relative"
               title="Favoritos"
             >
               <Heart className="h-5 w-5" />
+              {favCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white ring-2 ring-white px-1 animate-in zoom-in-75">
+                  {favCount}
+                </span>
+              )}
             </Button>
 
             <Link
@@ -185,9 +192,9 @@ export function StoreHeader({ store }: { store: any }) {
               >
                 <div>
                   <ShoppingBag className="h-5 w-5" />
-                  {count > 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-slate-900 text-[10px] font-bold text-white ring-2 ring-white px-1">
-                      {count}
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-slate-900 text-[10px] font-bold text-white ring-2 ring-white px-1 animate-in zoom-in-75">
+                      {cartCount}
                     </span>
                   )}
                 </div>
