@@ -255,6 +255,10 @@ function ProductEditor() {
         category_id: form.category_id || null,
         featured: false, // Não deixar em destaque por padrão
         active: false, // Deixar inativo inicialmente
+        has_variations: form.has_variations,
+        stock: Number(form.stock) || 0,
+        sku: form.sku ? `${form.sku}-copy` : null,
+        barcode: form.barcode || null,
       })
       .select()
       .single();
