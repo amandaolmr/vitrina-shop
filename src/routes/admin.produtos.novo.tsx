@@ -13,7 +13,8 @@ import {
   Package, 
   Save, 
   Tag, 
-  BadgeDollarSign
+  BadgeDollarSign,
+  Settings
 } from "lucide-react";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
