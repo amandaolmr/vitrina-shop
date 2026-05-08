@@ -276,38 +276,38 @@ function ProductEditor() {
   }
 
   return (
-    <div className="space-y-6">
-      <Link
-        to="/admin/produtos"
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeft className="h-4 w-4" /> Produtos
-      </Link>
-
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold">Editar produto</h1>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={remove}>
-            Excluir
+    <div className="max-w-5xl mx-auto pb-20">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link to="/admin/produtos" className="hover:text-foreground">Produtos</Link>
+            <ChevronRight className="h-4 w-4" />
+            <span>Editar Produto</span>
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight">
+            {form.name || "Sem nome"}
+          </h1>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => setShowDuplicateDialog(true)} disabled={busy} className="hidden sm:flex">
+            <Copy className="mr-2 h-4 w-4" /> Duplicar
           </Button>
-          <Button variant="outline" onClick={() => setShowDuplicateDialog(true)} disabled={busy}>
-            Duplicar
+          <Button variant="outline" size="sm" onClick={remove} disabled={busy} className="text-destructive hover:bg-destructive/10">
+            <Trash2 className="mr-2 h-4 w-4" /> Excluir
           </Button>
-          <Button onClick={save} disabled={busy}>
-            Salvar
+          <Button size="sm" onClick={save} disabled={busy}>
+            <Save className="mr-2 h-4 w-4" /> {busy ? "Salvando..." : "Salvar alterações"}
           </Button>
         </div>
       </div>
 
-      {/* Dialog de confirmação de duplicação */}
       <AlertDialog open={showDuplicateDialog} onOpenChange={setShowDuplicateDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Duplicar produto?</AlertDialogTitle>
             <AlertDialogDescription>
-              Isso criará uma cópia completa deste produto, incluindo todas as imagens, variantes e
-              configurações. O produto duplicado ficará inativo por padrão para que você possa
-              revisá-lo antes de publicar.
+              Isso criará uma cópia completa deste produto. O novo produto ficará como rascunho por padrão.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -317,116 +317,205 @@ function ProductEditor() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <div className="grid gap-6 md:grid-cols-3">
-        <section className="md:col-span-2 space-y-6 rounded-2xl border border-border bg-card p-6">
-          <div className="space-y-2">
-            <Label>Nome</Label>
-            <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-          </div>
-          <div className="space-y-2">
-            <Label>Descrição</Label>
-            <Textarea
-              rows={4}
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-            />
-          </div>
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2 space-y-6">
+          {/* Informações Básicas */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Package className="h-5 w-5 text-primary" />
+                Informações Básicas
+              </CardTitle>
+              <CardDescription>Nome e descrição principal do produto</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Nome do produto</Label>
+                <Input 
+                  id="name"
+                  placeholder="Ex: Camiseta Oversized Algodão"
+                  value={form.name} 
+                  onChange={(e) => setForm({ ...form, name: e.target.value })} 
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="desc">Descrição</Label>
+                <Textarea
+                  id="desc"
+                  placeholder="Descreva os detalhes do seu produto..."
+                  rows={6}
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                />
+              </div>
+            </CardContent>
+          </Card>
 
-          <div className="space-y-2">
-            <Label>Imagens</Label>
-            <MultiImageUpload values={images} onChange={setImages} />
-          </div>
+          {/* Imagens */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <ImageIcon className="h-5 w-5 text-primary" />
+                Imagens do Produto
+              </CardTitle>
+              <CardDescription>A primeira imagem será a capa da vitrine</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <MultiImageUpload values={images} onChange={setImages} />
+            </CardContent>
+          </Card>
 
-          <VariantsEditor variants={variants} setVariants={setVariants} />
+          {/* Variações */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Settings className="h-5 w-5 text-primary" />
+                Grade e Estoque
+              </CardTitle>
+              <CardDescription>Gerencie cores, tamanhos e quantidades</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <VariantsEditor variants={variants} setVariants={setVariants} />
+              
+              <Separator />
+              
+              <div className="pt-2">
+                <h3 className="text-sm font-semibold mb-3">Imagens por Cor (Opcional)</h3>
+                <ColorImagesEditor
+                  variants={variants}
+                  colorImages={colorImages}
+                  setColorImages={setColorImages}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
-          <ColorImagesEditor
-            variants={variants}
-            colorImages={colorImages}
-            setColorImages={setColorImages}
-          />
-        </section>
+        <div className="space-y-6">
+          {/* Preço e Estoque */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <BadgeDollarSign className="h-5 w-5 text-primary" />
+                Preço
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>Preço de venda (R$)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={form.price}
+                  onChange={(e) => setForm({ ...form, price: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Preço comparativo (R$)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={form.compare_at_price}
+                  onChange={(e) => setForm({ ...form, compare_at_price: e.target.value })}
+                  placeholder="Ex: 199.90"
+                />
+                <p className="text-[10px] text-muted-foreground">Exibe o preço riscado (promoção)</p>
+              </div>
+            </CardContent>
+          </Card>
 
-        <aside className="space-y-6 rounded-2xl border border-border bg-card p-6">
-          <div className="space-y-2">
-            <Label>Preço (R$)</Label>
-            <Input
-              type="number"
-              step="0.01"
-              value={form.price}
-              onChange={(e) => setForm({ ...form, price: e.target.value })}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Preço comparativo</Label>
-            <Input
-              type="number"
-              step="0.01"
-              value={form.compare_at_price}
-              onChange={(e) => setForm({ ...form, compare_at_price: e.target.value })}
-              placeholder="Opcional"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label>Departamento</Label>
-            <Select
-              value={departmentId || "none"}
-              onValueChange={(v) => {
-                const next = v === "none" ? "" : v;
-                setDeptOverride(next);
-                // clear subcategory when department changes
-                if (selectedCat && selectedCat.parent_id !== next) {
-                  setForm({ ...form, category_id: "" });
-                }
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">Sem departamento</SelectItem>
-                {departments.map((d: any) => (
-                  <SelectItem key={d.id} value={d.id}>
-                    {d.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label>Categoria</Label>
-            <Select
-              value={form.category_id || "none"}
-              onValueChange={(v) => setForm({ ...form, category_id: v === "none" ? "" : v })}
-              disabled={!departmentId}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder={departmentId ? "Selecione" : "Escolha um departamento"} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">Sem categoria</SelectItem>
-                {subcategories.map((c: any) => (
-                  <SelectItem key={c.id} value={c.id}>
-                    {c.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center justify-between">
-            <Label>Em destaque</Label>
-            <Switch
-              checked={form.featured}
-              onCheckedChange={(c) => setForm({ ...form, featured: c })}
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <Label>Ativo (visível)</Label>
-            <Switch
-              checked={form.active}
-              onCheckedChange={(c) => setForm({ ...form, active: c })}
-            />
-          </div>
-        </aside>
+          {/* Organização */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Tag className="h-5 w-5 text-primary" />
+                Organização
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label>Departamento</Label>
+                <Select
+                  value={departmentId || "none"}
+                  onValueChange={(v) => {
+                    const next = v === "none" ? "" : v;
+                    setDeptOverride(next);
+                    if (selectedCat && selectedCat.parent_id !== next) {
+                      setForm({ ...form, category_id: "" });
+                    }
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Sem departamento</SelectItem>
+                    {departments.map((d: any) => (
+                      <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Categoria</Label>
+                <Select
+                  value={form.category_id || "none"}
+                  onValueChange={(v) => setForm({ ...form, category_id: v === "none" ? "" : v })}
+                  disabled={!departmentId}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={departmentId ? "Selecione" : "Escolha um departamento"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Sem categoria</SelectItem>
+                    {subcategories.map((c: any) => (
+                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Status e Visibilidade */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Publicação</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Ativo</Label>
+                  <p className="text-xs text-muted-foreground">Visível na vitrine</p>
+                </div>
+                <Switch
+                  checked={form.active}
+                  onCheckedChange={(c) => setForm({ ...form, active: c })}
+                />
+              </div>
+              <Separator />
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>Destaque</Label>
+                  <p className="text-xs text-muted-foreground">Topo da página inicial</p>
+                </div>
+                <Switch
+                  checked={form.featured}
+                  onCheckedChange={(c) => setForm({ ...form, featured: c })}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Ver na loja */}
+          {product && (
+            <Button variant="outline" className="w-full" asChild>
+              <a href={`/loja/${store?.slug}/produto/${product.id}`} target="_blank" rel="noreferrer">
+                <ExternalLink className="mr-2 h-4 w-4" /> Ver na vitrine
+              </a>
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
