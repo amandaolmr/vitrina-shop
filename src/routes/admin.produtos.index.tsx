@@ -184,126 +184,185 @@ function ProductsList() {
         </Button>
       </div>
 
-      {/* Filtros */}
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 rounded-2xl border border-border bg-card p-4">
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Departamento</label>
-          <Select
-            value={filterDept || "all"}
-            onValueChange={(v) => {
-              setFilterDept(v === "all" ? "" : v);
-              setFilterCat(""); // Limpar categoria ao trocar departamento
-            }}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Todos" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
-              {departments.map((d: any) => (
-                <SelectItem key={d.id} value={d.id}>
-                  {d.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative max-w-sm flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Buscar por nome..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-10"
+          />
         </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Categoria</label>
-          <Select
-            value={filterCat || "all"}
-            onValueChange={(v) => setFilterCat(v === "all" ? "" : v)}
-            disabled={!filterDept}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder={filterDept ? "Todas" : "Selecione departamento"} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas</SelectItem>
-              {subcategories.map((c: any) => (
-                <SelectItem key={c.id} value={c.id}>
-                  {c.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Status</label>
+        
+        <div className="flex flex-wrap items-center gap-2">
           <Select value={filterStatus} onValueChange={setFilterStatus}>
-            <SelectTrigger>
-              <SelectValue />
+            <SelectTrigger className="w-[140px]">
+              <Filter className="mr-2 h-4 w-4" />
+              <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Todos</SelectItem>
+              <SelectItem value="all">Todos Status</SelectItem>
               <SelectItem value="active">Ativos</SelectItem>
               <SelectItem value="inactive">Inativos</SelectItem>
               <SelectItem value="featured">Em destaque</SelectItem>
             </SelectContent>
           </Select>
-        </div>
 
-        <div className="flex items-end">
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => {
-              setFilterDept("");
+          <Select
+            value={filterDept || "all"}
+            onValueChange={(v) => {
+              setFilterDept(v === "all" ? "" : v);
               setFilterCat("");
-              setFilterStatus("all");
             }}
           >
-            Limpar filtros
-          </Button>
-        </div>
-      </div>
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="Departamento" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos Deptos</SelectItem>
+              {departments.map((d: any) => (
+                <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-      {/* Contador de resultados */}
-      <div className="mt-4 text-sm text-muted-foreground">
-        {filteredProducts.length}{" "}
-        {filteredProducts.length === 1 ? "produto encontrado" : "produtos encontrados"}
-      </div>
-
-      {filteredProducts?.length === 0 && (
-        <div className="mt-6 rounded-2xl border border-dashed border-border p-12 text-center text-muted-foreground">
-          {products?.length === 0
-            ? "Nenhum produto ainda. Clique em Novo produto para começar."
-            : "Nenhum produto encontrado com os filtros selecionados."}
-        </div>
-      )}
-
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filteredProducts?.map((p: any) => {
-          const cover = p.product_images?.sort((a: any, b: any) => a.position - b.position)[0]?.url;
-          return (
-            <Link
-              key={p.id}
-              to="/admin/produtos/$id"
-              params={{ id: p.id }}
-              className="overflow-hidden rounded-2xl border border-border bg-card transition hover:shadow-md"
+          {(filterDept || filterCat || filterStatus !== "all" || search) && (
+            <Button 
+              variant="ghost" 
+              onClick={() => {
+                setSearch("");
+                setFilterDept("");
+                setFilterCat("");
+                setFilterStatus("all");
+              }}
+              className="h-9 px-2 text-xs text-muted-foreground"
             >
-              <div className="aspect-square bg-white overflow-hidden flex items-center justify-center">
-                {cover ? (
-                  <img src={cover} alt={p.name} className="h-full w-full object-contain p-4" />
-                ) : null}
-              </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between gap-2">
-                  <h3 className="truncate font-medium">{p.name}</h3>
-                  {p.featured && <Star className="h-4 w-4 fill-current text-yellow-500" />}
-                </div>
-                <p className="mt-1 text-sm text-muted-foreground">{formatBRL(Number(p.price))}</p>
-                {!p.active && (
-                  <span className="mt-2 inline-block rounded-full bg-secondary px-2 py-0.5 text-xs">
-                    Rascunho
-                  </span>
-                )}
-              </div>
-            </Link>
-          );
-        })}
+              Limpar
+            </Button>
+          )}
+        </div>
+      </div>
+
+      <div className="mt-6 overflow-hidden rounded-xl border border-border bg-card">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[80px]">Imagem</TableHead>
+              <TableHead>Produto</TableHead>
+              <TableHead>Preço</TableHead>
+              <TableHead>Estoque</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Ações</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
+                  Carregando produtos...
+                </TableCell>
+              </TableRow>
+            ) : filteredProducts.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
+                  Nenhum produto encontrado.
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredProducts.map((p: any) => {
+                const cover = p.product_images?.sort((a: any, b: any) => a.position - b.position)[0]?.url;
+                const totalStock = p.product_variants?.reduce((acc: number, v: any) => acc + (v.stock || 0), 0) || 0;
+                
+                return (
+                  <TableRow key={p.id}>
+                    <TableCell>
+                      <div className="aspect-square w-12 overflow-hidden rounded-lg border border-border bg-white p-1">
+                        {cover ? (
+                          <img src={cover} alt={p.name} className="h-full w-full object-contain" />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center bg-secondary/50">
+                            <Package className="h-4 w-4 text-muted-foreground" />
+                          </div>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{p.name}</span>
+                        <span className="text-xs text-muted-foreground">ID: {p.id.slice(0, 8)}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <span className="font-medium text-foreground">{formatBRL(Number(p.price))}</span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-col gap-1">
+                        <span className={`text-sm ${totalStock <= 5 ? 'font-semibold text-destructive' : ''}`}>
+                          {totalStock} un
+                        </span>
+                        {p.product_variants?.length > 0 && (
+                          <span className="text-[10px] text-muted-foreground">
+                            {p.product_variants.length} variações
+                          </span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap gap-1">
+                        {p.active ? (
+                          <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
+                            Ativo
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="bg-secondary text-secondary-foreground">
+                            Rascunho
+                          </Badge>
+                        )}
+                        {p.featured && (
+                          <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
+                            Destaque
+                          </Badge>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" className="h-8 w-8 p-0">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-[160px]">
+                          <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => navigate({ to: "/admin/produtos/$id", params: { id: p.id } })}>
+                            <Pencil className="mr-2 h-4 w-4" /> Editar
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => duplicateProduct(p)}>
+                            <Copy className="mr-2 h-4 w-4" /> Duplicar
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <a href={`/loja/${store.slug}/produto/${p.id}`} target="_blank" rel="noreferrer">
+                              <Eye className="mr-2 h-4 w-4" /> Ver na loja
+                            </a>
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem 
+                            className="text-destructive focus:text-destructive" 
+                            onClick={() => deleteProduct(p.id)}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" /> Excluir
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            )}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );
