@@ -104,6 +104,10 @@ function ProductsList() {
     refetch();
   }
 
+  if (!store && !user) return null; // Let AdminLayout handle auth redirect
+  
+  if (!store) return <div className="grid min-h-[50vh] place-items-center text-muted-foreground">Carregando loja…</div>;
+
   return (
     <div>
       <div className="flex items-center justify-between">
