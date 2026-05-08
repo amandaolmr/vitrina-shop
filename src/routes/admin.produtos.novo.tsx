@@ -38,8 +38,6 @@ function NewProduct() {
     featured: false,
     has_variations: false,
     stock: "0",
-    sku: "",
-    barcode: "",
   });
 
   const { data: store } = useQuery({
