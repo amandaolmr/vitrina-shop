@@ -270,14 +270,20 @@ function ProductPage() {
 
         <div>
           <h1 className="text-2xl font-bold md:text-3xl">{product.name}</h1>
-          <div className="mt-2 flex items-baseline gap-3">
-            <span className="text-2xl font-semibold">{formatBRL(Number(product.price))}</span>
-            {product.compare_at_price &&
-              Number(product.compare_at_price) > Number(product.price) && (
-                <span className="text-muted-foreground line-through">
+          <div className="mt-3 flex flex-col gap-1">
+            {product.compare_at_price && Number(product.compare_at_price) > Number(product.price) && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground line-through decoration-muted-foreground/50">
                   {formatBRL(Number(product.compare_at_price))}
                 </span>
-              )}
+                <span className="rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-bold text-destructive">
+                  {Math.round(((Number(product.compare_at_price) - Number(product.price)) / Number(product.compare_at_price)) * 100)}% OFF
+                </span>
+              </div>
+            )}
+            <span className="text-3xl font-bold text-foreground">
+              {formatBRL(Number(product.price))}
+            </span>
           </div>
 
           {product.description && (
