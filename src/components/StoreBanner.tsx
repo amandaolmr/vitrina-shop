@@ -21,9 +21,7 @@ export function StoreBanner() {
               {store.description}
             </p>
           )}
-          <button className="bg-white text-slate-900 px-6 sm:px-8 py-3 rounded-full font-bold text-sm sm:text-base hover:bg-slate-100 transition-colors shadow-lg">
-            Ver Coleção
-          </button>
+          {/* Botão removido conforme solicitado */}
         </div>
       </div>
     </div>
