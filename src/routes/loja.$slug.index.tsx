@@ -295,11 +295,8 @@ function StorefrontPage() {
       <Dialog open={!!viewAllCategory} onOpenChange={(open) => !open && setViewAllCategory(null)}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0 rounded-2xl sm:rounded-2xl border-none shadow-2xl">
           <DialogHeader className="p-6 border-b bg-white shrink-0">
-            <DialogTitle className="text-xl font-bold flex items-center justify-between">
+            <DialogTitle className="text-xl font-bold">
               {viewAllCategory?.name}
-              <span className="ml-2 text-xs font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-                {viewAllCategory && productsByCategory.get(viewAllCategory.id)?.length} produtos
-              </span>
             </DialogTitle>
           </DialogHeader>
           
