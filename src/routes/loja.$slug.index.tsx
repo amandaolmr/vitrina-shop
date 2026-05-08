@@ -284,19 +284,32 @@ function StorefrontPage() {
 
 function ProductCard({ p, slug }: { p: any; slug: string }) {
   const cover = p.product_images?.sort((a: any, b: any) => a.position - b.position)[0]?.url;
+  const price = Number(p.price);
+  const comparePrice = p.compare_at_price ? Number(p.compare_at_price) : null;
+  const hasDiscount = comparePrice && comparePrice > price;
+  const discountPercent = hasDiscount ? Math.round(((comparePrice - price) / comparePrice) * 100) : 0;
+
   return (
     <Link
       to="/loja/$slug/produto/$productId"
       params={{ slug, productId: p.id }}
-      className="group overflow-hidden rounded-xl bg-card transition hover:shadow-md"
+      className="group relative flex flex-col overflow-hidden rounded-xl bg-card transition hover:shadow-md"
     >
-      <div className="aspect-square overflow-hidden bg-white rounded-xl flex items-center justify-center">
+      {hasDiscount && (
+        <div className="absolute left-2 top-2 z-10">
+          <span className="rounded-full bg-destructive px-2 py-0.5 text-[10px] font-bold text-destructive-foreground shadow-sm">
+            {discountPercent}% OFF
+          </span>
+        </div>
+      )}
+      
+      <div className="aspect-[4/5] overflow-hidden bg-white rounded-xl flex items-center justify-center">
         {cover ? (
           <img
             src={cover}
             alt={p.name}
             loading="lazy"
-            className="h-full w-full object-contain p-4 transition group-hover:scale-105"
+            className="h-full w-full object-contain p-2 transition group-hover:scale-105"
           />
         ) : (
           <div className="grid h-full w-full place-items-center text-xs text-muted-foreground">
@@ -305,14 +318,18 @@ function ProductCard({ p, slug }: { p: any; slug: string }) {
         )}
       </div>
       <div className="p-3">
-        <h3 className="line-clamp-2 text-sm font-medium">{p.name}</h3>
-        <div className="mt-1 flex items-baseline gap-2">
-          <span className="font-semibold">{formatBRL(Number(p.price))}</span>
-          {p.compare_at_price && Number(p.compare_at_price) > Number(p.price) && (
-            <span className="text-xs text-muted-foreground line-through">
-              {formatBRL(Number(p.compare_at_price))}
+        <h3 className="line-clamp-2 text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+          {p.name}
+        </h3>
+        <div className="mt-2 flex flex-col">
+          {hasDiscount && (
+            <span className="text-xs text-muted-foreground line-through decoration-muted-foreground/50">
+              {formatBRL(comparePrice)}
             </span>
           )}
+          <span className={`font-bold ${hasDiscount ? "text-destructive" : "text-foreground"}`}>
+            {formatBRL(price)}
+          </span>
         </div>
       </div>
     </Link>
