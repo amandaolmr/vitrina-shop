@@ -8,7 +8,23 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { MultiImageUpload } from "@/components/image-upload";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -16,7 +32,14 @@ export const Route = createFileRoute("/admin/produtos/$id")({
   component: ProductEditor,
 });
 
-type Variant = { id?: string; size: string; color: string; numbering: string; stock: number; sku: string };
+type Variant = {
+  id?: string;
+  size: string;
+  color: string;
+  numbering: string;
+  stock: number;
+  sku: string;
+};
 
 function ProductEditor() {
   const { id } = Route.useParams();
@@ -26,6 +49,7 @@ function ProductEditor() {
   const [variants, setVariants] = useState<Variant[]>([]);
   const [colorImages, setColorImages] = useState<Record<string, string[]>>({});
   const [busy, setBusy] = useState(false);
+  const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
 
   const { data: product, refetch } = useQuery({
     queryKey: ["product", id],
@@ -44,7 +68,13 @@ function ProductEditor() {
     queryKey: ["cats-for-product", product?.store_id],
     enabled: !!product?.store_id,
     queryFn: async () =>
-      (await supabase.from("categories").select("id,name,parent_id").eq("store_id", product!.store_id).order("name")).data ?? [],
+      (
+        await supabase
+          .from("categories")
+          .select("id,name,parent_id")
+          .eq("store_id", product!.store_id)
+          .order("name")
+      ).data ?? [],
   });
 
   const [deptOverride, setDeptOverride] = useState<string>("");
@@ -64,10 +94,19 @@ function ProductEditor() {
         featured: product.featured,
         active: product.active,
       });
-      setImages((product.product_images ?? []).sort((a: any, b: any) => a.position - b.position).map((i: any) => i.url));
+      setImages(
+        (product.product_images ?? [])
+          .sort((a: any, b: any) => a.position - b.position)
+          .map((i: any) => i.url),
+      );
       setVariants(
         (product.product_variants ?? []).map((v: any) => ({
-          id: v.id, size: v.size ?? "", color: v.color ?? "", numbering: v.numbering ?? "", stock: v.stock, sku: v.sku ?? "",
+          id: v.id,
+          size: v.size ?? "",
+          color: v.color ?? "",
+          numbering: v.numbering ?? "",
+          stock: v.stock,
+          sku: v.sku ?? "",
         })),
       );
       const ci: Record<string, string[]> = {};
@@ -97,12 +136,17 @@ function ProductEditor() {
         active: form.active,
       })
       .eq("id", id);
-    if (error) { setBusy(false); return toast.error(error.message); }
+    if (error) {
+      setBusy(false);
+      return toast.error(error.message);
+    }
 
     // Sync images: delete all then insert
     await supabase.from("product_images").delete().eq("product_id", id);
     if (images.length) {
-      await supabase.from("product_images").insert(images.map((url, i) => ({ product_id: id, url, position: i })));
+      await supabase
+        .from("product_images")
+        .insert(images.map((url, i) => ({ product_id: id, url, position: i })));
     }
 
     // Sync variants
@@ -123,7 +167,8 @@ function ProductEditor() {
 
     // Sync color images
     await supabase.from("product_color_images").delete().eq("product_id", id);
-    const colorRows: { product_id: string; color: string; image_url: string; position: number }[] = [];
+    const colorRows: { product_id: string; color: string; image_url: string; position: number }[] =
+      [];
     for (const [color, urls] of Object.entries(colorImages)) {
       if (!color) continue;
       urls.forEach((image_url, position) => {
@@ -146,24 +191,127 @@ function ProductEditor() {
     navigate({ to: "/admin/produtos" });
   }
 
+  async function duplicate() {
+    setShowDuplicateDialog(false);
+    setBusy(true);
+
+    // Criar cópia do produto
+    const { data: newProduct, error: productError } = await supabase
+      .from("products")
+      .insert({
+        store_id: product.store_id,
+        name: `${form.name} (Cópia)`,
+        description: form.description,
+        price: Number(form.price) || 0,
+        compare_at_price: form.compare_at_price === "" ? null : Number(form.compare_at_price),
+        category_id: form.category_id || null,
+        featured: false, // Não deixar em destaque por padrão
+        active: false, // Deixar inativo inicialmente
+      })
+      .select()
+      .single();
+
+    if (productError || !newProduct) {
+      setBusy(false);
+      return toast.error("Erro ao duplicar produto");
+    }
+
+    // Copiar imagens
+    if (images.length) {
+      await supabase
+        .from("product_images")
+        .insert(images.map((url, i) => ({ product_id: newProduct.id, url, position: i })));
+    }
+
+    // Copiar variantes
+    const validVariants = variants.filter((v) => v.size || v.color || v.numbering);
+    if (validVariants.length) {
+      await supabase.from("product_variants").insert(
+        validVariants.map((v) => ({
+          product_id: newProduct.id,
+          size: v.size || null,
+          color: v.color || null,
+          numbering: v.numbering || null,
+          stock: Number(v.stock) || 0,
+          sku: v.sku || null,
+        })),
+      );
+    }
+
+    // Copiar imagens de cores
+    const colorRows: { product_id: string; color: string; image_url: string; position: number }[] =
+      [];
+    for (const [color, urls] of Object.entries(colorImages)) {
+      if (!color) continue;
+      urls.forEach((image_url, position) => {
+        if (image_url) colorRows.push({ product_id: newProduct.id, color, image_url, position });
+      });
+    }
+    if (colorRows.length) {
+      await supabase.from("product_color_images").insert(colorRows);
+    }
+
+    setBusy(false);
+    toast.success("Produto duplicado com sucesso!");
+    navigate({ to: "/admin/produtos/$id", params: { id: newProduct.id } });
+  }
+
   return (
     <div className="space-y-6">
-      <Link to="/admin/produtos" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+      <Link
+        to="/admin/produtos"
+        className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+      >
         <ArrowLeft className="h-4 w-4" /> Produtos
       </Link>
 
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">Editar produto</h1>
         <div className="flex gap-2">
-          <Button variant="outline" onClick={remove}>Excluir</Button>
-          <Button onClick={save} disabled={busy}>Salvar</Button>
+          <Button variant="outline" onClick={remove}>
+            Excluir
+          </Button>
+          <Button variant="outline" onClick={() => setShowDuplicateDialog(true)} disabled={busy}>
+            Duplicar
+          </Button>
+          <Button onClick={save} disabled={busy}>
+            Salvar
+          </Button>
         </div>
       </div>
 
+      {/* Dialog de confirmação de duplicação */}
+      <AlertDialog open={showDuplicateDialog} onOpenChange={setShowDuplicateDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Duplicar produto?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Isso criará uma cópia completa deste produto, incluindo todas as imagens, variantes e
+              configurações. O produto duplicado ficará inativo por padrão para que você possa
+              revisá-lo antes de publicar.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={duplicate}>Duplicar</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <div className="grid gap-6 md:grid-cols-3">
         <section className="md:col-span-2 space-y-6 rounded-2xl border border-border bg-card p-6">
-          <div className="space-y-2"><Label>Nome</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
-          <div className="space-y-2"><Label>Descrição</Label><Textarea rows={4} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
+          <div className="space-y-2">
+            <Label>Nome</Label>
+            <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+          </div>
+          <div className="space-y-2">
+            <Label>Descrição</Label>
+            <Textarea
+              rows={4}
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+            />
+          </div>
 
           <div className="space-y-2">
             <Label>Imagens</Label>
@@ -172,12 +320,33 @@ function ProductEditor() {
 
           <VariantsEditor variants={variants} setVariants={setVariants} />
 
-          <ColorImagesEditor variants={variants} colorImages={colorImages} setColorImages={setColorImages} />
+          <ColorImagesEditor
+            variants={variants}
+            colorImages={colorImages}
+            setColorImages={setColorImages}
+          />
         </section>
 
         <aside className="space-y-6 rounded-2xl border border-border bg-card p-6">
-          <div className="space-y-2"><Label>Preço (R$)</Label><Input type="number" step="0.01" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} /></div>
-          <div className="space-y-2"><Label>Preço comparativo</Label><Input type="number" step="0.01" value={form.compare_at_price} onChange={(e) => setForm({ ...form, compare_at_price: e.target.value })} placeholder="Opcional" /></div>
+          <div className="space-y-2">
+            <Label>Preço (R$)</Label>
+            <Input
+              type="number"
+              step="0.01"
+              value={form.price}
+              onChange={(e) => setForm({ ...form, price: e.target.value })}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Preço comparativo</Label>
+            <Input
+              type="number"
+              step="0.01"
+              value={form.compare_at_price}
+              onChange={(e) => setForm({ ...form, compare_at_price: e.target.value })}
+              placeholder="Opcional"
+            />
+          </div>
           <div className="space-y-2">
             <Label>Departamento</Label>
             <Select
@@ -191,10 +360,16 @@ function ProductEditor() {
                 }
               }}
             >
-              <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione" />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">Sem departamento</SelectItem>
-                {departments.map((d: any) => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
+                {departments.map((d: any) => (
+                  <SelectItem key={d.id} value={d.id}>
+                    {d.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -205,15 +380,33 @@ function ProductEditor() {
               onValueChange={(v) => setForm({ ...form, category_id: v === "none" ? "" : v })}
               disabled={!departmentId}
             >
-              <SelectTrigger><SelectValue placeholder={departmentId ? "Selecione" : "Escolha um departamento"} /></SelectTrigger>
+              <SelectTrigger>
+                <SelectValue placeholder={departmentId ? "Selecione" : "Escolha um departamento"} />
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="none">Sem categoria</SelectItem>
-                {subcategories.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                {subcategories.map((c: any) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
-          <div className="flex items-center justify-between"><Label>Em destaque</Label><Switch checked={form.featured} onCheckedChange={(c) => setForm({ ...form, featured: c })} /></div>
-          <div className="flex items-center justify-between"><Label>Ativo (visível)</Label><Switch checked={form.active} onCheckedChange={(c) => setForm({ ...form, active: c })} /></div>
+          <div className="flex items-center justify-between">
+            <Label>Em destaque</Label>
+            <Switch
+              checked={form.featured}
+              onCheckedChange={(c) => setForm({ ...form, featured: c })}
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <Label>Ativo (visível)</Label>
+            <Switch
+              checked={form.active}
+              onCheckedChange={(c) => setForm({ ...form, active: c })}
+            />
+          </div>
         </aside>
       </div>
     </div>
@@ -222,7 +415,13 @@ function ProductEditor() {
 
 const COMMON_SIZES = ["PP", "P", "M", "G", "GG", "XG"];
 
-function VariantsEditor({ variants, setVariants }: { variants: Variant[]; setVariants: (v: Variant[]) => void }) {
+function VariantsEditor({
+  variants,
+  setVariants,
+}: {
+  variants: Variant[];
+  setVariants: (v: Variant[]) => void;
+}) {
   // group by color
   const colors = Array.from(new Set(variants.map((v) => (v.color ?? "").trim()).filter(Boolean)));
 
@@ -273,7 +472,8 @@ function VariantsEditor({ variants, setVariants }: { variants: Variant[]; setVar
 
       {colors.length === 0 && (
         <p className="text-sm text-muted-foreground">
-          Cadastre as cores disponíveis. Para cada cor, escolha os tamanhos e informe a quantidade em estoque.
+          Cadastre as cores disponíveis. Para cada cor, escolha os tamanhos e informe a quantidade
+          em estoque.
         </p>
       )}
 
@@ -316,14 +516,21 @@ function VariantsEditor({ variants, setVariants }: { variants: Variant[]; setVar
                 <div className="space-y-2">
                   {sizeRows.map((v, i) => (
                     <div key={i} className="grid grid-cols-[60px_1fr_auto] items-center gap-2">
-                      <span className="rounded-full bg-muted px-3 py-1 text-center text-xs font-semibold">{v.size}</span>
+                      <span className="rounded-full bg-muted px-3 py-1 text-center text-xs font-semibold">
+                        {v.size}
+                      </span>
                       <Input
                         type="number"
                         placeholder="Estoque"
                         value={v.stock}
                         onChange={(e) => updateRow(v, { stock: Number(e.target.value) })}
                       />
-                      <Button type="button" variant="ghost" size="icon" onClick={() => removeRow(v)}>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeRow(v)}
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -347,7 +554,12 @@ function VariantsEditor({ variants, setVariants }: { variants: Variant[]; setVar
                         value={v.stock}
                         onChange={(e) => updateRow(v, { stock: Number(e.target.value) })}
                       />
-                      <Button type="button" variant="ghost" size="icon" onClick={() => removeRow(v)}>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => removeRow(v)}
+                      >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -355,7 +567,13 @@ function VariantsEditor({ variants, setVariants }: { variants: Variant[]; setVar
                 </div>
               )}
 
-              <Button type="button" variant="outline" size="sm" className="mt-3" onClick={() => addNumberingRow(color)}>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="mt-3"
+                onClick={() => addNumberingRow(color)}
+              >
                 <Plus className="mr-1 h-4 w-4" /> Adicionar numeração
               </Button>
             </div>
@@ -403,9 +621,7 @@ function ColorImagesEditor({
   colorImages: Record<string, string[]>;
   setColorImages: (v: Record<string, string[]>) => void;
 }) {
-  const colors = Array.from(
-    new Set(variants.map((v) => (v.color ?? "").trim()).filter(Boolean)),
-  );
+  const colors = Array.from(new Set(variants.map((v) => (v.color ?? "").trim()).filter(Boolean)));
 
   if (colors.length === 0) {
     return (
@@ -422,7 +638,8 @@ function ColorImagesEditor({
     <div>
       <Label>Imagens por cor</Label>
       <p className="mt-1 text-sm text-muted-foreground">
-        Envie uma ou mais fotos para cada cor. Elas serão exibidas na vitrine quando o cliente selecionar a cor.
+        Envie uma ou mais fotos para cada cor. Elas serão exibidas na vitrine quando o cliente
+        selecionar a cor.
       </p>
       <div className="mt-4 space-y-4">
         {colors.map((color) => (

@@ -12,18 +12,34 @@ export const Route = createFileRoute("/loja/$slug")({
 
 function StoreLayout() {
   const { slug } = Route.useParams();
-  const { data: store, isLoading, error } = useQuery({
+  const {
+    data: store,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["store", slug],
     queryFn: async () => {
-      const { data, error } = await supabase.from("stores").select("*").eq("slug", slug).maybeSingle();
+      const { data, error } = await supabase
+        .from("stores")
+        .select("*")
+        .eq("slug", slug)
+        .maybeSingle();
       if (error) throw error;
       if (!data) throw notFound();
       return data;
     },
   });
 
-  if (isLoading) return <div className="grid min-h-screen place-items-center text-muted-foreground">Carregando…</div>;
-  if (error || !store) return <div className="grid min-h-screen place-items-center text-muted-foreground">Loja não encontrada</div>;
+  if (isLoading)
+    return (
+      <div className="grid min-h-screen place-items-center text-muted-foreground">Carregando…</div>
+    );
+  if (error || !store)
+    return (
+      <div className="grid min-h-screen place-items-center text-muted-foreground">
+        Loja não encontrada
+      </div>
+    );
 
   return (
     <StoreCtx.Provider value={store as any}>
@@ -31,7 +47,7 @@ function StoreLayout() {
         <StoreHeader store={store} />
         <Outlet />
         <footer className="mt-16 border-t border-border py-8 text-center text-xs text-muted-foreground">
-          Powered by Vitrina
+          Powered by Amanda
         </footer>
       </div>
     </StoreCtx.Provider>
