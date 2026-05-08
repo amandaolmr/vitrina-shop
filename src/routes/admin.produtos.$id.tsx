@@ -124,6 +124,10 @@ function ProductEditor() {
         category_id: product.category_id ?? "",
         featured: product.featured,
         active: product.active,
+        has_variations: product.has_variations,
+        stock: product.stock,
+        sku: product.sku ?? "",
+        barcode: product.barcode ?? "",
       });
       setImages(
         (product.product_images ?? [])
