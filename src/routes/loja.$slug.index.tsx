@@ -23,6 +23,7 @@ function StorefrontPage() {
   const [q, setQ] = useState("");
   const [activeDept, setActiveDept] = useState<string | null>(null);
   const [activeCat, setActiveCat] = useState<string | null>(null);
+  const [viewAllCategory, setViewAllCategory] = useState<{ id: string; name: string } | null>(null);
 
   const scrollContainerRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
