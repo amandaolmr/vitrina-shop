@@ -217,12 +217,15 @@ function ProductsList() {
 
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between px-1">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-2 sm:px-1">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">Produtos</h1>
+          <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight text-foreground">Produtos</h1>
           <p className="hidden sm:block text-sm text-muted-foreground mt-1">Gerencie seu inventário e catálogo de produtos.</p>
         </div>
-        <Button onClick={createProduct} className="rounded-xl font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98] w-full sm:w-auto h-12 sm:h-10">
+        <Button 
+          onClick={createProduct} 
+          className="rounded-xl font-bold shadow-lg shadow-primary/10 transition-all active:scale-[0.98] w-full sm:w-auto h-10 sm:h-11 px-4 text-sm"
+        >
           <Plus className="mr-2 h-4 w-4" /> Novo produto
         </Button>
       </div>
