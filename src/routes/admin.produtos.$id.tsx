@@ -126,8 +126,6 @@ function ProductEditor() {
         active: product.active,
         has_variations: product.has_variations,
         stock: product.stock,
-        sku: product.sku ?? "",
-        barcode: product.barcode ?? "",
       });
       setImages(
         (product.product_images ?? [])
