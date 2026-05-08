@@ -13,7 +13,11 @@ import {
   Eye, 
   Filter,
   Package,
-  Star
+  Star,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight
 } from "lucide-react";
 import { formatBRL } from "@/lib/format";
 import { useMemo, useState } from "react";
