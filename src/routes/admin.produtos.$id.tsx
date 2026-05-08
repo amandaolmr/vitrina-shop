@@ -151,7 +151,14 @@ function ProductEditor() {
     }
   }, [product]);
 
-  if (!form) return <p className="text-muted-foreground">Carregando…</p>;
+  if (loadingProduct || !form) {
+    return (
+      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        <p className="text-muted-foreground">Carregando detalhes do produto...</p>
+      </div>
+    );
+  }
 
   async function save() {
     setBusy(true);
