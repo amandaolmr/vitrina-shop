@@ -356,14 +356,29 @@ function ProductPage() {
             </div>
           )}
 
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Button onClick={() => addToCart()} variant="outline" className="flex-1">
-              <ShoppingBag className="mr-2 h-4 w-4" /> Adicionar
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Button 
+              onClick={() => addToCart()} 
+              variant="outline" 
+              className="flex-1"
+              disabled={!hasVariations && product.stock <= 0}
+            >
+              <ShoppingBag className="mr-2 h-4 w-4" /> 
+              {!hasVariations && product.stock <= 0 ? "Esgotado" : "Adicionar"}
             </Button>
-            <Button onClick={buyNow} className="flex-1 bg-[#25D366] hover:bg-[#1ebd5b]">
+            <Button 
+              onClick={buyNow} 
+              className="flex-1 bg-[#25D366] hover:bg-[#1ebd5b]"
+              disabled={!hasVariations && product.stock <= 0}
+            >
               <MessageCircle className="mr-2 h-4 w-4" /> Comprar agora
             </Button>
           </div>
+          {!hasVariations && product.stock > 0 && product.stock <= 5 && (
+            <p className="mt-2 text-xs text-amber-600 font-medium">
+              Apenas {product.stock} unidades em estoque!
+            </p>
+          )}
         </div>
       </div>
 
