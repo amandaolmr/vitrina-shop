@@ -172,7 +172,7 @@ function ProductPage() {
       return;
     }
     if (!product) return;
-    if (hasVariants) {
+    if (hasVariations) {
       if (hasColors && !selectedColor) {
         toast.error("Selecione uma cor");
         return;
