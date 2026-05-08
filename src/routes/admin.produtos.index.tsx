@@ -51,6 +51,7 @@ export const Route = createFileRoute("/admin/produtos/")({
 function ProductsList() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
   const [filterDept, setFilterDept] = useState<string>("");
   const [filterCat, setFilterCat] = useState<string>("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
@@ -78,13 +79,13 @@ function ProductsList() {
     },
   });
 
-  const { data: products, refetch } = useQuery({
+  const { data: products, refetch, isLoading } = useQuery({
     queryKey: ["admin-products", store?.id],
     enabled: !!store,
     queryFn: async () => {
       const { data } = await supabase
         .from("products")
-        .select("*, product_images(url, position)")
+        .select("*, product_images(url, position), product_variants(stock)")
         .eq("store_id", store!.id)
         .order("created_at", { ascending: false });
       return data ?? [];
@@ -104,6 +105,9 @@ function ProductsList() {
     if (!products) return [];
 
     return products.filter((p: any) => {
+      // Filtro por busca
+      if (search && !p.name.toLowerCase().includes(search.toLowerCase())) return false;
+
       // Filtro por status
       if (filterStatus === "active" && !p.active) return false;
       if (filterStatus === "inactive" && p.active) return false;
@@ -113,25 +117,58 @@ function ProductsList() {
       if (filterCat) {
         if (p.category_id !== filterCat) return false;
       } else if (filterDept) {
-        // Se selecionou departamento mas não categoria, mostrar todos do departamento
         const productCategory = (categories ?? []).find((c: any) => c.id === p.category_id);
         if (!productCategory || productCategory.parent_id !== filterDept) return false;
       }
 
       return true;
     });
-  }, [products, filterDept, filterCat, filterStatus, categories]);
+  }, [products, search, filterDept, filterCat, filterStatus, categories]);
 
   async function createProduct() {
     if (!store) return;
-    const { data, error } = await supabase
+    navigate({ to: "/admin/produtos/novo" });
+  }
+
+  async function deleteProduct(id: string) {
+    if (!confirm("Tem certeza que deseja excluir este produto?")) return;
+    const { error } = await supabase.from("products").delete().eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Produto excluído");
+    refetch();
+  }
+
+  async function duplicateProduct(product: any) {
+    const { data: newProduct, error } = await supabase
       .from("products")
-      .insert({ store_id: store.id, name: "Novo produto", price: 0, active: false })
+      .insert({
+        store_id: store!.id,
+        name: `${product.name} (Cópia)`,
+        description: product.description,
+        price: product.price,
+        compare_at_price: product.compare_at_price,
+        category_id: product.category_id,
+        active: false,
+      })
       .select()
       .single();
-    if (error) return alert(error.message);
-    navigate({ to: "/admin/produtos/$id", params: { id: data.id } });
+
+    if (error) return toast.error(error.message);
+    
+    // Copiar imagens
+    if (product.product_images?.length) {
+      await supabase.from("product_images").insert(
+        product.product_images.map((img: any) => ({
+          product_id: newProduct.id,
+          url: img.url,
+          position: img.position
+        }))
+      );
+    }
+
+    toast.success("Produto duplicado");
     refetch();
+    navigate({ to: "/admin/produtos/$id", params: { id: newProduct.id } });
   }
 
   if (!store && !user) return null; // Let AdminLayout handle auth redirect
