@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useCart } from "@/lib/cart";
+import { useFavorites } from "@/lib/favorites";
 import { 
   ShoppingBag, 
   Info, 
