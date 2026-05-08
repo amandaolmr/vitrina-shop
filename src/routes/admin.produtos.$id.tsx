@@ -170,7 +170,6 @@ function ProductEditor() {
         featured: form.featured,
         active: form.active,
         has_variations: form.has_variations,
-        stock: Number(form.stock) || 0,
       })
       .eq("id", id);
     if (error) {
