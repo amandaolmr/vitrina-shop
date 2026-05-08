@@ -494,23 +494,17 @@ function ProductRow({ p, store, navigate, duplicateProduct, deleteProduct, toggl
         <span className="font-bold text-sm text-foreground">{formatBRL(Number(p.price))}</span>
       </TableCell>
       <TableCell className="py-4">
-        <button
-          onClick={handleToggle}
-          disabled={loading}
-          className="flex items-center gap-1.5 focus:outline-none disabled:opacity-50"
-        >
-          {p.active ? (
-            <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200/60 h-6 px-2 text-[10px] font-bold uppercase tracking-wider hover:bg-emerald-100 transition-colors cursor-pointer">
-              {loading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-1" />}
-              Ativo
-            </Badge>
-          ) : (
-            <Badge variant="outline" className="bg-slate-50 text-slate-500 border-slate-200 h-6 px-2 text-[10px] font-bold uppercase tracking-wider hover:bg-slate-100 transition-colors cursor-pointer">
-              {loading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <div className="h-1.5 w-1.5 rounded-full bg-slate-400 mr-1" />}
-              Inativo
-            </Badge>
-          )}
-        </button>
+        <div className="flex items-center gap-2">
+          <Switch
+            checked={p.active}
+            onCheckedChange={handleToggle}
+            disabled={loading}
+            className="data-[state=checked]:bg-emerald-500"
+          />
+          <span className={`text-[10px] font-bold uppercase tracking-wider transition-colors ${p.active ? 'text-emerald-600' : 'text-slate-400'}`}>
+            {loading ? '...' : p.active ? 'Ativo' : 'Inativo'}
+          </span>
+        </div>
       </TableCell>
       <TableCell className="text-right py-4">
         <ProductActions p={p} store={store} navigate={navigate} duplicateProduct={duplicateProduct} deleteProduct={deleteProduct} />
