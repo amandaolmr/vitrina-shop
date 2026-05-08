@@ -50,7 +50,8 @@ function ProductPage() {
     [product],
   );
   const variants: any[] = product?.product_variants ?? [];
-  const hasVariants = variants.length > 0;
+  const hasVariations = product?.has_variations;
+  const variantsAvailable = hasVariations && variants.length > 0;
   const colorImageMap = useMemo(() => {
     const m = new Map<string, string[]>();
     const sorted = [...((product as any)?.product_color_images ?? [])].sort(
@@ -132,7 +133,7 @@ function ProductPage() {
 
   function addToCart(then?: "cart") {
     if (!product) return;
-    if (hasVariants) {
+    if (hasVariations) {
       if (hasColors && !selectedColor) {
         toast.error("Selecione uma cor");
         return;
@@ -156,7 +157,7 @@ function ProductPage() {
       productId: product.id,
       variantId: v.id,
       name: product.name,
-      variantLabel: hasVariants ? variantLabel(v) : "Único",
+      variantLabel: hasVariations ? variantLabel(v) : "Único",
       price: Number(product.price),
       image: images[0]?.url,
       qty: 1,
@@ -171,7 +172,7 @@ function ProductPage() {
       return;
     }
     if (!product) return;
-    if (hasVariants) {
+    if (hasVariations) {
       if (hasColors && !selectedColor) {
         toast.error("Selecione uma cor");
         return;
@@ -203,7 +204,7 @@ function ProductPage() {
       productId: product.id,
       variantId: v.id,
       name: product.name,
-      variantLabel: hasVariants ? variantLabel(v) : "Único",
+      variantLabel: hasVariations ? variantLabel(v) : "Único",
       price: Number(product.price),
       image: images[0]?.url,
       qty: 1,
@@ -328,7 +329,7 @@ function ProductPage() {
             </div>
           )}
 
-          {hasVariants && (hasColors ? selectedColor : true) && sizesForColor.length > 0 && (
+          {hasVariations && (hasColors ? selectedColor : true) && sizesForColor.length > 0 && (
             <div className="mt-6">
               <p className="mb-3 text-sm font-medium">Tamanho</p>
               <div className="flex flex-wrap gap-2">
@@ -355,14 +356,29 @@ function ProductPage() {
             </div>
           )}
 
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Button onClick={() => addToCart()} variant="outline" className="flex-1">
-              <ShoppingBag className="mr-2 h-4 w-4" /> Adicionar
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Button 
+              onClick={() => addToCart()} 
+              variant="outline" 
+              className="flex-1"
+              disabled={!hasVariations && product.stock <= 0}
+            >
+              <ShoppingBag className="mr-2 h-4 w-4" /> 
+              {!hasVariations && product.stock <= 0 ? "Esgotado" : "Adicionar"}
             </Button>
-            <Button onClick={buyNow} className="flex-1 bg-[#25D366] hover:bg-[#1ebd5b]">
+            <Button 
+              onClick={buyNow} 
+              className="flex-1 bg-[#25D366] hover:bg-[#1ebd5b]"
+              disabled={!hasVariations && product.stock <= 0}
+            >
               <MessageCircle className="mr-2 h-4 w-4" /> Comprar agora
             </Button>
           </div>
+          {!hasVariations && product.stock > 0 && product.stock <= 5 && (
+            <p className="mt-2 text-xs text-amber-600 font-medium">
+              Apenas {product.stock} unidades em estoque!
+            </p>
+          )}
         </div>
       </div>
 

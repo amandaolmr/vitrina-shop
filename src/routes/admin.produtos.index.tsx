@@ -292,7 +292,9 @@ function ProductsList() {
                 ) : (
                   filteredProducts.map((p: any) => {
                     const cover = p.product_images?.sort((a: any, b: any) => a.position - b.position)[0]?.url;
-                    const totalStock = p.product_variants?.reduce((acc: number, v: any) => acc + (v.stock || 0), 0) || 0;
+                    const totalStock = p.has_variations 
+                      ? (p.product_variants?.reduce((acc: number, v: any) => acc + (v.stock || 0), 0) || 0)
+                      : (p.stock || 0);
                     
                     return (
                       <TableRow key={p.id} className="border-border/40 hover:bg-muted/5 group transition-colors">

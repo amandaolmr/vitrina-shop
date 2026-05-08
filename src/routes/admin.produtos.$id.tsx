@@ -124,6 +124,10 @@ function ProductEditor() {
         category_id: product.category_id ?? "",
         featured: product.featured,
         active: product.active,
+        has_variations: product.has_variations,
+        stock: product.stock,
+        sku: product.sku ?? "",
+        barcode: product.barcode ?? "",
       });
       setImages(
         (product.product_images ?? [])
@@ -172,6 +176,10 @@ function ProductEditor() {
         category_id: form.category_id || null,
         featured: form.featured,
         active: form.active,
+        has_variations: form.has_variations,
+        stock: Number(form.stock) || 0,
+        sku: form.sku || null,
+        barcode: form.barcode || null,
       })
       .eq("id", id);
     if (error) {
@@ -247,6 +255,10 @@ function ProductEditor() {
         category_id: form.category_id || null,
         featured: false, // Não deixar em destaque por padrão
         active: false, // Deixar inativo inicialmente
+        has_variations: form.has_variations,
+        stock: Number(form.stock) || 0,
+        sku: form.sku ? `${form.sku}-copy` : null,
+        barcode: form.barcode || null,
       })
       .select()
       .single();
@@ -386,28 +398,76 @@ function ProductEditor() {
             </CardContent>
           </Card>
 
-          {/* Variações */}
+          {/* Variações e Estoque */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Settings className="h-5 w-5 text-primary" />
-                Grade e Estoque
+              <CardTitle className="text-lg flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Settings className="h-5 w-5 text-primary" />
+                  Estoque e Grade
+                </div>
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="has_variations" className="text-xs font-normal">Possui variações?</Label>
+                  <Switch
+                    id="has_variations"
+                    checked={form.has_variations}
+                    onCheckedChange={(c) => setForm({ ...form, has_variations: c })}
+                  />
+                </div>
               </CardTitle>
-              <CardDescription>Gerencie cores, tamanhos e quantidades</CardDescription>
+              <CardDescription>
+                {form.has_variations 
+                  ? "Gerencie cores, tamanhos e quantidades por variação" 
+                  : "Defina o estoque e identificadores únicos do produto"}
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <VariantsEditor variants={variants} setVariants={setVariants} />
-              
-              <Separator />
-              
-              <div className="pt-2">
-                <h3 className="text-sm font-semibold mb-3">Imagens por Cor (Opcional)</h3>
-                <ColorImagesEditor
-                  variants={variants}
-                  colorImages={colorImages}
-                  setColorImages={setColorImages}
-                />
-              </div>
+              {form.has_variations ? (
+                <>
+                  <VariantsEditor variants={variants} setVariants={setVariants} />
+                  
+                  <Separator />
+                  
+                  <div className="pt-2">
+                    <h3 className="text-sm font-semibold mb-3">Imagens por Cor (Opcional)</h3>
+                    <ColorImagesEditor
+                      variants={variants}
+                      colorImages={colorImages}
+                      setColorImages={setColorImages}
+                    />
+                  </div>
+                </>
+              ) : (
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="stock">Qtd em estoque</Label>
+                    <Input
+                      id="stock"
+                      type="number"
+                      value={form.stock}
+                      onChange={(e) => setForm({ ...form, stock: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="sku">SKU</Label>
+                    <Input
+                      id="sku"
+                      placeholder="Ex: CAM-PR-P"
+                      value={form.sku}
+                      onChange={(e) => setForm({ ...form, sku: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="barcode">Código de barras</Label>
+                    <Input
+                      id="barcode"
+                      placeholder="EAN-13, ISBN..."
+                      value={form.barcode}
+                      onChange={(e) => setForm({ ...form, barcode: e.target.value })}
+                    />
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
