@@ -200,7 +200,7 @@ function StorefrontPage() {
                 ref={(el) => {
                   scrollContainerRef.current["featured"] = el;
                 }}
-                className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-thin -mx-4 px-4"
+                className="flex gap-4 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory scrollbar-thin -mx-4 px-4"
                 style={{ scrollbarWidth: "auto" }}
               >
                 {featured.map((p: any) => (
