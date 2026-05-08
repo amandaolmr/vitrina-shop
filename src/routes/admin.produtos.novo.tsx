@@ -153,13 +153,13 @@ function NewProduct() {
             </CardContent>
           </Card>
 
-          {/* Estoque e Grade */}
+          {/* Grade */}
           <Card>
             <CardHeader>
               <CardTitle className="text-lg flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Settings className="h-5 w-5 text-primary" />
-                  Estoque e Grade
+                  Grade de Cores e Tamanhos
                 </div>
                 <div className="flex items-center gap-2">
                   <Label htmlFor="has_variations" className="text-xs font-normal">Possui variações?</Label>
@@ -173,24 +173,11 @@ function NewProduct() {
               <CardDescription>
                 {form.has_variations 
                   ? "Você poderá adicionar variações após salvar o produto." 
-                  : "Defina o estoque e identificadores únicos do produto."}
+                  : "Este produto será vendido como item único."}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {!form.has_variations ? (
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="stock">Quantidade em estoque</Label>
-                    <Input
-                      id="stock"
-                      type="number"
-                      placeholder="Ex: 10"
-                      value={form.stock}
-                      onChange={(e) => setForm({ ...form, stock: e.target.value })}
-                    />
-                  </div>
-                </div>
-              ) : (
+              {form.has_variations && (
                 <p className="text-sm text-muted-foreground italic">
                   Opções de grade (cor/tamanho) ficarão disponíveis na tela de edição logo após a criação.
                 </p>
