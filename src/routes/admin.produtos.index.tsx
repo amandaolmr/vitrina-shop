@@ -257,7 +257,6 @@ function ProductsList() {
                   <TableHead className="w-[100px] py-4 font-bold text-[11px] uppercase tracking-wider">Imagem</TableHead>
                   <TableHead className="py-4 font-bold text-[11px] uppercase tracking-wider">Produto</TableHead>
                   <TableHead className="py-4 font-bold text-[11px] uppercase tracking-wider">Preço</TableHead>
-                  <TableHead className="py-4 font-bold text-[11px] uppercase tracking-wider">Estoque</TableHead>
                   <TableHead className="py-4 font-bold text-[11px] uppercase tracking-wider">Status</TableHead>
                   <TableHead className="text-right py-4 font-bold text-[11px] uppercase tracking-wider">Ações</TableHead>
                 </TableRow>
