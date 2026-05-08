@@ -224,9 +224,9 @@ function ProductsList() {
         </div>
         <Button 
           onClick={createProduct} 
-          className="rounded-xl font-bold shadow-lg shadow-primary/10 transition-all active:scale-[0.98] w-full sm:w-auto h-10 sm:h-11 px-4 text-sm"
+          className="rounded-xl font-bold shadow-lg shadow-primary/10 transition-all active:scale-[0.98] w-full sm:w-auto h-10 px-4 text-xs sm:text-sm"
         >
-          <Plus className="mr-2 h-4 w-4" /> Novo produto
+          <Plus className="mr-1.5 h-3.5 w-3.5" /> Novo produto
         </Button>
       </div>
 
