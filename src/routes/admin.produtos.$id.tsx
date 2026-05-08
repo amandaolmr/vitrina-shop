@@ -54,7 +54,6 @@ type Variant = {
   color: string;
   numbering: string;
   stock: number;
-  sku: string;
 };
 
 function ProductEditor() {
@@ -126,8 +125,6 @@ function ProductEditor() {
         active: product.active,
         has_variations: product.has_variations,
         stock: product.stock,
-        sku: product.sku ?? "",
-        barcode: product.barcode ?? "",
       });
       setImages(
         (product.product_images ?? [])
@@ -141,7 +138,6 @@ function ProductEditor() {
           color: v.color ?? "",
           numbering: v.numbering ?? "",
           stock: v.stock,
-          sku: v.sku ?? "",
         })),
       );
       const ci: Record<string, string[]> = {};
@@ -178,8 +174,6 @@ function ProductEditor() {
         active: form.active,
         has_variations: form.has_variations,
         stock: Number(form.stock) || 0,
-        sku: form.sku || null,
-        barcode: form.barcode || null,
       })
       .eq("id", id);
     if (error) {
@@ -206,7 +200,6 @@ function ProductEditor() {
           color: v.color || null,
           numbering: v.numbering || null,
           stock: Number(v.stock) || 0,
-          sku: v.sku || null,
         })),
       );
     }
@@ -257,8 +250,6 @@ function ProductEditor() {
         active: false, // Deixar inativo inicialmente
         has_variations: form.has_variations,
         stock: Number(form.stock) || 0,
-        sku: form.sku ? `${form.sku}-copy` : null,
-        barcode: form.barcode || null,
       })
       .select()
       .single();
@@ -285,7 +276,6 @@ function ProductEditor() {
           color: v.color || null,
           numbering: v.numbering || null,
           stock: Number(v.stock) || 0,
-          sku: v.sku || null,
         })),
       );
     }
@@ -438,32 +428,15 @@ function ProductEditor() {
                   </div>
                 </>
               ) : (
-                <div className="grid gap-4 sm:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="stock">Qtd em estoque</Label>
+                    <Label htmlFor="stock">Quantidade em estoque</Label>
                     <Input
                       id="stock"
                       type="number"
+                      placeholder="Ex: 10"
                       value={form.stock}
                       onChange={(e) => setForm({ ...form, stock: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="sku">SKU</Label>
-                    <Input
-                      id="sku"
-                      placeholder="Ex: CAM-PR-P"
-                      value={form.sku}
-                      onChange={(e) => setForm({ ...form, sku: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="barcode">Código de barras</Label>
-                    <Input
-                      id="barcode"
-                      placeholder="EAN-13, ISBN..."
-                      value={form.barcode}
-                      onChange={(e) => setForm({ ...form, barcode: e.target.value })}
                     />
                   </div>
                 </div>
@@ -617,7 +590,7 @@ function VariantsEditor({
   function addColor(name: string) {
     const color = name.trim();
     if (!color || colors.includes(color)) return;
-    setVariants([...variants, { size: "", color, numbering: "", stock: 0, sku: "" }]);
+    setVariants([...variants, { size: "", color, numbering: "", stock: 0 }]);
   }
 
   function removeColor(color: string) {
@@ -643,12 +616,12 @@ function VariantsEditor({
     if (existing) {
       setVariants(variants.filter((v) => v !== existing));
     } else {
-      setVariants([...variants, { color, size, numbering: "", stock: 0, sku: "" }]);
+      setVariants([...variants, { color, size, numbering: "", stock: 0 }]);
     }
   }
 
   function addNumberingRow(color: string) {
-    setVariants([...variants, { color, size: "", numbering: "", stock: 0, sku: "" }]);
+    setVariants([...variants, { color, size: "", numbering: "", stock: 0 }]);
   }
 
   return (
