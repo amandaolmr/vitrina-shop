@@ -176,8 +176,6 @@ function ProductEditor() {
         active: form.active,
         has_variations: form.has_variations,
         stock: Number(form.stock) || 0,
-        sku: form.sku || null,
-        barcode: form.barcode || null,
       })
       .eq("id", id);
     if (error) {
