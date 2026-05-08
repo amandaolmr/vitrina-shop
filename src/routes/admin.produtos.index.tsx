@@ -274,7 +274,26 @@ function ProductsList() {
                 </SelectContent>
               </Select>
 
-              {(filterDept || filterStatus !== "all" || search) && (
+              <Select
+                value={filterCat || "all"}
+                onValueChange={(v) => {
+                  setFilterCat(v === "all" ? "" : v);
+                  setPage(1);
+                }}
+                disabled={!filterDept}
+              >
+                <SelectTrigger className="w-[160px] h-10 rounded-xl border-border/40 bg-white">
+                  <SelectValue placeholder={filterDept ? "Categoria" : "Escolha Depto"} />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-border/40 shadow-xl shadow-black/5">
+                  <SelectItem value="all">Todas Categorias</SelectItem>
+                  {subcategories.map((c: any) => (
+                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {(filterDept || filterCat || filterStatus !== "all" || search) && (
                 <Button 
                   variant="ghost" 
                   onClick={() => {
