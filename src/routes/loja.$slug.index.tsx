@@ -234,8 +234,14 @@ function StorefrontPage() {
 
                 return (
                   <div key={categoryId}>
-                    <div className="mb-4">
+                    <div className="mb-4 flex items-center justify-between">
                       <h2 className="text-lg font-semibold">{categoryName}</h2>
+                      <button
+                        onClick={() => setViewAllCategory({ id: categoryId, name: categoryName })}
+                        className="group flex items-center gap-1 text-xs font-bold text-emerald-600 transition-colors hover:text-emerald-700"
+                      >
+                        Ver todos <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+                      </button>
                     </div>
                     <div className="relative overflow-hidden">
                       {categoryProducts.length > 4 && (
