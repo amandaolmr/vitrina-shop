@@ -5,7 +5,16 @@ import { useState, useMemo, useRef } from "react";
 import { useStore } from "@/lib/store-context";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { 
+  Search, 
+  ChevronLeft, 
+  ChevronRight, 
+  ArrowRight, 
+  LayoutGrid, 
+  User as UserIcon, 
+  Sparkles,
+  Filter
+} from "lucide-react";
 import { formatBRL } from "@/lib/format";
 import {
   Dialog,
@@ -13,6 +22,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { ProductCard } from "@/components/ProductCard";
+import { StoreHeader } from "@/components/StoreHeader";
+import { StoreBanner } from "@/components/StoreBanner";
 
 export const Route = createFileRoute("/loja/$slug/")({
   component: StorefrontPage,
@@ -87,7 +99,6 @@ function StorefrontPage() {
 
     filtered.forEach((p: any) => {
       if (!p.category_id) {
-        // Produtos sem categoria
         const uncategorized = grouped.get("uncategorized") || [];
         uncategorized.push(p);
         grouped.set("uncategorized", uncategorized);
@@ -101,7 +112,15 @@ function StorefrontPage() {
     return grouped;
   }, [filtered]);
 
-  const featured = products.filter((p: any) => p.featured).slice(0, 6);
+  const featured = products.filter((p: any) => p.featured).slice(0, 8);
+
+  const getCategoryIcon = (name: string) => {
+    const lowerName = name.toLowerCase();
+    if (lowerName.includes("masculino") || lowerName.includes("homem")) return <UserIcon className="h-4 w-4" />;
+    if (lowerName.includes("feminino") || lowerName.includes("mulher")) return <Sparkles className="h-4 w-4" />;
+    if (lowerName.includes("beleza") || lowerName.includes("cosmético")) return <Sparkles className="h-4 w-4" />;
+    return <LayoutGrid className="h-4 w-4" />;
+  };
 
   return (
     <main>
