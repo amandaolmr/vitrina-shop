@@ -220,40 +220,55 @@ export type Database = {
       }
       stores: {
         Row: {
+          address: string | null
           banner_url: string | null
+          city: string | null
           created_at: string
           description: string | null
           id: string
+          instagram: string | null
           logo_url: string | null
           name: string
           owner_id: string
           slug: string
+          state: string | null
           theme_color: string | null
           whatsapp: string | null
+          zip_code: string | null
         }
         Insert: {
+          address?: string | null
           banner_url?: string | null
+          city?: string | null
           created_at?: string
           description?: string | null
           id?: string
+          instagram?: string | null
           logo_url?: string | null
           name: string
           owner_id: string
           slug: string
+          state?: string | null
           theme_color?: string | null
           whatsapp?: string | null
+          zip_code?: string | null
         }
         Update: {
+          address?: string | null
           banner_url?: string | null
+          city?: string | null
           created_at?: string
           description?: string | null
           id?: string
+          instagram?: string | null
           logo_url?: string | null
           name?: string
           owner_id?: string
           slug?: string
+          state?: string | null
           theme_color?: string | null
           whatsapp?: string | null
+          zip_code?: string | null
         }
         Relationships: []
       }
