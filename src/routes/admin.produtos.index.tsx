@@ -43,6 +43,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
+import { Card, CardContent } from "@/components/ui/card";
 
 export const Route = createFileRoute("/admin/produtos/")({
   component: ProductsList,
