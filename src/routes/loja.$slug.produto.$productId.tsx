@@ -109,7 +109,6 @@ function ProductPage() {
       .map((v) => ({
         key: v.id,
         label: v.size || v.numbering || "Único",
-        stock: v.stock ?? 0,
       }))
       .filter((s) => s.label);
   }, [variants, selectedColor, hasColors]);
