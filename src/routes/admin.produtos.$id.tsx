@@ -276,7 +276,6 @@ function ProductEditor() {
           color: v.color || null,
           numbering: v.numbering || null,
           stock: Number(v.stock) || 0,
-          sku: v.sku || null,
         })),
       );
     }
