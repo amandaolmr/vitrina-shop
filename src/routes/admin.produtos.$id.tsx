@@ -195,7 +195,6 @@ function ProductEditor() {
           size: v.size || null,
           color: v.color || null,
           numbering: v.numbering || null,
-          stock: Number(v.stock) || 0,
         })),
       );
     }
