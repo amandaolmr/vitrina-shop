@@ -1,6 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { useCart } from "@/lib/cart";
-import { ShoppingBag, Info, MessageCircle, MapPin, Instagram } from "lucide-react";
+import { 
+  ShoppingBag, 
+  Info, 
+  MessageCircle, 
+  MapPin, 
+  Instagram,
+  Heart
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -26,129 +33,167 @@ export function StoreHeader({ store }: { store: any }) {
   function openInstagram() {
     if (!store.instagram) return;
     let url = store.instagram.trim();
-    // Se começa com @, remove e monta a URL
     if (url.startsWith("@")) {
       url = `https://instagram.com/${url.substring(1)}`;
-    }
-    // Se não começa com http, assume que é username
-    else if (!url.startsWith("http")) {
+    } else if (!url.startsWith("http")) {
       url = `https://instagram.com/${url}`;
     }
     window.open(url, "_blank");
   }
 
   return (
-    <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur">
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-        <Link to="/loja/$slug" params={{ slug: store.slug }} className="flex items-center gap-2">
-          {store.logo_url ? (
-            <img
-              src={store.logo_url}
-              alt={store.name}
-              className="h-9 w-9 rounded-full object-cover"
-            />
-          ) : (
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-primary text-primary-foreground font-bold">
-              {store.name.charAt(0)}
-            </span>
-          )}
-          <span className="font-semibold">{store.name}</span>
-        </Link>
-
-        <div className="flex items-center gap-2">
-          {store.instagram && (
-            <button
-              onClick={openInstagram}
-              className="grid h-10 w-10 place-items-center rounded-full bg-secondary hover:bg-accent"
-              title="Instagram"
-            >
-              <Instagram className="h-5 w-5" />
-            </button>
-          )}
-
-          <Dialog>
-            <DialogTrigger asChild>
-              <button className="grid h-10 w-10 place-items-center rounded-full bg-secondary hover:bg-accent">
-                <Info className="h-5 w-5" />
-              </button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>Informações da Loja</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  {store.logo_url ? (
-                    <img
-                      src={store.logo_url}
-                      alt={store.name}
-                      className="h-12 w-12 rounded-full object-cover"
-                    />
-                  ) : (
-                    <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground font-bold text-lg">
-                      {store.name.charAt(0)}
-                    </span>
-                  )}
-                  <div>
-                    <h3 className="font-semibold text-lg">{store.name}</h3>
-                    {store.description && (
-                      <p className="text-sm text-muted-foreground mt-1">{store.description}</p>
-                    )}
-                  </div>
-                </div>
-
-                {(store.address || store.city || store.state) && (
-                  <div className="space-y-2 border-t pt-4">
-                    <div className="flex items-start gap-2">
-                      <MapPin className="h-4 w-4 text-muted-foreground mt-0.5" />
-                      <div className="text-sm">
-                        {store.address && <p>{store.address}</p>}
-                        {(store.city || store.state) && (
-                          <p className="text-muted-foreground">
-                            {[store.city, store.state].filter(Boolean).join(", ")}
-                            {store.zip_code && ` - ${store.zip_code}`}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {(store.whatsapp || store.instagram) && (
-                  <div className="border-t pt-4 space-y-2">
-                    {store.whatsapp && (
-                      <Button
-                        onClick={openWhatsApp}
-                        className="w-full bg-[#25D366] hover:bg-[#1ebd5b]"
-                      >
-                        <MessageCircle className="mr-2 h-4 w-4" />
-                        Conversar no WhatsApp
-                      </Button>
-                    )}
-                    {store.instagram && (
-                      <Button onClick={openInstagram} variant="outline" className="w-full">
-                        <Instagram className="mr-2 h-4 w-4" />
-                        Ver no Instagram
-                      </Button>
-                    )}
-                  </div>
-                )}
-              </div>
-            </DialogContent>
-          </Dialog>
-
-          <Link
-            to="/loja/$slug/carrinho"
-            params={{ slug: store.slug }}
-            className="relative grid h-10 w-10 place-items-center rounded-full bg-secondary hover:bg-accent"
+    <header className="sticky top-0 z-[100] w-full bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-sm transition-all duration-300">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 sm:h-20 items-center justify-between">
+          {/* Logo */}
+          <Link 
+            to="/loja/$slug" 
+            params={{ slug: store.slug }} 
+            className="flex items-center gap-2 group shrink-0"
           >
-            <ShoppingBag className="h-5 w-5" />
-            {count > 0 && (
-              <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
-                {count}
+            {store.logo_url ? (
+              <img
+                src={store.logo_url}
+                alt={store.name}
+                className="h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover shadow-sm group-hover:scale-105 transition-transform"
+              />
+            ) : (
+              <span className="grid h-10 w-10 sm:h-12 sm:w-12 place-items-center rounded-full bg-slate-900 text-white font-black text-lg group-hover:scale-105 transition-transform">
+                {store.name.charAt(0).toUpperCase()}
               </span>
             )}
+            <h1 className="text-xl sm:text-2xl font-black tracking-tighter text-slate-900 uppercase">
+              {store.name}
+            </h1>
           </Link>
+
+          {/* Right Icons */}
+          <div className="flex items-center gap-1 sm:gap-4">
+            {store.instagram && (
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={openInstagram}
+                className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 transition-all"
+                title="Instagram"
+              >
+                <Instagram className="h-5 w-5" />
+              </Button>
+            )}
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 transition-all"
+                  title="Informações"
+                >
+                  <Info className="h-5 w-5" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md rounded-[2rem] border-none shadow-2xl">
+                <DialogHeader>
+                  <DialogTitle className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Informações da Loja</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-6 pt-4">
+                  <div className="flex items-center gap-4 bg-slate-50 p-6 rounded-[1.5rem]">
+                    {store.logo_url ? (
+                      <img
+                        src={store.logo_url}
+                        alt={store.name}
+                        className="h-16 w-16 rounded-full object-cover shadow-md"
+                      />
+                    ) : (
+                      <span className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-slate-900 text-white font-black text-2xl">
+                        {store.name.charAt(0).toUpperCase()}
+                      </span>
+                    )}
+                    <div>
+                      <h3 className="font-black text-xl text-slate-900 uppercase tracking-tight">{store.name}</h3>
+                      {store.description && (
+                        <p className="text-sm text-slate-500 mt-1 font-medium">{store.description}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {(store.address || store.city || store.state) && (
+                    <div className="space-y-3 bg-slate-50/50 p-6 rounded-[1.5rem]">
+                      <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest px-1">Localização</h4>
+                      <div className="flex items-start gap-3">
+                        <MapPin className="h-5 w-5 text-slate-400 mt-0.5" />
+                        <div className="text-sm text-slate-600 font-medium">
+                          {store.address && <p className="text-slate-900 font-bold">{store.address}</p>}
+                          {(store.city || store.state) && (
+                            <p>
+                              {[store.city, store.state].filter(Boolean).join(", ")}
+                              {store.zip_code && ` - ${store.zip_code}`}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {(store.whatsapp || store.instagram) && (
+                    <div className="flex flex-col gap-3">
+                      {store.whatsapp && (
+                        <Button
+                          onClick={openWhatsApp}
+                          className="w-full h-14 rounded-full bg-emerald-500 hover:bg-emerald-600 font-bold text-white shadow-lg shadow-emerald-200"
+                        >
+                          <MessageCircle className="mr-2 h-5 w-5" />
+                          Conversar no WhatsApp
+                        </Button>
+                      )}
+                      {store.instagram && (
+                        <Button 
+                          onClick={openInstagram} 
+                          variant="outline" 
+                          className="w-full h-14 rounded-full font-bold border-slate-200 hover:bg-slate-50"
+                        >
+                          <Instagram className="mr-2 h-5 w-5" />
+                          Ver no Instagram
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
+
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="hidden sm:flex rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 transition-all"
+              title="Favoritos"
+            >
+              <Heart className="h-5 w-5" />
+            </Button>
+
+            <Link
+              to="/loja/$slug/carrinho"
+              params={{ slug: store.slug }}
+              className="relative"
+            >
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 transition-all"
+                title="Carrinho"
+                asChild
+              >
+                <div>
+                  <ShoppingBag className="h-5 w-5" />
+                  {count > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-slate-900 text-[10px] font-bold text-white ring-2 ring-white px-1">
+                      {count}
+                    </span>
+                  )}
+                </div>
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </header>
