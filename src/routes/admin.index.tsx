@@ -17,9 +17,12 @@ import {
   ExternalLink,
   Users,
   Eye,
-  TrendingUp
+  TrendingUp,
+  Image as ImageIcon,
+  LayoutDashboard
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminHome,
