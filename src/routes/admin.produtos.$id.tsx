@@ -196,6 +196,8 @@ function ProductEditor() {
     setBusy(true);
 
     // Criar cópia do produto
+    if (!product) return;
+    
     const { data: newProduct, error: productError } = await supabase
       .from("products")
       .insert({
