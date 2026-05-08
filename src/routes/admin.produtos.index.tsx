@@ -436,9 +436,16 @@ function ProductsList() {
   );
 }
 
-function ProductRow({ p, store, navigate, duplicateProduct, deleteProduct }: any) {
+function ProductRow({ p, store, navigate, duplicateProduct, deleteProduct, toggleStatus }: any) {
   const cover = p.product_images?.sort((a: any, b: any) => a.position - b.position)[0]?.url;
+  const [loading, setLoading] = useState(false);
   
+  const handleToggle = async () => {
+    setLoading(true);
+    await toggleStatus(p);
+    setLoading(false);
+  };
+
   return (
     <TableRow className="border-border/40 hover:bg-muted/5 group transition-colors">
       <TableCell className="py-4">
@@ -466,22 +473,23 @@ function ProductRow({ p, store, navigate, duplicateProduct, deleteProduct }: any
         <span className="font-bold text-sm text-foreground">{formatBRL(Number(p.price))}</span>
       </TableCell>
       <TableCell className="py-4">
-        <div className="flex flex-wrap gap-1.5">
+        <button
+          onClick={handleToggle}
+          disabled={loading}
+          className="flex items-center gap-1.5 focus:outline-none disabled:opacity-50"
+        >
           {p.active ? (
-            <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200/60 h-5 px-1.5 text-[10px] font-bold uppercase tracking-wider">
+            <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200/60 h-6 px-2 text-[10px] font-bold uppercase tracking-wider hover:bg-emerald-100 transition-colors cursor-pointer">
+              {loading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-1" />}
               Ativo
             </Badge>
           ) : (
-            <Badge variant="outline" className="bg-muted text-muted-foreground border-border/60 h-5 px-1.5 text-[10px] font-bold uppercase tracking-wider">
+            <Badge variant="outline" className="bg-slate-50 text-slate-500 border-slate-200 h-6 px-2 text-[10px] font-bold uppercase tracking-wider hover:bg-slate-100 transition-colors cursor-pointer">
+              {loading ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : <div className="h-1.5 w-1.5 rounded-full bg-slate-400 mr-1" />}
               Inativo
             </Badge>
           )}
-          {p.featured && (
-            <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200/60 h-5 px-1.5 text-[10px] font-bold uppercase tracking-wider">
-              Destaque
-            </Badge>
-          )}
-        </div>
+        </button>
       </TableCell>
       <TableCell className="text-right py-4">
         <ProductActions p={p} store={store} navigate={navigate} duplicateProduct={duplicateProduct} deleteProduct={deleteProduct} />
