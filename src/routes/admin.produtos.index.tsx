@@ -332,7 +332,7 @@ function ProductsList() {
                   </TableRow>
                 ) : (
                   products.map((p: any) => (
-                    <ProductRow key={p.id} p={p} store={store} navigate={navigate} duplicateProduct={duplicateProduct} deleteProduct={deleteProduct} />
+                    <ProductRow key={p.id} p={p} store={store} navigate={navigate} duplicateProduct={duplicateProduct} deleteProduct={deleteProduct} toggleStatus={toggleStatus} />
                   ))
                 )}
               </TableBody>
