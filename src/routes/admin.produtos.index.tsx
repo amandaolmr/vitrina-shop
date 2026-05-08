@@ -60,6 +60,10 @@ function ProductsList() {
   const [filterDept, setFilterDept] = useState<string>("");
   const [filterCat, setFilterCat] = useState<string>("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  
+  // Paginação
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const { data: store } = useQuery({
     queryKey: ["my-store", user?.id],
@@ -84,18 +88,51 @@ function ProductsList() {
     },
   });
 
-  const { data: products, refetch, isLoading } = useQuery({
-    queryKey: ["admin-products", store?.id],
+  const { data: productsData, refetch, isPlaceholderData, isLoading } = useQuery({
+    queryKey: ["admin-products", store?.id, page, pageSize, search, filterDept, filterCat, filterStatus],
     enabled: !!store,
+    placeholderData: (previousData) => previousData,
     queryFn: async () => {
-      const { data } = await supabase
+      let query = supabase
         .from("products")
-        .select("*, product_images(url, position), product_variants(id)")
-        .eq("store_id", store!.id)
-        .order("created_at", { ascending: false });
-      return data ?? [];
+        .select("*, product_images(url, position), product_variants(id)", { count: "exact" })
+        .eq("store_id", store!.id);
+
+      // Filtros no servidor
+      if (search) query = query.ilike("name", `%${search}%`);
+      if (filterStatus === "active") query = query.eq("active", true);
+      if (filterStatus === "inactive") query = query.eq("active", false);
+      if (filterStatus === "featured") query = query.eq("featured", true);
+      
+      if (filterCat) {
+        query = query.eq("category_id", filterCat);
+      } else if (filterDept) {
+        // Para filtrar por depto (parent_id) no servidor, precisaríamos de um join ou subquery
+        // Como o Supabase permite filtros em relações, se category_id tivesse a relação carregada
+        // mas aqui vamos manter o filtro de depto local por enquanto ou simplificar
+        const catIds = (categories ?? [])
+          .filter((c: any) => c.parent_id === filterDept)
+          .map((c: any) => c.id);
+        if (catIds.length > 0) {
+          query = query.in("category_id", catIds);
+        }
+      }
+
+      const from = (page - 1) * pageSize;
+      const to = from + pageSize - 1;
+
+      const { data, count, error } = await query
+        .order("created_at", { ascending: false })
+        .range(from, to);
+
+      if (error) throw error;
+      return { products: data ?? [], count: count ?? 0 };
     },
   });
+
+  const products = productsData?.products ?? [];
+  const totalCount = productsData?.count ?? 0;
+  const totalPages = Math.ceil(totalCount / pageSize);
 
   const departments = useMemo(() => {
     return (categories ?? []).filter((c: any) => !c.parent_id);
