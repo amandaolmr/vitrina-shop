@@ -216,7 +216,7 @@ function ProductsList() {
   if (!store) return <div className="grid min-h-[50vh] place-items-center text-muted-foreground">Carregando loja…</div>;
 
   return (
-    <div className="space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 px-1 sm:px-0">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-2 sm:px-1">
         <div>
           <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight text-foreground">Produtos</h1>
