@@ -86,7 +86,7 @@ function ProductsList() {
     queryFn: async () => {
       const { data } = await supabase
         .from("products")
-        .select("*, product_images(url, position), product_variants(stock)")
+        .select("*, product_images(url, position), product_variants(id)")
         .eq("store_id", store!.id)
         .order("created_at", { ascending: false });
       return data ?? [];
