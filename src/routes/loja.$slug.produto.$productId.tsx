@@ -204,7 +204,7 @@ function ProductPage() {
       productId: product.id,
       variantId: v.id,
       name: product.name,
-      variantLabel: hasVariants ? variantLabel(v) : "Único",
+      variantLabel: hasVariations ? variantLabel(v) : "Único",
       price: Number(product.price),
       image: images[0]?.url,
       qty: 1,
