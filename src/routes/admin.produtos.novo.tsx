@@ -35,6 +35,10 @@ function NewProduct() {
     category_id: "",
     active: true,
     featured: false,
+    has_variations: false,
+    stock: "0",
+    sku: "",
+    barcode: "",
   });
 
   const { data: store } = useQuery({
