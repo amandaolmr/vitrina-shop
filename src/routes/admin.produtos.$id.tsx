@@ -139,7 +139,6 @@ function ProductEditor() {
           color: v.color ?? "",
           numbering: v.numbering ?? "",
           stock: v.stock,
-          sku: v.sku ?? "",
         })),
       );
       const ci: Record<string, string[]> = {};
