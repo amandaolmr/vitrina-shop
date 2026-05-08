@@ -329,7 +329,7 @@ function ProductPage() {
             </div>
           )}
 
-          {hasVariants && (hasColors ? selectedColor : true) && sizesForColor.length > 0 && (
+          {hasVariations && (hasColors ? selectedColor : true) && sizesForColor.length > 0 && (
             <div className="mt-6">
               <p className="mb-3 text-sm font-medium">Tamanho</p>
               <div className="flex flex-wrap gap-2">
