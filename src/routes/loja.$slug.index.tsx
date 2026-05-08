@@ -22,8 +22,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ProductCard } from "@/components/ProductCard";
-import { StoreHeader } from "@/components/StoreHeader";
+// ... keep existing code
 import { StoreBanner } from "@/components/StoreBanner";
+// ... keep existing code
 
 export const Route = createFileRoute("/loja/$slug/")({
   component: StorefrontPage,
