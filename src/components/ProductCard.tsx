@@ -2,6 +2,8 @@ import { Link } from "@tanstack/react-router";
 import { Heart, ShoppingCart } from "lucide-react";
 import { formatBRL } from "@/lib/format";
 import { Button } from "@/components/ui/button";
+import { useFavorites } from "@/lib/favorites";
+import { cn } from "@/lib/utils";
 
 interface ProductCardProps {
   p: any;
