@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -413,20 +413,12 @@ function ProductEditor() {
             </CardHeader>
             <CardContent className="space-y-6">
               {form.has_variations ? (
-                <>
-                  <VariantsEditor variants={variants} setVariants={setVariants} />
-                  
-                  <Separator />
-                  
-                  <div className="pt-2">
-                    <h3 className="text-sm font-semibold mb-3">Imagens por Cor (Opcional)</h3>
-                    <ColorImagesEditor
-                      variants={variants}
-                      colorImages={colorImages}
-                      setColorImages={setColorImages}
-                    />
-                  </div>
-                </>
+                <VariantsEditor 
+                  variants={variants} 
+                  setVariants={setVariants}
+                  colorImages={colorImages}
+                  setColorImages={setColorImages}
+                />
               ) : (
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
@@ -580,27 +572,54 @@ const COMMON_SIZES = ["PP", "P", "M", "G", "GG", "XG"];
 function VariantsEditor({
   variants,
   setVariants,
+  colorImages,
+  setColorImages,
 }: {
   variants: Variant[];
   setVariants: (v: Variant[]) => void;
+  colorImages: Record<string, string[]>;
+  setColorImages: (v: Record<string, string[]>) => void;
 }) {
+  const [newColorAdded, setNewColorAdded] = useState<string | null>(null);
+  const colorRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
   // group by color
   const colors = Array.from(new Set(variants.map((v) => (v.color ?? "").trim()).filter(Boolean)));
+
+  useEffect(() => {
+    if (newColorAdded && colorRefs.current[newColorAdded]) {
+      colorRefs.current[newColorAdded]?.scrollIntoView({ behavior: "smooth", block: "center" });
+      const input = colorRefs.current[newColorAdded]?.querySelector("input");
+      if (input) (input as HTMLInputElement).focus();
+      setNewColorAdded(null);
+    }
+  }, [newColorAdded, colors]);
 
   function addColor(name: string) {
     const color = name.trim();
     if (!color || colors.includes(color)) return;
     setVariants([...variants, { size: "", color, numbering: "", stock: 0 }]);
+    setNewColorAdded(color);
   }
 
   function removeColor(color: string) {
     setVariants(variants.filter((v) => v.color !== color));
+    const nextImages = { ...colorImages };
+    delete nextImages[color];
+    setColorImages(nextImages);
   }
 
   function renameColor(oldName: string, newName: string) {
     const next = newName.trim();
-    if (!next) return;
+    if (!next || next === oldName) return;
     setVariants(variants.map((v) => (v.color === oldName ? { ...v, color: next } : v)));
+    
+    if (colorImages[oldName]) {
+      const nextImages = { ...colorImages };
+      nextImages[next] = nextImages[oldName];
+      delete nextImages[oldName];
+      setColorImages(nextImages);
+    }
   }
 
   function updateRow(target: Variant, patch: Partial<Variant>) {
@@ -625,9 +644,9 @@ function VariantsEditor({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <Label>Cores e estoque</Label>
+        <Label className="text-base font-semibold">Cores e estoque</Label>
       </div>
 
       <AddColorInput onAdd={addColor} existing={colors} />
@@ -639,105 +658,148 @@ function VariantsEditor({
         </p>
       )}
 
-      <div className="space-y-3">
+      <div className="space-y-6">
         {colors.map((color) => {
           const rows = variants.filter((v) => v.color === color);
           const sizeRows = rows.filter((r) => r.size);
           const numberingRows = rows.filter((r) => !r.size);
           return (
-            <div key={color} className="rounded-xl border border-border p-4">
-              <div className="mb-3 flex items-center justify-between gap-2">
-                <Input
-                  defaultValue={color}
-                  onBlur={(e) => e.target.value !== color && renameColor(color, e.target.value)}
-                  className="h-8 max-w-[200px] font-semibold"
-                />
-                <Button type="button" variant="ghost" size="sm" onClick={() => removeColor(color)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+            <div 
+              key={color} 
+              ref={el => { colorRefs.current[color] = el; }}
+              className="rounded-xl border border-border bg-card overflow-hidden"
+            >
+              <div className="p-4 border-b border-border bg-muted/30">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 flex-1">
+                    <div 
+                      className="w-4 h-4 rounded-full border border-border" 
+                      style={{ backgroundColor: color.toLowerCase() }} 
+                    />
+                    <Input
+                      defaultValue={color}
+                      onBlur={(e) => renameColor(color, e.target.value)}
+                      className="h-8 max-w-[200px] font-bold bg-transparent border-none focus-visible:ring-0 px-0 text-base"
+                    />
+                  </div>
+                  <Button type="button" variant="ghost" size="sm" onClick={() => removeColor(color)} className="text-destructive hover:text-destructive hover:bg-destructive/10">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
 
-              <div className="mb-3 flex flex-wrap gap-2">
-                {COMMON_SIZES.map((s) => {
-                  const active = sizeRows.some((r) => r.size === s);
-                  return (
-                    <Button
-                      key={s}
-                      type="button"
-                      variant={active ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => toggleSize(color, s)}
-                    >
-                      {s}
-                    </Button>
-                  );
-                })}
+              <div className="p-4 space-y-6">
+                {/* Imagens da Cor */}
+                <div className="space-y-3">
+                  <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">Fotos desta cor</Label>
+                  <MultiImageUpload
+                    values={colorImages[color] ?? []}
+                    onChange={(urls) => {
+                      const next = { ...colorImages };
+                      if (urls.length) next[color] = urls;
+                      else delete next[color];
+                      setColorImages(next);
+                    }}
+                  />
+                </div>
+
+                <Separator />
+
+                {/* Tamanhos e Estoque */}
+                <div className="space-y-4">
+                  <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">Grade e Estoque</Label>
+                  
+                  <div className="flex flex-wrap gap-2">
+                    {COMMON_SIZES.map((s) => {
+                      const active = sizeRows.some((r) => r.size === s);
+                      return (
+                        <Button
+                          key={s}
+                          type="button"
+                          variant={active ? "default" : "outline"}
+                          size="sm"
+                          className="min-w-[40px]"
+                          onClick={() => toggleSize(color, s)}
+                        >
+                          {s}
+                        </Button>
+                      );
+                    })}
+                  </div>
+
+                  {sizeRows.length > 0 && (
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      {sizeRows.map((v, i) => (
+                        <div key={i} className="flex items-center gap-2 p-2 rounded-lg border border-border bg-muted/10">
+                          <span className="w-8 h-8 flex items-center justify-center rounded bg-muted text-xs font-bold">
+                            {v.size}
+                          </span>
+                          <Input
+                            type="number"
+                            placeholder="Qtd"
+                            value={v.stock}
+                            className="h-8"
+                            onChange={(e) => updateRow(v, { stock: Number(e.target.value) })}
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground"
+                            onClick={() => removeRow(v)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {numberingRows.length > 0 && (
+                    <div className="space-y-2">
+                      <p className="text-xs text-muted-foreground">Numeração (calçados)</p>
+                      <div className="grid gap-2 sm:grid-cols-2">
+                        {numberingRows.map((v, i) => (
+                          <div key={i} className="flex items-center gap-2 p-2 rounded-lg border border-border bg-muted/10">
+                            <Input
+                              placeholder="Nº"
+                              value={v.numbering}
+                              className="h-8 w-20"
+                              onChange={(e) => updateRow(v, { numbering: e.target.value })}
+                            />
+                            <Input
+                              type="number"
+                              placeholder="Qtd"
+                              value={v.stock}
+                              className="h-8"
+                              onChange={(e) => updateRow(v, { stock: Number(e.target.value) })}
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-muted-foreground"
+                              onClick={() => removeRow(v)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="w-full border-dashed border-2 hover:border-solid"
+                    onClick={() => addNumberingRow(color)}
+                  >
+                    <Plus className="mr-1 h-4 w-4" /> Adicionar numeração personalizada
+                  </Button>
+                </div>
               </div>
-
-              {sizeRows.length > 0 && (
-                <div className="space-y-2">
-                  {sizeRows.map((v, i) => (
-                    <div key={i} className="grid grid-cols-[60px_1fr_auto] items-center gap-2">
-                      <span className="rounded-full bg-muted px-3 py-1 text-center text-xs font-semibold">
-                        {v.size}
-                      </span>
-                      <Input
-                        type="number"
-                        placeholder="Estoque"
-                        value={v.stock}
-                        onChange={(e) => updateRow(v, { stock: Number(e.target.value) })}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeRow(v)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {numberingRows.length > 0 && (
-                <div className="mt-3 space-y-2">
-                  <p className="text-xs text-muted-foreground">Numeração (calçados)</p>
-                  {numberingRows.map((v, i) => (
-                    <div key={i} className="grid grid-cols-[1fr_1fr_auto] items-center gap-2">
-                      <Input
-                        placeholder="Nº (ex: 38)"
-                        value={v.numbering}
-                        onChange={(e) => updateRow(v, { numbering: e.target.value })}
-                      />
-                      <Input
-                        type="number"
-                        placeholder="Estoque"
-                        value={v.stock}
-                        onChange={(e) => updateRow(v, { stock: Number(e.target.value) })}
-                      />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => removeRow(v)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="mt-3"
-                onClick={() => addNumberingRow(color)}
-              >
-                <Plus className="mr-1 h-4 w-4" /> Adicionar numeração
-              </Button>
             </div>
           );
         })}
@@ -759,7 +821,7 @@ function AddColorInput({ onAdd, existing }: { onAdd: (s: string) => void; existi
         value={val}
         onChange={(e) => setVal(e.target.value)}
         placeholder="Adicionar cor (ex: Preto)"
-        className="h-9 max-w-[240px]"
+        className="h-10 max-w-[240px]"
         onKeyDown={(e) => {
           if (e.key === "Enter") {
             e.preventDefault();
@@ -767,58 +829,11 @@ function AddColorInput({ onAdd, existing }: { onAdd: (s: string) => void; existi
           }
         }}
       />
-      <Button type="button" variant="outline" size="sm" onClick={submit}>
-        <Plus className="mr-1 h-4 w-4" /> Cor
+      <Button type="button" size="default" onClick={submit} className="h-10">
+        <Plus className="mr-2 h-4 w-4" /> Adicionar Cor
       </Button>
     </div>
   );
 }
 
-function ColorImagesEditor({
-  variants,
-  colorImages,
-  setColorImages,
-}: {
-  variants: Variant[];
-  colorImages: Record<string, string[]>;
-  setColorImages: (v: Record<string, string[]>) => void;
-}) {
-  const colors = Array.from(new Set(variants.map((v) => (v.color ?? "").trim()).filter(Boolean)));
-
-  if (colors.length === 0) {
-    return (
-      <div>
-        <Label>Imagens por cor</Label>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Adicione cores nas variações acima para enviar imagens específicas para cada cor.
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <Label>Imagens por cor</Label>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Envie uma ou mais fotos para cada cor. Elas serão exibidas na vitrine quando o cliente
-        selecionar a cor.
-      </p>
-      <div className="mt-4 space-y-4">
-        {colors.map((color) => (
-          <div key={color} className="rounded-lg border border-border p-4">
-            <p className="mb-3 text-sm font-semibold">{color}</p>
-            <MultiImageUpload
-              values={colorImages[color] ?? []}
-              onChange={(urls) => {
-                const next = { ...colorImages };
-                if (urls.length) next[color] = urls;
-                else delete next[color];
-                setColorImages(next);
-              }}
-            />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+// Removing ColorImagesEditor as it's now integrated into VariantsEditor
