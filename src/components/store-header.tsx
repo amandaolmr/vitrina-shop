@@ -19,7 +19,8 @@ import {
 import { Button } from "@/components/ui/button";
 
 export function StoreHeader({ store }: { store: any }) {
-  const { count } = useCart(store.slug);
+  const { count: cartCount } = useCart(store.slug);
+  const { count: favCount } = useFavorites(store.slug);
 
   function openWhatsApp() {
     if (!store.whatsapp) return;
