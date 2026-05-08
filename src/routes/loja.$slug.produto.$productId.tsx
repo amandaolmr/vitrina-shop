@@ -81,12 +81,11 @@ function ProductPage() {
 
   // Distinct colors with stock info
   const colors = useMemo(() => {
-    const map = new Map<string, { color: string; totalStock: number }>();
+    const map = new Map<string, { color: string }>();
     for (const v of variants) {
       const c = (v.color ?? "").trim();
       if (!c) continue;
-      const cur = map.get(c) ?? { color: c, totalStock: 0 };
-      cur.totalStock += v.stock ?? 0;
+      const cur = map.get(c) ?? { color: c };
       map.set(c, cur);
     }
     return Array.from(map.values());
