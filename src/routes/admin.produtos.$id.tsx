@@ -413,20 +413,12 @@ function ProductEditor() {
             </CardHeader>
             <CardContent className="space-y-6">
               {form.has_variations ? (
-                <>
-                  <VariantsEditor variants={variants} setVariants={setVariants} />
-                  
-                  <Separator />
-                  
-                  <div className="pt-2">
-                    <h3 className="text-sm font-semibold mb-3">Imagens por Cor (Opcional)</h3>
-                    <ColorImagesEditor
-                      variants={variants}
-                      colorImages={colorImages}
-                      setColorImages={setColorImages}
-                    />
-                  </div>
-                </>
+                <VariantsEditor 
+                  variants={variants} 
+                  setVariants={setVariants}
+                  colorImages={colorImages}
+                  setColorImages={setColorImages}
+                />
               ) : (
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-2">
