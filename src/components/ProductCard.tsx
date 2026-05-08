@@ -11,6 +11,9 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ p, slug }: ProductCardProps) {
+  const { toggle, isFavorite } = useFavorites(slug);
+  const favorited = isFavorite(p.id);
+
   const cover = p.product_images?.sort((a: any, b: any) => a.position - b.position)[0]?.url;
   const price = Number(p.price);
   const comparePrice = p.compare_at_price ? Number(p.compare_at_price) : null;
@@ -20,8 +23,21 @@ export function ProductCard({ p, slug }: ProductCardProps) {
   return (
     <div className="group relative flex flex-col h-full bg-white rounded-[2rem] p-3 transition-all duration-500 shadow-sm hover:shadow-xl hover:-translate-y-2 border border-slate-100/50 overflow-hidden">
       {/* Favorite Button */}
-      <button className="absolute right-5 top-5 z-10 p-2.5 rounded-full bg-white/90 backdrop-blur-sm shadow-sm border border-slate-100 text-slate-400 hover:text-rose-500 hover:scale-110 transition-all duration-300">
-        <Heart className="h-5 w-5" />
+      <button 
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          toggle(p.id);
+        }}
+        className={cn(
+          "absolute right-5 top-5 z-10 p-2.5 rounded-full bg-white/90 backdrop-blur-sm shadow-sm border border-slate-100 transition-all duration-300",
+          favorited 
+            ? "text-rose-500 border-rose-100 bg-rose-50/50 scale-110" 
+            : "text-slate-400 hover:text-rose-500 hover:scale-110"
+        )}
+        title={favorited ? "Remover dos favoritos" : "Adicionar aos favoritos"}
+      >
+        <Heart className={cn("h-5 w-5 transition-transform duration-300", favorited && "fill-current animate-in zoom-in-75 duration-300")} />
       </button>
 
       {/* Image Container */}
