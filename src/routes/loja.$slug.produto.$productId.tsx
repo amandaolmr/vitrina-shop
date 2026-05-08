@@ -81,12 +81,11 @@ function ProductPage() {
 
   // Distinct colors with stock info
   const colors = useMemo(() => {
-    const map = new Map<string, { color: string; totalStock: number }>();
+    const map = new Map<string, { color: string }>();
     for (const v of variants) {
       const c = (v.color ?? "").trim();
       if (!c) continue;
-      const cur = map.get(c) ?? { color: c, totalStock: 0 };
-      cur.totalStock += v.stock ?? 0;
+      const cur = map.get(c) ?? { color: c };
       map.set(c, cur);
     }
     return Array.from(map.values());
@@ -110,7 +109,6 @@ function ProductPage() {
       .map((v) => ({
         key: v.id,
         label: v.size || v.numbering || "Único",
-        stock: v.stock ?? 0,
       }))
       .filter((s) => s.label);
   }, [variants, selectedColor, hasColors]);
@@ -295,7 +293,6 @@ function ProductPage() {
               <p className="mb-3 text-sm font-medium">Cores disponíveis:</p>
               <div className="flex flex-wrap gap-3">
                 {colors.map((c) => {
-                  const out = c.totalStock <= 0;
                   const css = colorToCss(c.color);
                   const photo = colorImageMap.get(c.color)?.[0];
                   const active = selectedColor === c.color;
@@ -303,13 +300,12 @@ function ProductPage() {
                     <button
                       key={c.color}
                       type="button"
-                      disabled={out}
                       onClick={() => {
                         setSelectedColor(c.color);
                         setSelectedSize(null);
                       }}
                       title={c.color}
-                      className={`flex flex-col items-center gap-1 ${out ? "opacity-40" : ""}`}
+                      className={`flex flex-col items-center gap-1`}
                     >
                       <span
                         className={`grid h-14 w-14 place-items-center overflow-hidden rounded-full border-2 transition ${
@@ -340,19 +336,17 @@ function ProductPage() {
               <p className="mb-3 text-sm font-medium">Tamanho</p>
               <div className="flex flex-wrap gap-2">
                 {sizesForColor.map((s) => {
-                  const out = s.stock <= 0;
                   const active = selectedSize === s.label;
                   return (
                     <button
                       key={s.key}
                       type="button"
-                      disabled={out}
                       onClick={() => setSelectedSize(s.label)}
                       className={`min-w-14 rounded-md border px-4 py-2 text-sm font-medium transition ${
                         active
                           ? "border-foreground bg-foreground text-background"
                           : "border-border hover:border-foreground"
-                      } ${out ? "cursor-not-allowed text-muted-foreground line-through" : ""}`}
+                      }`}
                     >
                       {s.label}
                     </button>
@@ -367,24 +361,17 @@ function ProductPage() {
               onClick={() => addToCart()} 
               variant="outline" 
               className="flex-1"
-              disabled={!hasVariations && product.stock <= 0}
             >
               <ShoppingBag className="mr-2 h-4 w-4" /> 
-              {!hasVariations && product.stock <= 0 ? "Esgotado" : "Adicionar"}
+              Adicionar
             </Button>
             <Button 
               onClick={buyNow} 
               className="flex-1 bg-[#25D366] hover:bg-[#1ebd5b]"
-              disabled={!hasVariations && product.stock <= 0}
             >
               <MessageCircle className="mr-2 h-4 w-4" /> Comprar agora
             </Button>
           </div>
-          {!hasVariations && product.stock > 0 && product.stock <= 5 && (
-            <p className="mt-2 text-xs text-amber-600 font-medium">
-              Apenas {product.stock} unidades em estoque!
-            </p>
-          )}
         </div>
       </div>
 

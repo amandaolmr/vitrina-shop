@@ -53,7 +53,6 @@ type Variant = {
   size: string;
   color: string;
   numbering: string;
-  stock: number;
 };
 
 function ProductEditor() {
@@ -124,7 +123,6 @@ function ProductEditor() {
         featured: product.featured,
         active: product.active,
         has_variations: product.has_variations,
-        stock: product.stock,
       });
       setImages(
         (product.product_images ?? [])
@@ -137,7 +135,6 @@ function ProductEditor() {
           size: v.size ?? "",
           color: v.color ?? "",
           numbering: v.numbering ?? "",
-          stock: v.stock,
         })),
       );
       const ci: Record<string, string[]> = {};
@@ -173,7 +170,6 @@ function ProductEditor() {
         featured: form.featured,
         active: form.active,
         has_variations: form.has_variations,
-        stock: Number(form.stock) || 0,
       })
       .eq("id", id);
     if (error) {
@@ -199,7 +195,6 @@ function ProductEditor() {
           size: v.size || null,
           color: v.color || null,
           numbering: v.numbering || null,
-          stock: Number(v.stock) || 0,
         })),
       );
     }
@@ -249,7 +244,6 @@ function ProductEditor() {
         featured: false, // Não deixar em destaque por padrão
         active: false, // Deixar inativo inicialmente
         has_variations: form.has_variations,
-        stock: Number(form.stock) || 0,
       })
       .select()
       .single();
@@ -275,7 +269,6 @@ function ProductEditor() {
           size: v.size || null,
           color: v.color || null,
           numbering: v.numbering || null,
-          stock: Number(v.stock) || 0,
         })),
       );
     }
@@ -388,13 +381,13 @@ function ProductEditor() {
             </CardContent>
           </Card>
 
-          {/* Variações e Estoque */}
+          {/* Grade e Variações */}
           <Card>
             <CardHeader>
               <CardTitle className="text-lg flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Settings className="h-5 w-5 text-primary" />
-                  Estoque e Grade
+                  Grade de Cores e Tamanhos
                 </div>
                 <div className="flex items-center gap-2">
                   <Label htmlFor="has_variations" className="text-xs font-normal">Possui variações?</Label>
@@ -407,8 +400,8 @@ function ProductEditor() {
               </CardTitle>
               <CardDescription>
                 {form.has_variations 
-                  ? "Gerencie cores, tamanhos e quantidades por variação" 
-                  : "Defina o estoque e identificadores únicos do produto"}
+                  ? "Gerencie as cores e tamanhos disponíveis para este produto" 
+                  : "Este produto será vendido como item único"}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -420,18 +413,9 @@ function ProductEditor() {
                   setColorImages={setColorImages}
                 />
               ) : (
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="stock">Quantidade em estoque</Label>
-                    <Input
-                      id="stock"
-                      type="number"
-                      placeholder="Ex: 10"
-                      value={form.stock}
-                      onChange={(e) => setForm({ ...form, stock: e.target.value })}
-                    />
-                  </div>
-                </div>
+                <p className="text-sm text-muted-foreground italic">
+                  O produto será exibido sem opções de escolha para o cliente.
+                </p>
               )}
             </CardContent>
           </Card>
@@ -598,7 +582,7 @@ function VariantsEditor({
   function addColor(name: string) {
     const color = name.trim();
     if (!color || colors.includes(color)) return;
-    setVariants([...variants, { size: "", color, numbering: "", stock: 0 }]);
+    setVariants([...variants, { size: "", color, numbering: "" }]);
     setNewColorAdded(color);
   }
 
@@ -635,26 +619,25 @@ function VariantsEditor({
     if (existing) {
       setVariants(variants.filter((v) => v !== existing));
     } else {
-      setVariants([...variants, { color, size, numbering: "", stock: 0 }]);
+      setVariants([...variants, { color, size, numbering: "" }]);
     }
   }
 
   function addNumberingRow(color: string) {
-    setVariants([...variants, { color, size: "", numbering: "", stock: 0 }]);
+    setVariants([...variants, { color, size: "", numbering: "" }]);
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <Label className="text-base font-semibold">Cores e estoque</Label>
+        <Label className="text-base font-semibold">Cores e Grade</Label>
       </div>
 
       <AddColorInput onAdd={addColor} existing={colors} />
 
       {colors.length === 0 && (
         <p className="text-sm text-muted-foreground">
-          Cadastre as cores disponíveis. Para cada cor, escolha os tamanhos e informe a quantidade
-          em estoque.
+          Cadastre as cores disponíveis. Para cada cor, escolha os tamanhos da grade.
         </p>
       )}
 
@@ -705,9 +688,9 @@ function VariantsEditor({
 
                 <Separator />
 
-                {/* Tamanhos e Estoque */}
+                {/* Tamanhos */}
                 <div className="space-y-4">
-                  <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">Grade e Estoque</Label>
+                  <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">Grade de Tamanhos</Label>
                   
                   <div className="flex flex-wrap gap-2">
                     {COMMON_SIZES.map((s) => {
@@ -728,19 +711,12 @@ function VariantsEditor({
                   </div>
 
                   {sizeRows.length > 0 && (
-                    <div className="grid gap-2 sm:grid-cols-2">
+                    <div className="flex flex-wrap gap-2">
                       {sizeRows.map((v, i) => (
                         <div key={i} className="flex items-center gap-2 p-2 rounded-lg border border-border bg-muted/10">
                           <span className="w-8 h-8 flex items-center justify-center rounded bg-muted text-xs font-bold">
                             {v.size}
                           </span>
-                          <Input
-                            type="number"
-                            placeholder="Qtd"
-                            value={v.stock}
-                            className="h-8"
-                            onChange={(e) => updateRow(v, { stock: Number(e.target.value) })}
-                          />
                           <Button
                             type="button"
                             variant="ghost"
@@ -757,22 +733,15 @@ function VariantsEditor({
 
                   {numberingRows.length > 0 && (
                     <div className="space-y-2">
-                      <p className="text-xs text-muted-foreground">Numeração (calçados)</p>
+                      <p className="text-xs text-muted-foreground">Numeração Personalizada</p>
                       <div className="grid gap-2 sm:grid-cols-2">
                         {numberingRows.map((v, i) => (
                           <div key={i} className="flex items-center gap-2 p-2 rounded-lg border border-border bg-muted/10">
                             <Input
                               placeholder="Nº"
                               value={v.numbering}
-                              className="h-8 w-20"
-                              onChange={(e) => updateRow(v, { numbering: e.target.value })}
-                            />
-                            <Input
-                              type="number"
-                              placeholder="Qtd"
-                              value={v.stock}
                               className="h-8"
-                              onChange={(e) => updateRow(v, { stock: Number(e.target.value) })}
+                              onChange={(e) => updateRow(v, { numbering: e.target.value })}
                             />
                             <Button
                               type="button"
