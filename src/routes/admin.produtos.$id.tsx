@@ -666,7 +666,7 @@ function VariantsEditor({
           return (
             <div 
               key={color} 
-              ref={el => colorRefs.current[color] = el}
+              ref={el => { colorRefs.current[color] = el; }}
               className="rounded-xl border border-border bg-card overflow-hidden"
             >
               <div className="p-4 border-b border-border bg-muted/30">
