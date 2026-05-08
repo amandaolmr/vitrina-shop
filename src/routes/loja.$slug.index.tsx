@@ -303,8 +303,8 @@ function StorefrontPage() {
             </DialogTitle>
           </DialogHeader>
           
-          <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-50/50">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-8 bg-slate-50">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
               {viewAllCategory && productsByCategory.get(viewAllCategory.id)?.map((p: any) => (
                 <ProductCard key={p.id} p={p} slug={store.slug} />
               ))}
