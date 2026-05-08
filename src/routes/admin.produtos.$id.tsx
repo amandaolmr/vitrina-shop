@@ -688,9 +688,9 @@ function VariantsEditor({
 
                 <Separator />
 
-                {/* Tamanhos e Estoque */}
+                {/* Tamanhos */}
                 <div className="space-y-4">
-                  <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">Grade e Estoque</Label>
+                  <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">Grade de Tamanhos</Label>
                   
                   <div className="flex flex-wrap gap-2">
                     {COMMON_SIZES.map((s) => {
@@ -711,19 +711,12 @@ function VariantsEditor({
                   </div>
 
                   {sizeRows.length > 0 && (
-                    <div className="grid gap-2 sm:grid-cols-2">
+                    <div className="flex flex-wrap gap-2">
                       {sizeRows.map((v, i) => (
                         <div key={i} className="flex items-center gap-2 p-2 rounded-lg border border-border bg-muted/10">
                           <span className="w-8 h-8 flex items-center justify-center rounded bg-muted text-xs font-bold">
                             {v.size}
                           </span>
-                          <Input
-                            type="number"
-                            placeholder="Qtd"
-                            value={v.stock}
-                            className="h-8"
-                            onChange={(e) => updateRow(v, { stock: Number(e.target.value) })}
-                          />
                           <Button
                             type="button"
                             variant="ghost"
@@ -740,22 +733,15 @@ function VariantsEditor({
 
                   {numberingRows.length > 0 && (
                     <div className="space-y-2">
-                      <p className="text-xs text-muted-foreground">Numeração (calçados)</p>
+                      <p className="text-xs text-muted-foreground">Numeração Personalizada</p>
                       <div className="grid gap-2 sm:grid-cols-2">
                         {numberingRows.map((v, i) => (
                           <div key={i} className="flex items-center gap-2 p-2 rounded-lg border border-border bg-muted/10">
                             <Input
                               placeholder="Nº"
                               value={v.numbering}
-                              className="h-8 w-20"
-                              onChange={(e) => updateRow(v, { numbering: e.target.value })}
-                            />
-                            <Input
-                              type="number"
-                              placeholder="Qtd"
-                              value={v.stock}
                               className="h-8"
-                              onChange={(e) => updateRow(v, { stock: Number(e.target.value) })}
+                              onChange={(e) => updateRow(v, { numbering: e.target.value })}
                             />
                             <Button
                               type="button"
