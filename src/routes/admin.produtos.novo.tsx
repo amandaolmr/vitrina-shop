@@ -86,8 +86,7 @@ function NewProduct() {
         featured: form.featured,
         has_variations: form.has_variations,
         stock: Number(form.stock) || 0,
-        sku: form.sku || null,
-        barcode: form.barcode || null,
+      })
       })
       .select()
       .single();
