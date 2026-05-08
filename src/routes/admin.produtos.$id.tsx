@@ -54,7 +54,6 @@ type Variant = {
   color: string;
   numbering: string;
   stock: number;
-  sku: string;
 };
 
 function ProductEditor() {
