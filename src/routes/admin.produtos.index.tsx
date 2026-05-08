@@ -54,6 +54,8 @@ export const Route = createFileRoute("/admin/produtos/")({
   component: ProductsList,
 });
 
+import { Switch } from "@/components/ui/switch";
+
 function ProductsList() {
   const { user } = useAuth();
   const navigate = useNavigate();
