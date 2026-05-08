@@ -216,38 +216,43 @@ function ProductsList() {
   if (!store) return <div className="grid min-h-[50vh] place-items-center text-muted-foreground">Carregando loja…</div>;
 
   return (
-    <div className="space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between px-1">
+    <div className="space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 px-1 sm:px-0">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-2 sm:px-1">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">Produtos</h1>
+          <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight text-foreground">Produtos</h1>
           <p className="hidden sm:block text-sm text-muted-foreground mt-1">Gerencie seu inventário e catálogo de produtos.</p>
         </div>
-        <Button onClick={createProduct} className="rounded-xl font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98] w-full sm:w-auto h-12 sm:h-10">
-          <Plus className="mr-2 h-4 w-4" /> Novo produto
+        <Button 
+          onClick={createProduct} 
+          className="rounded-xl font-bold shadow-lg shadow-primary/10 transition-all active:scale-[0.98] w-full sm:w-auto h-10 px-4 text-xs sm:text-sm"
+        >
+          <Plus className="mr-1.5 h-3.5 w-3.5" /> Novo produto
         </Button>
       </div>
 
       <Card className="border-border/60 shadow-sm overflow-hidden rounded-2xl sm:rounded-3xl border-0 sm:border">
         <CardContent className="p-0">
-          <div className="flex flex-col border-b border-border/40 bg-muted/20 p-4 gap-4 md:flex-row md:items-center md:justify-between md:p-6">
-            <div className="relative max-w-sm flex-1">
+          <div className="flex flex-col border-b border-border/40 bg-muted/20 p-4 gap-4 lg:flex-row lg:items-center lg:justify-between lg:p-6">
+            <div className="relative w-full lg:max-w-sm">
               <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
               <Input
                 placeholder="Buscar por nome..."
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
-                  setPage(1); // Resetar para primeira página ao buscar
+                  setPage(1);
                 }}
-                className="pl-10 h-10 rounded-xl border-border/40 bg-white focus-visible:ring-primary/20 transition-all"
+                className="pl-10 h-10 w-full rounded-xl border-border/40 bg-white focus-visible:ring-primary/20 transition-all text-sm"
               />
             </div>
             
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
               <Select value={filterStatus} onValueChange={(v) => { setFilterStatus(v); setPage(1); }}>
-                <SelectTrigger className="w-[140px] h-10 rounded-xl border-border/40 bg-white">
-                  <Filter className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
-                  <SelectValue placeholder="Status" />
+                <SelectTrigger className="w-full sm:w-[130px] h-10 rounded-xl border-border/40 bg-white text-xs sm:text-sm">
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    <Filter className="h-3.5 w-3.5 shrink-0 text-muted-foreground/70" />
+                    <span className="truncate"><SelectValue placeholder="Status" /></span>
+                  </div>
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-border/40 shadow-xl shadow-black/5">
                   <SelectItem value="all">Todos Status</SelectItem>
@@ -265,8 +270,8 @@ function ProductsList() {
                   setPage(1);
                 }}
               >
-                <SelectTrigger className="w-[160px] h-10 rounded-xl border-border/40 bg-white">
-                  <SelectValue placeholder="Departamento" />
+                <SelectTrigger className="w-full sm:w-[150px] h-10 rounded-xl border-border/40 bg-white text-xs sm:text-sm">
+                  <span className="truncate"><SelectValue placeholder="Depto" /></span>
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-border/40 shadow-xl shadow-black/5">
                   <SelectItem value="all">Todos Deptos</SelectItem>
@@ -284,8 +289,8 @@ function ProductsList() {
                 }}
                 disabled={!filterDept}
               >
-                <SelectTrigger className="w-[160px] h-10 rounded-xl border-border/40 bg-white">
-                  <SelectValue placeholder={filterDept ? "Categoria" : "Escolha Depto"} />
+                <SelectTrigger className="w-full sm:w-[150px] h-10 rounded-xl border-border/40 bg-white text-xs sm:text-sm">
+                  <span className="truncate"><SelectValue placeholder={filterDept ? "Categoria" : "Escolha Depto"} /></span>
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-border/40 shadow-xl shadow-black/5">
                   <SelectItem value="all">Todas Categorias</SelectItem>
@@ -305,9 +310,9 @@ function ProductsList() {
                     setFilterStatus("all");
                     setPage(1);
                   }}
-                  className="h-10 px-3 text-xs font-semibold text-muted-foreground hover:bg-muted/80 rounded-xl transition-colors"
+                  className="h-10 px-3 text-[11px] font-bold text-muted-foreground hover:bg-muted/80 rounded-xl transition-colors col-span-2 sm:col-span-1"
                 >
-                  Limpar
+                  Limpar filtros
                 </Button>
               )}
             </div>
@@ -524,9 +529,9 @@ function ProductMobileCard({ p, store, navigate, duplicateProduct, deleteProduct
   };
 
   return (
-    <div className="p-4 flex items-center justify-between gap-3 hover:bg-muted/5 transition-colors">
-      <div className="flex items-center gap-3 min-w-0">
-        <div className="aspect-square w-16 h-16 shrink-0 overflow-hidden rounded-xl border border-border/40 bg-white p-1 shadow-sm">
+    <div className="p-3 sm:p-4 flex items-start justify-between gap-3 hover:bg-muted/5 transition-colors">
+      <div className="flex items-start gap-3 min-w-0 flex-1">
+        <div className="aspect-square w-14 h-14 sm:w-16 sm:h-16 shrink-0 overflow-hidden rounded-xl border border-border/40 bg-white p-1 shadow-sm mt-0.5">
           {cover ? (
             <img src={cover} alt={p.name} className="h-full w-full object-contain" />
           ) : (
@@ -535,28 +540,42 @@ function ProductMobileCard({ p, store, navigate, duplicateProduct, deleteProduct
             </div>
           )}
         </div>
-        <div className="flex flex-col min-w-0">
-          <span className="font-bold text-sm text-foreground truncate">{p.name}</span>
-          <span className="font-bold text-xs text-muted-foreground mt-0.5">{formatBRL(Number(p.price))}</span>
-          <div className="flex items-center gap-3 mt-2">
-            <div className="flex items-center gap-2">
+        <div className="flex flex-col min-w-0 flex-1">
+          <span className="font-bold text-sm text-foreground leading-tight line-clamp-2">{p.name}</span>
+          <span className="font-bold text-xs text-muted-foreground mt-1">{formatBRL(Number(p.price))}</span>
+          
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mt-2.5">
+            <div className="flex items-center gap-2 bg-muted/40 rounded-full pl-2 pr-3 py-1 border border-border/10">
               <Switch
                 checked={p.active}
                 onCheckedChange={handleToggle}
                 disabled={loading}
-                className="scale-75 origin-left data-[state=checked]:bg-emerald-500"
+                className="scale-[0.8] origin-left data-[state=checked]:bg-emerald-500"
               />
-              <span className={`text-[9px] font-bold uppercase tracking-wider transition-colors ${p.active ? 'text-emerald-600' : 'text-slate-400'}`}>
+              <span className={`text-[8px] sm:text-[9px] font-extrabold uppercase tracking-widest transition-colors ${p.active ? 'text-emerald-600' : 'text-slate-400'}`}>
                 {p.active ? 'Ativo' : 'Inativo'}
               </span>
             </div>
-            {p.featured && <Star className="h-3 w-3 text-amber-500 fill-amber-500" />}
-            {p.product_variants?.length > 0 && <span className="text-[9px] text-emerald-600 font-bold leading-none bg-emerald-50 px-2 py-1 rounded-full border border-emerald-100">{p.product_variants.length} var</span>}
+            
+            {p.featured && (
+              <div className="flex items-center gap-1 bg-amber-50 rounded-full px-2 py-0.5 border border-amber-100">
+                <Star className="h-2.5 w-2.5 text-amber-500 fill-amber-500" />
+                <span className="text-[8px] sm:text-[9px] font-extrabold text-amber-600 uppercase tracking-widest">Destaque</span>
+              </div>
+            )}
+            
+            {p.product_variants?.length > 0 && (
+              <span className="text-[8px] sm:text-[9px] text-emerald-600 font-extrabold uppercase tracking-widest bg-emerald-50 px-2 py-1 rounded-full border border-emerald-100">
+                {p.product_variants.length} var
+              </span>
+            )}
           </div>
         </div>
       </div>
       
-      <ProductActions p={p} store={store} navigate={navigate} duplicateProduct={duplicateProduct} deleteProduct={deleteProduct} />
+      <div className="flex flex-col justify-between items-end h-full py-0.5">
+        <ProductActions p={p} store={store} navigate={navigate} duplicateProduct={duplicateProduct} deleteProduct={deleteProduct} />
+      </div>
     </div>
   );
 }
