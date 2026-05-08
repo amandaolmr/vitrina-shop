@@ -291,6 +291,37 @@ function StorefrontPage() {
           )}
         </section>
       </div>
+
+      <Dialog open={!!viewAllCategory} onOpenChange={(open) => !open && setViewAllCategory(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0 rounded-2xl sm:rounded-2xl border-none shadow-2xl">
+          <DialogHeader className="p-6 border-b bg-white shrink-0">
+            <DialogTitle className="text-xl font-bold flex items-center justify-between">
+              {viewAllCategory?.name}
+              <span className="ml-2 text-xs font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                {viewAllCategory && productsByCategory.get(viewAllCategory.id)?.length} produtos
+              </span>
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-50/50">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+              {viewAllCategory && productsByCategory.get(viewAllCategory.id)?.map((p: any) => (
+                <ProductCard key={p.id} p={p} slug={store.slug} />
+              ))}
+            </div>
+          </div>
+          
+          <div className="p-4 border-t bg-white shrink-0 text-center sm:hidden">
+            <Button 
+              variant="ghost" 
+              className="w-full text-emerald-600 font-bold hover:bg-emerald-50 hover:text-emerald-700"
+              onClick={() => setViewAllCategory(null)}
+            >
+              Fechar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </main>
   );
 }
