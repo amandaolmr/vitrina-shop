@@ -200,7 +200,7 @@ function StorefrontPage() {
                 ref={(el) => {
                   scrollContainerRef.current["featured"] = el;
                 }}
-                className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-thin -mx-4 px-4"
+                className="flex gap-4 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory scrollbar-thin -mx-4 px-4"
                 style={{ scrollbarWidth: "auto" }}
               >
                 {featured.map((p: any) => (
@@ -268,7 +268,7 @@ function StorefrontPage() {
                         ref={(el) => {
                           scrollContainerRef.current[`cat-${categoryId}`] = el;
                         }}
-                        className="flex gap-3 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-thin -mx-4 px-4"
+                        className="flex gap-4 overflow-x-auto pb-6 pt-2 snap-x snap-mandatory scrollbar-thin -mx-4 px-4"
                         style={{ scrollbarWidth: "auto" }}
                       >
                         {categoryProducts.map((p: any) => (
@@ -303,8 +303,8 @@ function StorefrontPage() {
             </DialogTitle>
           </DialogHeader>
           
-          <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-50/50">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+          <div className="flex-1 overflow-y-auto p-4 sm:p-8 bg-slate-50">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
               {viewAllCategory && productsByCategory.get(viewAllCategory.id)?.map((p: any) => (
                 <ProductCard key={p.id} p={p} slug={store.slug} />
               ))}
@@ -337,15 +337,15 @@ function ProductCard({ p, slug }: { p: any; slug: string }) {
     <Link
       to="/loja/$slug/produto/$productId"
       params={{ slug, productId: p.id }}
-      className="group relative flex flex-col overflow-hidden rounded-xl bg-card transition hover:shadow-md"
+      className="group relative flex flex-col overflow-hidden rounded-2xl bg-white p-2 transition-all duration-300 shadow-sm hover:shadow-xl hover:-translate-y-1 border border-slate-100/50"
     >
-      <div className="aspect-[4/5] overflow-hidden bg-white rounded-xl flex items-center justify-center">
+      <div className="aspect-[4/5] overflow-hidden bg-slate-50 rounded-xl flex items-center justify-center relative">
         {cover ? (
           <img
             src={cover}
             alt={p.name}
             loading="lazy"
-            className="h-full w-full object-contain p-2 transition group-hover:scale-105"
+            className="h-full w-full object-contain p-2 transition-transform duration-500 group-hover:scale-110"
           />
         ) : (
           <div className="grid h-full w-full place-items-center text-xs text-muted-foreground">
@@ -353,22 +353,22 @@ function ProductCard({ p, slug }: { p: any; slug: string }) {
           </div>
         )}
       </div>
-      <div className="p-3">
-        <h3 className="line-clamp-2 text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+      <div className="p-2 sm:p-3 flex flex-col flex-1">
+        <h3 className="line-clamp-2 text-sm font-semibold text-slate-800 leading-tight group-hover:text-emerald-600 transition-colors">
           {p.name}
         </h3>
-        <div className="mt-2 flex flex-col gap-0.5">
+        <div className="mt-auto pt-3 flex flex-col gap-0.5">
           {hasDiscount && (
-            <span className="text-[10px] text-muted-foreground line-through decoration-muted-foreground/50">
+            <span className="text-[10px] sm:text-xs text-slate-400 line-through decoration-slate-300">
               {formatBRL(comparePrice)}
             </span>
           )}
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="font-bold text-foreground">
+            <span className="font-bold text-base sm:text-lg text-slate-900 tracking-tight">
               {formatBRL(price)}
             </span>
             {hasDiscount && (
-              <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">
+              <span className="text-[10px] sm:text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full border border-emerald-100/50">
                 {discountPercent}% OFF
               </span>
             )}
