@@ -143,29 +143,8 @@ function ProductsList() {
     return (categories ?? []).filter((c: any) => c.parent_id === filterDept);
   }, [categories, filterDept]);
 
-  const filteredProducts = useMemo(() => {
-    if (!products) return [];
-
-    return products.filter((p: any) => {
-      // Filtro por busca
-      if (search && !p.name.toLowerCase().includes(search.toLowerCase())) return false;
-
-      // Filtro por status
-      if (filterStatus === "active" && !p.active) return false;
-      if (filterStatus === "inactive" && p.active) return false;
-      if (filterStatus === "featured" && !p.featured) return false;
-
-      // Filtro por categoria
-      if (filterCat) {
-        if (p.category_id !== filterCat) return false;
-      } else if (filterDept) {
-        const productCategory = (categories ?? []).find((c: any) => c.id === p.category_id);
-        if (!productCategory || productCategory.parent_id !== filterDept) return false;
-      }
-
-      return true;
-    });
-  }, [products, search, filterDept, filterCat, filterStatus, categories]);
+  // Os produtos já vêm filtrados do backend agora
+  const filteredProducts = products;
 
   async function createProduct() {
     if (!store) return;
