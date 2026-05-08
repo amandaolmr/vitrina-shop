@@ -80,6 +80,20 @@ function ProductEditor() {
     },
   });
 
+  const { data: store } = useQuery({
+    queryKey: ["admin-store", product?.store_id],
+    enabled: !!product?.store_id,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("stores")
+        .select("*")
+        .eq("id", product!.store_id)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const { data: cats } = useQuery({
     queryKey: ["cats-for-product", product?.store_id],
     enabled: !!product?.store_id,
