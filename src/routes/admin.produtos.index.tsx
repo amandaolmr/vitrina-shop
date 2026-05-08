@@ -193,6 +193,22 @@ function ProductsList() {
     navigate({ to: "/admin/produtos/$id", params: { id: newProduct.id } });
   }
 
+  async function toggleStatus(product: any) {
+    const nextStatus = !product.active;
+    const { error } = await supabase
+      .from("products")
+      .update({ active: nextStatus })
+      .eq("id", product.id);
+
+    if (error) {
+      toast.error("Erro ao atualizar status");
+      return;
+    }
+
+    toast.success(nextStatus ? "Produto ativado" : "Produto desativado");
+    refetch();
+  }
+
   if (!store && !user) return null; // Let AdminLayout handle auth redirect
   
   if (!store) return <div className="grid min-h-[50vh] place-items-center text-muted-foreground">Carregando loja…</div>;
