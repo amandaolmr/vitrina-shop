@@ -37,7 +37,6 @@ function NewProduct() {
     active: true,
     featured: false,
     has_variations: false,
-    active: true,
   });
 
   const { data: store } = useQuery({
