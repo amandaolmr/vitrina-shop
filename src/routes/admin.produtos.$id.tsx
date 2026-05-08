@@ -630,15 +630,14 @@ function VariantsEditor({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <Label className="text-base font-semibold">Cores e estoque</Label>
+        <Label className="text-base font-semibold">Cores e Grade</Label>
       </div>
 
       <AddColorInput onAdd={addColor} existing={colors} />
 
       {colors.length === 0 && (
         <p className="text-sm text-muted-foreground">
-          Cadastre as cores disponíveis. Para cada cor, escolha os tamanhos e informe a quantidade
-          em estoque.
+          Cadastre as cores disponíveis. Para cada cor, escolha os tamanhos da grade.
         </p>
       )}
 
