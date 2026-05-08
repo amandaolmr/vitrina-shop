@@ -25,8 +25,24 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { ArrowLeft, Plus, Trash2 } from "lucide-react";
+import { 
+  ArrowLeft, 
+  Plus, 
+  Trash2, 
+  Save, 
+  Copy, 
+  ExternalLink,
+  ChevronRight,
+  Package,
+  Image as ImageIcon,
+  Settings,
+  Tag,
+  BadgeDollarSign
+} from "lucide-react";
 import { toast } from "sonner";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/admin/produtos/$id")({
   component: ProductEditor,
