@@ -360,7 +360,7 @@ function ProductsList() {
               </div>
             ) : (
               products.map((p: any) => (
-                <ProductMobileCard key={p.id} p={p} store={store} navigate={navigate} duplicateProduct={duplicateProduct} deleteProduct={deleteProduct} />
+                <ProductMobileCard key={p.id} p={p} store={store} navigate={navigate} duplicateProduct={duplicateProduct} deleteProduct={deleteProduct} toggleStatus={toggleStatus} />
               ))
             )}
           </div>
