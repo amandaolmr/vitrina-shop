@@ -582,7 +582,7 @@ function VariantsEditor({
   function addColor(name: string) {
     const color = name.trim();
     if (!color || colors.includes(color)) return;
-    setVariants([...variants, { size: "", color, numbering: "", stock: 0 }]);
+    setVariants([...variants, { size: "", color, numbering: "" }]);
     setNewColorAdded(color);
   }
 
