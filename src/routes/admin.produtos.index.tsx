@@ -197,18 +197,18 @@ function ProductsList() {
   if (!store) return <div className="grid min-h-[50vh] place-items-center text-muted-foreground">Carregando loja…</div>;
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between px-1">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-foreground">Produtos</h1>
-          <p className="text-sm text-muted-foreground mt-1">Gerencie seu inventário e catálogo de produtos.</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">Produtos</h1>
+          <p className="hidden sm:block text-sm text-muted-foreground mt-1">Gerencie seu inventário e catálogo de produtos.</p>
         </div>
-        <Button onClick={createProduct} className="rounded-xl font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98]">
+        <Button onClick={createProduct} className="rounded-xl font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98] w-full sm:w-auto h-12 sm:h-10">
           <Plus className="mr-2 h-4 w-4" /> Novo produto
         </Button>
       </div>
 
-      <Card className="border-border/60 shadow-sm overflow-hidden rounded-2xl">
+      <Card className="border-border/60 shadow-sm overflow-hidden rounded-2xl sm:rounded-3xl border-0 sm:border">
         <CardContent className="p-0">
           <div className="flex flex-col border-b border-border/40 bg-muted/20 p-4 gap-4 md:flex-row md:items-center md:justify-between md:p-6">
             <div className="relative max-w-sm flex-1">
