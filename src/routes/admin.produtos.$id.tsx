@@ -214,8 +214,8 @@ function ProductEditor() {
     }
 
     setBusy(false);
-    toast.success("Produto salvo");
-    refetch();
+    toast.success("Produto atualizado com sucesso!");
+    navigate({ to: "/admin/produtos" });
   }
 
   async function remove() {

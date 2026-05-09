@@ -93,8 +93,8 @@ function NewProduct() {
       return toast.error(error.message);
     }
 
-    toast.success("Produto criado! Agora adicione imagens e variações.");
-    navigate({ to: "/admin/produtos/$id", params: { id: product.id } });
+    toast.success("Produto criado com sucesso!");
+    navigate({ to: "/admin/produtos" });
   }
 
   if (!store) return null;
