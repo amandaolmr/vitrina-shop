@@ -76,7 +76,7 @@ export function StoreHeader({ store }: { store: any }) {
                 variant="ghost" 
                 size="icon" 
                 onClick={openInstagram}
-                className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 transition-all scale-[0.85] sm:scale-100"
+                className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 transition-all duration-300 active:scale-90 hover:scale-110 sm:scale-100 scale-90 cursor-pointer active:bg-slate-200/60"
                 title="Instagram"
               >
                 <Instagram className="h-5 w-5" />
@@ -88,7 +88,7 @@ export function StoreHeader({ store }: { store: any }) {
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 transition-all scale-[0.85] sm:scale-100"
+                  className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 transition-all duration-300 active:scale-90 hover:scale-110 sm:scale-100 scale-90 cursor-pointer active:bg-slate-200/60"
                   title="Informações"
                 >
                   <Info className="h-5 w-5" />
@@ -167,7 +167,7 @@ export function StoreHeader({ store }: { store: any }) {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 transition-all relative scale-[0.85] sm:scale-100"
+              className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 transition-all duration-300 active:scale-90 hover:scale-110 relative sm:scale-100 scale-90 cursor-pointer active:bg-slate-200/60"
               title="Favoritos"
             >
               <Heart className="h-5 w-5" />
@@ -186,7 +186,7 @@ export function StoreHeader({ store }: { store: any }) {
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 transition-all scale-[0.85] sm:scale-100"
+                className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 transition-all duration-300 active:scale-90 hover:scale-110 sm:scale-100 scale-90 cursor-pointer active:bg-slate-200/60"
                 title="Carrinho"
                 asChild
               >
