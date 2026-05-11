@@ -244,10 +244,10 @@ function StorefrontPage() {
                 ref={(el) => {
                   scrollContainerRef.current["featured"] = el;
                 }}
-                className="flex gap-6 overflow-x-auto pb-8 pt-2 snap-x snap-mandatory scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0"
+                className="flex gap-3 sm:gap-6 overflow-x-auto pb-8 pt-2 snap-x snap-mandatory scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0"
               >
                 {featured.map((p: any) => (
-                  <div key={p.id} className="flex-none w-[75%] sm:w-[45%] md:w-[30%] lg:w-[23%] snap-start">
+                  <div key={p.id} className="flex-none w-[44%] sm:w-[45%] md:w-[30%] lg:w-[23%] snap-start">
                     <ProductCard p={p} slug={store.slug} />
                   </div>
                 ))}
@@ -299,12 +299,12 @@ function StorefrontPage() {
                           ref={(el) => {
                             scrollContainerRef.current[`cat-${categoryId}`] = el;
                           }}
-                          className="flex gap-6 overflow-x-auto pb-8 pt-2 snap-x snap-mandatory scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0"
+                          className="flex gap-3 sm:gap-6 overflow-x-auto pb-8 pt-2 snap-x snap-mandatory scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0"
                         >
                           {categoryProducts.map((p: any) => (
                             <div
                               key={p.id}
-                              className="flex-none w-[75%] sm:w-[45%] md:w-[30%] lg:w-[23%] snap-start"
+                              className="flex-none w-[44%] sm:w-[45%] md:w-[30%] lg:w-[23%] snap-start"
                             >
                               <ProductCard p={p} slug={store.slug} />
                             </div>
@@ -357,7 +357,7 @@ function StorefrontPage() {
             </DialogHeader>
             
             <div className="flex-1 overflow-y-auto p-6 sm:p-12 bg-slate-50/50">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-10">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-10">
                 {viewAllCategory && productsByCategory.get(viewAllCategory.id)?.map((p: any) => (
                   <ProductCard key={p.id} p={p} slug={store.slug} />
                 ))}
