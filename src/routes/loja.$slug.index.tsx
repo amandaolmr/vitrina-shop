@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { ProductCard } from "@/components/ProductCard";
 import { StoreBanner } from "@/components/StoreBanner";
+import { ShippingBanner } from "@/components/ShippingBanner";
 
 export const Route = createFileRoute("/loja/$slug/")({
   component: StorefrontPage,
@@ -122,6 +123,7 @@ function StorefrontPage() {
   return (
     <div className="min-h-screen bg-slate-50/30 pb-20 font-sans">
       <main>
+        <ShippingBanner />
         <StoreBanner />
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
