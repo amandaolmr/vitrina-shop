@@ -26,7 +26,7 @@ function Landing() {
             <a href={`https://api.whatsapp.com/send?phone=5583994043126&text=${encodeURIComponent("Ola! Gostaria mais de saber sobre a plataforma de vitrine online!")}`} target="_blank" rel="noopener noreferrer">
               <Button size="sm" className="gap-2 hover:scale-105 transition-all duration-300">
                 <MessageCircle className="h-4 w-4" />
-                Falar no WhatsApp
+                Fale Conosco
               </Button>
             </a>
           </nav>
@@ -48,7 +48,7 @@ function Landing() {
             <a href={`https://api.whatsapp.com/send?phone=5583994043126&text=${encodeURIComponent("Ola! Gostaria mais de saber sobre a plataforma de vitrine online!")}`} target="_blank" rel="noopener noreferrer">
               <Button size="lg" className="gap-2 px-8 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-95">
                 <MessageCircle className="h-5 w-5" />
-                Falar no WhatsApp
+                Fale Conosco
               </Button>
             </a>
             <a href="#features"><Button size="lg" variant="outline">Como funciona</Button></a>
