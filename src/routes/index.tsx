@@ -45,7 +45,12 @@ function Landing() {
             Cadastre produtos com cores, tamanhos e numeração. Compartilhe um link e receba pedidos direto no WhatsApp.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link to="/auth"><Button size="lg">Começar agora</Button></Link>
+            <a href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer">
+              <Button size="lg" className="gap-2 px-8 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-95">
+                <MessageCircle className="h-5 w-5" />
+                Falar no WhatsApp
+              </Button>
+            </a>
             <a href="#features"><Button size="lg" variant="outline">Como funciona</Button></a>
           </div>
         </div>
