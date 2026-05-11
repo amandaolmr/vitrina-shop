@@ -70,7 +70,7 @@ export function StoreHeader({ store }: { store: any }) {
           </Link>
 
           {/* Right Icons */}
-          <div className="flex items-center gap-0 sm:gap-2 shrink-0">
+          <div className="flex items-center gap-0.5 sm:gap-2 shrink-0">
             {store.instagram && (
               <Button 
                 variant="ghost" 
