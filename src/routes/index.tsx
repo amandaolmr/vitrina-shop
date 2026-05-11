@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, Smartphone, Zap, Layers } from "lucide-react";
+import { ShoppingBag, Smartphone, Zap, Layers, MessageCircle } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
