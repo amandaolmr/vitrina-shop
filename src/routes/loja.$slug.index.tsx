@@ -247,7 +247,7 @@ function StorefrontPage() {
                 className="flex gap-3 sm:gap-6 overflow-x-auto pb-8 pt-2 snap-x snap-mandatory scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0"
               >
                 {featured.map((p: any) => (
-                  <div key={p.id} className="flex-none w-[44%] xs:w-[45%] sm:w-[45%] md:w-[30%] lg:w-[23%] snap-start">
+                  <div key={p.id} className="flex-none w-[46%] sm:w-[45%] md:w-[30%] lg:w-[23%] snap-start">
                     <ProductCard p={p} slug={store.slug} />
                   </div>
                 ))}
@@ -304,7 +304,7 @@ function StorefrontPage() {
                           {categoryProducts.map((p: any) => (
                             <div
                               key={p.id}
-                              className="flex-none w-[44%] xs:w-[45%] sm:w-[45%] md:w-[30%] lg:w-[23%] snap-start"
+                              className="flex-none w-[46%] sm:w-[45%] md:w-[30%] lg:w-[23%] snap-start"
                             >
                               <ProductCard p={p} slug={store.slug} />
                             </div>
