@@ -23,7 +23,12 @@ function Landing() {
           </Link>
           <nav className="flex items-center gap-2">
             <Link to="/auth"><Button variant="ghost" size="sm">Entrar</Button></Link>
-            <Link to="/auth"><Button size="sm">Criar loja grátis</Button></Link>
+            <a href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer">
+              <Button size="sm" className="gap-2 hover:scale-105 transition-all duration-300">
+                <MessageCircle className="h-4 w-4" />
+                Falar no WhatsApp
+              </Button>
+            </a>
           </nav>
         </div>
       </header>
