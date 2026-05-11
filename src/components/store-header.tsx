@@ -29,7 +29,7 @@ export function StoreHeader({ store }: { store: any }) {
     if (clean.length === 10 || clean.length === 11) {
       clean = "55" + clean;
     }
-    window.open(`https://api.whatsapp.com/send/?phone=${clean}&text&type=phone_number&app_absent=0`, "_blank");
+    window.open(`https://api.whatsapp.com/send?phone=${clean}`, "_blank");
   }
 
   function openInstagram() {
