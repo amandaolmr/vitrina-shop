@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { ProductCard } from "@/components/ProductCard";
 import { StoreBanner } from "@/components/StoreBanner";
-import { ShippingBanner } from "@/components/ShippingBanner";
+import { StoreFilters } from "@/components/StoreFilters";
 
 export const Route = createFileRoute("/loja/$slug/")({
   component: StorefrontPage,
