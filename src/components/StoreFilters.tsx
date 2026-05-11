@@ -28,6 +28,16 @@ export function StoreFilters({
   const deptScrollRef = useRef<HTMLDivElement>(null);
   const catScrollRef = useRef<HTMLDivElement>(null);
 
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 200);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const getCategoryIcon = (name: string) => {
     const lowerName = name.toLowerCase();
     if (lowerName.includes("masculino") || lowerName.includes("homem")) return <UserIcon className="h-4 w-4" />;
@@ -37,8 +47,10 @@ export function StoreFilters({
   };
 
   return (
-    <div className="sticky top-[72px] z-40 w-full bg-white/80 backdrop-blur-xl border-b border-slate-100 shadow-sm transition-all duration-300">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 space-y-4">
+    <div className={`sticky top-[72px] z-40 w-full transition-all duration-300 border-b border-slate-100 ${
+      isScrolled ? "sticky-filters-active py-2" : "bg-white py-4"
+    }`}>
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-3 sm:space-y-4">
         {/* Departments - Pill Tabs */}
         <div 
           ref={deptScrollRef}
