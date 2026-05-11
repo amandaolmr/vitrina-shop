@@ -23,7 +23,7 @@ function Landing() {
           </Link>
           <nav className="flex items-center gap-2">
             <Link to="/auth"><Button variant="ghost" size="sm">Entrar</Button></Link>
-            <a href="https://api.whatsapp.com/send/?phone=5583994043126&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
+            <a href="https://api.whatsapp.com/send?phone=5583994043126" target="_blank" rel="noopener noreferrer">
               <Button size="sm" className="gap-2 hover:scale-105 transition-all duration-300">
                 <MessageCircle className="h-4 w-4" />
                 Falar no WhatsApp
