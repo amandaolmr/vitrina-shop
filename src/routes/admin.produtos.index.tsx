@@ -3,14 +3,14 @@ import { useAuth } from "@/lib/auth-context";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { 
-  Plus, 
-  Search, 
-  MoreHorizontal, 
-  Pencil, 
-  Trash2, 
-  Copy, 
-  Eye, 
+import {
+  Plus,
+  Search,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+  Copy,
+  Eye,
   Filter,
   Package,
   Star,
@@ -18,7 +18,7 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  Loader2
+  Loader2,
 } from "lucide-react";
 import { formatBRL } from "@/lib/format";
 import { useMemo, useState } from "react";
@@ -63,7 +63,7 @@ function ProductsList() {
   const [filterDept, setFilterDept] = useState<string>("");
   const [filterCat, setFilterCat] = useState<string>("");
   const [filterStatus, setFilterStatus] = useState<string>("all");
-  
+
   // Paginação
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -72,7 +72,11 @@ function ProductsList() {
     queryKey: ["my-store", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase.from("stores").select("*").eq("owner_id", user!.id).maybeSingle();
+      const { data, error } = await supabase
+        .from("stores")
+        .select("*")
+        .eq("owner_id", user!.id)
+        .maybeSingle();
       if (error) throw error;
       return data;
     },
@@ -91,8 +95,22 @@ function ProductsList() {
     },
   });
 
-  const { data: productsData, refetch, isPlaceholderData, isLoading } = useQuery({
-    queryKey: ["admin-products", store?.id, page, pageSize, search, filterDept, filterCat, filterStatus],
+  const {
+    data: productsData,
+    refetch,
+    isPlaceholderData,
+    isLoading,
+  } = useQuery({
+    queryKey: [
+      "admin-products",
+      store?.id,
+      page,
+      pageSize,
+      search,
+      filterDept,
+      filterCat,
+      filterStatus,
+    ],
     enabled: !!store,
     placeholderData: (previousData) => previousData,
     queryFn: async () => {
@@ -106,7 +124,7 @@ function ProductsList() {
       if (filterStatus === "active") query = query.eq("active", true);
       if (filterStatus === "inactive") query = query.eq("active", false);
       if (filterStatus === "featured") query = query.eq("featured", true);
-      
+
       if (filterCat) {
         query = query.eq("category_id", filterCat);
       } else if (filterDept) {
@@ -178,15 +196,15 @@ function ProductsList() {
       .single();
 
     if (error) return toast.error(error.message);
-    
+
     // Copiar imagens
     if (product.product_images?.length) {
       await supabase.from("product_images").insert(
         product.product_images.map((img: any) => ({
           product_id: newProduct.id,
           url: img.url,
-          position: img.position
-        }))
+          position: img.position,
+        })),
       );
     }
 
@@ -212,18 +230,27 @@ function ProductsList() {
   }
 
   if (!store && !user) return null; // Let AdminLayout handle auth redirect
-  
-  if (!store) return <div className="grid min-h-[50vh] place-items-center text-muted-foreground">Carregando loja…</div>;
+
+  if (!store)
+    return (
+      <div className="grid min-h-[50vh] place-items-center text-muted-foreground">
+        Carregando loja…
+      </div>
+    );
 
   return (
     <div className="space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 px-1 sm:px-0">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-2 sm:px-1">
         <div>
-          <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight text-foreground">Produtos</h1>
-          <p className="hidden sm:block text-sm text-muted-foreground mt-1">Gerencie seu inventário e catálogo de produtos.</p>
+          <h1 className="text-xl sm:text-3xl font-extrabold tracking-tight text-foreground">
+            Produtos
+          </h1>
+          <p className="hidden sm:block text-sm text-muted-foreground mt-1">
+            Gerencie seu inventário e catálogo de produtos.
+          </p>
         </div>
-        <Button 
-          onClick={createProduct} 
+        <Button
+          onClick={createProduct}
           className="rounded-xl font-bold shadow-lg shadow-primary/10 transition-all active:scale-[0.98] w-full sm:w-auto h-10 px-4 text-xs sm:text-sm"
         >
           <Plus className="mr-1.5 h-3.5 w-3.5" /> Novo produto
@@ -245,13 +272,21 @@ function ProductsList() {
                 className="pl-10 h-10 w-full rounded-xl border-border/40 bg-white focus-visible:ring-primary/20 transition-all text-sm"
               />
             </div>
-            
+
             <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
-              <Select value={filterStatus} onValueChange={(v) => { setFilterStatus(v); setPage(1); }}>
+              <Select
+                value={filterStatus}
+                onValueChange={(v) => {
+                  setFilterStatus(v);
+                  setPage(1);
+                }}
+              >
                 <SelectTrigger className="w-full sm:w-[130px] h-10 rounded-xl border-border/40 bg-white text-xs sm:text-sm">
                   <div className="flex items-center gap-2 overflow-hidden">
                     <Filter className="h-3.5 w-3.5 shrink-0 text-muted-foreground/70" />
-                    <span className="truncate"><SelectValue placeholder="Status" /></span>
+                    <span className="truncate">
+                      <SelectValue placeholder="Status" />
+                    </span>
                   </div>
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-border/40 shadow-xl shadow-black/5">
@@ -271,12 +306,16 @@ function ProductsList() {
                 }}
               >
                 <SelectTrigger className="w-full sm:w-[150px] h-10 rounded-xl border-border/40 bg-white text-xs sm:text-sm">
-                  <span className="truncate"><SelectValue placeholder="Depto" /></span>
+                  <span className="truncate">
+                    <SelectValue placeholder="Depto" />
+                  </span>
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-border/40 shadow-xl shadow-black/5">
                   <SelectItem value="all">Todos Deptos</SelectItem>
                   {departments.map((d: any) => (
-                    <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+                    <SelectItem key={d.id} value={d.id}>
+                      {d.name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -290,19 +329,23 @@ function ProductsList() {
                 disabled={!filterDept}
               >
                 <SelectTrigger className="w-full sm:w-[150px] h-10 rounded-xl border-border/40 bg-white text-xs sm:text-sm">
-                  <span className="truncate"><SelectValue placeholder={filterDept ? "Categoria" : "Escolha Depto"} /></span>
+                  <span className="truncate">
+                    <SelectValue placeholder={filterDept ? "Categoria" : "Escolha Depto"} />
+                  </span>
                 </SelectTrigger>
                 <SelectContent className="rounded-xl border-border/40 shadow-xl shadow-black/5">
                   <SelectItem value="all">Todas Categorias</SelectItem>
                   {subcategories.map((c: any) => (
-                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.name}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
 
               {(filterDept || filterCat || filterStatus !== "all" || search) && (
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   onClick={() => {
                     setSearch("");
                     setFilterDept("");
@@ -323,11 +366,21 @@ function ProductsList() {
             <Table>
               <TableHeader className="bg-muted/10">
                 <TableRow className="border-border/40 hover:bg-transparent">
-                  <TableHead className="w-[80px] py-4 font-bold text-[11px] uppercase tracking-wider">Imagem</TableHead>
-                  <TableHead className="py-4 font-bold text-[11px] uppercase tracking-wider">Produto</TableHead>
-                  <TableHead className="py-4 font-bold text-[11px] uppercase tracking-wider">Preço</TableHead>
-                  <TableHead className="py-4 font-bold text-[11px] uppercase tracking-wider">Status</TableHead>
-                  <TableHead className="text-right py-4 font-bold text-[11px] uppercase tracking-wider">Ações</TableHead>
+                  <TableHead className="w-[80px] py-4 font-bold text-[11px] uppercase tracking-wider">
+                    Imagem
+                  </TableHead>
+                  <TableHead className="py-4 font-bold text-[11px] uppercase tracking-wider">
+                    Produto
+                  </TableHead>
+                  <TableHead className="w-[120px] py-4 font-bold text-[11px] uppercase tracking-wider">
+                    Preço
+                  </TableHead>
+                  <TableHead className="w-[140px] py-4 font-bold text-[11px] uppercase tracking-wider">
+                    Status
+                  </TableHead>
+                  <TableHead className="w-[80px] text-right py-4 font-bold text-[11px] uppercase tracking-wider">
+                    Ações
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -358,7 +411,15 @@ function ProductsList() {
                   </TableRow>
                 ) : (
                   products.map((p: any) => (
-                    <ProductRow key={p.id} p={p} store={store} navigate={navigate} duplicateProduct={duplicateProduct} deleteProduct={deleteProduct} toggleStatus={toggleStatus} />
+                    <ProductRow
+                      key={p.id}
+                      p={p}
+                      store={store}
+                      navigate={navigate}
+                      duplicateProduct={duplicateProduct}
+                      deleteProduct={deleteProduct}
+                      toggleStatus={toggleStatus}
+                    />
                   ))
                 )}
               </TableBody>
@@ -386,7 +447,15 @@ function ProductsList() {
               </div>
             ) : (
               products.map((p: any) => (
-                <ProductMobileCard key={p.id} p={p} store={store} navigate={navigate} duplicateProduct={duplicateProduct} deleteProduct={deleteProduct} toggleStatus={toggleStatus} />
+                <ProductMobileCard
+                  key={p.id}
+                  p={p}
+                  store={store}
+                  navigate={navigate}
+                  duplicateProduct={duplicateProduct}
+                  deleteProduct={deleteProduct}
+                  toggleStatus={toggleStatus}
+                />
               ))
             )}
           </div>
@@ -395,9 +464,14 @@ function ProductsList() {
           {totalPages > 1 && (
             <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-4 md:px-6 bg-muted/10 border-t border-border/40 gap-4">
               <div className="text-xs font-medium text-muted-foreground order-2 sm:order-1">
-                Mostrando <span className="text-foreground">{Math.min(totalCount, (page - 1) * pageSize + 1)}</span> até <span className="text-foreground">{Math.min(totalCount, page * pageSize)}</span> de <span className="text-foreground">{totalCount}</span> produtos
+                Mostrando{" "}
+                <span className="text-foreground">
+                  {Math.min(totalCount, (page - 1) * pageSize + 1)}
+                </span>{" "}
+                até <span className="text-foreground">{Math.min(totalCount, page * pageSize)}</span>{" "}
+                de <span className="text-foreground">{totalCount}</span> produtos
               </div>
-              
+
               <div className="flex items-center gap-1 order-1 sm:order-2">
                 <Button
                   variant="outline"
@@ -417,7 +491,7 @@ function ProductsList() {
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                
+
                 <div className="flex items-center gap-1 px-2">
                   <span className="text-xs font-bold text-foreground">{page}</span>
                   <span className="text-xs text-muted-foreground">/</span>
@@ -443,7 +517,13 @@ function ProductsList() {
                   <ChevronsRight className="h-4 w-4" />
                 </Button>
 
-                <Select value={pageSize.toString()} onValueChange={(v) => { setPageSize(Number(v)); setPage(1); }}>
+                <Select
+                  value={pageSize.toString()}
+                  onValueChange={(v) => {
+                    setPageSize(Number(v));
+                    setPage(1);
+                  }}
+                >
                   <SelectTrigger className="h-8 w-[70px] ml-2 text-xs rounded-lg">
                     <SelectValue />
                   </SelectTrigger>
@@ -465,7 +545,7 @@ function ProductsList() {
 function ProductRow({ p, store, navigate, duplicateProduct, deleteProduct, toggleStatus }: any) {
   const cover = p.product_images?.sort((a: any, b: any) => a.position - b.position)[0]?.url;
   const [loading, setLoading] = useState(false);
-  
+
   const handleToggle = async () => {
     setLoading(true);
     await toggleStatus(p);
@@ -487,7 +567,9 @@ function ProductRow({ p, store, navigate, duplicateProduct, deleteProduct, toggl
       </TableCell>
       <TableCell className="py-4">
         <div className="flex flex-col max-w-[250px]">
-          <span className="font-bold text-sm text-foreground group-hover:text-primary transition-colors truncate">{p.name}</span>
+          <span className="font-bold text-sm text-foreground group-hover:text-primary transition-colors truncate">
+            {p.name}
+          </span>
           {p.product_variants?.length > 0 && (
             <span className="text-[10px] font-medium text-emerald-600 mt-1">
               {p.product_variants.length} variações
@@ -495,33 +577,50 @@ function ProductRow({ p, store, navigate, duplicateProduct, deleteProduct, toggl
           )}
         </div>
       </TableCell>
-      <TableCell className="py-4">
-        <span className="font-bold text-sm text-foreground">{formatBRL(Number(p.price))}</span>
+      <TableCell className="py-4 w-[120px]">
+        <span className="font-bold text-sm text-foreground whitespace-nowrap">
+          {formatBRL(Number(p.price))}
+        </span>
       </TableCell>
-      <TableCell className="py-4">
-        <div className="flex items-center gap-2">
+      <TableCell className="py-4 w-[140px]">
+        <div className="flex items-center gap-2 whitespace-nowrap">
           <Switch
             checked={p.active}
             onCheckedChange={handleToggle}
             disabled={loading}
-            className="data-[state=checked]:bg-emerald-500"
+            className="data-[state=checked]:bg-emerald-500 shrink-0"
           />
-          <span className={`text-[10px] font-bold uppercase tracking-wider transition-colors ${p.active ? 'text-emerald-600' : 'text-slate-400'}`}>
-            {loading ? '...' : p.active ? 'Ativo' : 'Inativo'}
+          <span
+            className={`text-[10px] font-bold uppercase tracking-wider transition-colors ${p.active ? "text-emerald-600" : "text-slate-400"}`}
+          >
+            {loading ? "..." : p.active ? "Ativo" : "Inativo"}
           </span>
         </div>
       </TableCell>
       <TableCell className="text-right py-4">
-        <ProductActions p={p} store={store} navigate={navigate} duplicateProduct={duplicateProduct} deleteProduct={deleteProduct} />
+        <ProductActions
+          p={p}
+          store={store}
+          navigate={navigate}
+          duplicateProduct={duplicateProduct}
+          deleteProduct={deleteProduct}
+        />
       </TableCell>
     </TableRow>
   );
 }
 
-function ProductMobileCard({ p, store, navigate, duplicateProduct, deleteProduct, toggleStatus }: any) {
+function ProductMobileCard({
+  p,
+  store,
+  navigate,
+  duplicateProduct,
+  deleteProduct,
+  toggleStatus,
+}: any) {
   const cover = p.product_images?.sort((a: any, b: any) => a.position - b.position)[0]?.url;
   const [loading, setLoading] = useState(false);
-  
+
   const handleToggle = async () => {
     setLoading(true);
     await toggleStatus(p);
@@ -541,9 +640,13 @@ function ProductMobileCard({ p, store, navigate, duplicateProduct, deleteProduct
           )}
         </div>
         <div className="flex flex-col min-w-0 flex-1">
-          <span className="font-bold text-sm text-foreground leading-tight line-clamp-2">{p.name}</span>
-          <span className="font-bold text-xs text-muted-foreground mt-1">{formatBRL(Number(p.price))}</span>
-          
+          <span className="font-bold text-sm text-foreground leading-tight line-clamp-2">
+            {p.name}
+          </span>
+          <span className="font-bold text-xs text-muted-foreground mt-1">
+            {formatBRL(Number(p.price))}
+          </span>
+
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mt-2.5">
             <div className="flex items-center gap-2 bg-muted/40 rounded-full pl-2 pr-3 py-1 border border-border/10">
               <Switch
@@ -552,18 +655,22 @@ function ProductMobileCard({ p, store, navigate, duplicateProduct, deleteProduct
                 disabled={loading}
                 className="scale-[0.8] origin-left data-[state=checked]:bg-emerald-500"
               />
-              <span className={`text-[8px] sm:text-[9px] font-extrabold uppercase tracking-widest transition-colors ${p.active ? 'text-emerald-600' : 'text-slate-400'}`}>
-                {p.active ? 'Ativo' : 'Inativo'}
+              <span
+                className={`text-[8px] sm:text-[9px] font-extrabold uppercase tracking-widest transition-colors ${p.active ? "text-emerald-600" : "text-slate-400"}`}
+              >
+                {p.active ? "Ativo" : "Inativo"}
               </span>
             </div>
-            
+
             {p.featured && (
               <div className="flex items-center gap-1 bg-amber-50 rounded-full px-2 py-0.5 border border-amber-100">
                 <Star className="h-2.5 w-2.5 text-amber-500 fill-amber-500" />
-                <span className="text-[8px] sm:text-[9px] font-extrabold text-amber-600 uppercase tracking-widest">Destaque</span>
+                <span className="text-[8px] sm:text-[9px] font-extrabold text-amber-600 uppercase tracking-widest">
+                  Destaque
+                </span>
               </div>
             )}
-            
+
             {p.product_variants?.length > 0 && (
               <span className="text-[8px] sm:text-[9px] text-emerald-600 font-extrabold uppercase tracking-widest bg-emerald-50 px-2 py-1 rounded-full border border-emerald-100">
                 {p.product_variants.length} var
@@ -572,9 +679,15 @@ function ProductMobileCard({ p, store, navigate, duplicateProduct, deleteProduct
           </div>
         </div>
       </div>
-      
+
       <div className="flex flex-col justify-between items-end h-full py-0.5">
-        <ProductActions p={p} store={store} navigate={navigate} duplicateProduct={duplicateProduct} deleteProduct={deleteProduct} />
+        <ProductActions
+          p={p}
+          store={store}
+          navigate={navigate}
+          duplicateProduct={duplicateProduct}
+          deleteProduct={deleteProduct}
+        />
       </div>
     </div>
   );
@@ -588,13 +701,24 @@ function ProductActions({ p, store, navigate, duplicateProduct, deleteProduct }:
           <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[180px] rounded-xl border-border/40 shadow-xl shadow-black/5 p-1">
-        <DropdownMenuLabel className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">Ações</DropdownMenuLabel>
+      <DropdownMenuContent
+        align="end"
+        className="w-[180px] rounded-xl border-border/40 shadow-xl shadow-black/5 p-1"
+      >
+        <DropdownMenuLabel className="px-2 py-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
+          Ações
+        </DropdownMenuLabel>
         <DropdownMenuSeparator className="bg-border/40" />
-        <DropdownMenuItem className="rounded-lg gap-2 cursor-pointer font-medium text-sm" onClick={() => navigate({ to: "/admin/produtos/$id", params: { id: p.id } })}>
+        <DropdownMenuItem
+          className="rounded-lg gap-2 cursor-pointer font-medium text-sm"
+          onClick={() => navigate({ to: "/admin/produtos/$id", params: { id: p.id } })}
+        >
           <Pencil className="h-4 w-4 text-muted-foreground" /> Editar Produto
         </DropdownMenuItem>
-        <DropdownMenuItem className="rounded-lg gap-2 cursor-pointer font-medium text-sm" onClick={() => duplicateProduct(p)}>
+        <DropdownMenuItem
+          className="rounded-lg gap-2 cursor-pointer font-medium text-sm"
+          onClick={() => duplicateProduct(p)}
+        >
           <Copy className="h-4 w-4 text-muted-foreground" /> Duplicar Item
         </DropdownMenuItem>
         <DropdownMenuItem asChild className="rounded-lg gap-2 cursor-pointer font-medium text-sm">
@@ -603,8 +727,8 @@ function ProductActions({ p, store, navigate, duplicateProduct, deleteProduct }:
           </a>
         </DropdownMenuItem>
         <DropdownMenuSeparator className="bg-border/40" />
-        <DropdownMenuItem 
-          className="rounded-lg gap-2 cursor-pointer font-medium text-sm text-destructive focus:text-destructive focus:bg-destructive/5" 
+        <DropdownMenuItem
+          className="rounded-lg gap-2 cursor-pointer font-medium text-sm text-destructive focus:text-destructive focus:bg-destructive/5"
           onClick={() => deleteProduct(p.id)}
         >
           <Trash2 className="h-4 w-4" /> Excluir

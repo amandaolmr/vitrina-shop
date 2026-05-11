@@ -18,12 +18,14 @@ export function ProductCard({ p, slug }: ProductCardProps) {
   const price = Number(p.price);
   const comparePrice = p.compare_at_price ? Number(p.compare_at_price) : null;
   const hasDiscount = comparePrice && comparePrice > price;
-  const discountPercent = hasDiscount ? Math.round(((comparePrice - price) / comparePrice) * 100) : 0;
+  const discountPercent = hasDiscount
+    ? Math.round(((comparePrice - price) / comparePrice) * 100)
+    : 0;
 
   return (
-    <div className="group relative flex flex-col h-full bg-white rounded-[1.2rem] sm:rounded-[2rem] p-2 sm:p-3 transition-all duration-500 shadow-sm hover:shadow-xl hover:-translate-y-2 border border-slate-100/50 overflow-hidden">
+    <div className="group relative flex flex-col h-full bg-white rounded-[1.2rem] sm:rounded-[2rem] p-2 sm:p-3 transition-all duration-500 shadow-sm hover:shadow-xl hover:-translate-y-2 border border-slate-100/50 overflow-hidden w-full max-w-full">
       {/* Favorite Button */}
-      <button 
+      <button
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -31,13 +33,18 @@ export function ProductCard({ p, slug }: ProductCardProps) {
         }}
         className={cn(
           "absolute right-2 top-2 sm:right-5 sm:top-5 z-10 p-1.5 sm:p-2.5 rounded-full bg-white/90 backdrop-blur-sm shadow-sm border border-slate-100 transition-all duration-300",
-          favorited 
-            ? "text-rose-500 border-rose-100 bg-rose-50/50 scale-110" 
-            : "text-slate-400 hover:text-rose-500 hover:scale-110"
+          favorited
+            ? "text-rose-500 border-rose-100 bg-rose-50/50 scale-110"
+            : "text-slate-400 hover:text-rose-500 hover:scale-110",
         )}
         title={favorited ? "Remover dos favoritos" : "Adicionar aos favoritos"}
       >
-        <Heart className={cn("h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300", favorited && "fill-current animate-in zoom-in-75 duration-300")} />
+        <Heart
+          className={cn(
+            "h-4 w-4 sm:h-5 sm:w-5 transition-transform duration-300",
+            favorited && "fill-current animate-in zoom-in-75 duration-300",
+          )}
+        />
       </button>
 
       {/* Image Container */}
@@ -81,7 +88,7 @@ export function ProductCard({ p, slug }: ProductCardProps) {
             {p.name}
           </h3>
         </Link>
-        
+
         <div className="mt-auto flex flex-col gap-0.5">
           {hasDiscount && (
             <span className="text-xs text-slate-400 line-through decoration-slate-300 font-medium">

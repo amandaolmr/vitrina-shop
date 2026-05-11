@@ -1,14 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useCart } from "@/lib/cart";
 import { useFavorites } from "@/lib/favorites";
-import { 
-  ShoppingBag, 
-  Info, 
-  MessageCircle, 
-  MapPin, 
-  Instagram,
-  Heart
-} from "lucide-react";
+import { ShoppingBag, Info, MessageCircle, MapPin, Instagram, Heart } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -44,13 +37,13 @@ export function StoreHeader({ store }: { store: any }) {
   }
 
   return (
-    <header className="sticky top-0 z-[100] w-full bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-sm transition-all duration-300">
-      <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
-        <div className="flex h-16 sm:h-20 items-center justify-between gap-2">
+    <header className="sticky top-0 z-[100] w-full bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-sm transition-all duration-300 overflow-x-hidden">
+      <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 w-full">
+        <div className="flex h-16 sm:h-20 items-center justify-between gap-2 w-full">
           {/* Logo */}
-          <Link 
-            to="/loja/$slug" 
-            params={{ slug: store.slug }} 
+          <Link
+            to="/loja/$slug"
+            params={{ slug: store.slug }}
             className="flex items-center gap-1.5 sm:gap-3 group min-w-0"
           >
             {store.logo_url ? (
@@ -72,9 +65,9 @@ export function StoreHeader({ store }: { store: any }) {
           {/* Right Icons */}
           <div className="flex items-center gap-0.5 sm:gap-2 shrink-0">
             {store.instagram && (
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 onClick={openInstagram}
                 className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all duration-300 active:scale-90 hover:scale-110 h-10 w-10 sm:h-11 sm:w-11 cursor-pointer active:bg-slate-200/80 hover:shadow-sm"
                 title="Instagram"
@@ -85,9 +78,9 @@ export function StoreHeader({ store }: { store: any }) {
 
             <Dialog>
               <DialogTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all duration-300 active:scale-90 hover:scale-110 h-10 w-10 sm:h-11 sm:w-11 cursor-pointer active:bg-slate-200/80 hover:shadow-sm"
                   title="Informações"
                 >
@@ -96,7 +89,9 @@ export function StoreHeader({ store }: { store: any }) {
               </DialogTrigger>
               <DialogContent className="sm:max-w-md rounded-[2rem] border-none shadow-2xl">
                 <DialogHeader>
-                  <DialogTitle className="text-2xl font-black text-slate-900 uppercase tracking-tighter">Informações da Loja</DialogTitle>
+                  <DialogTitle className="text-2xl font-black text-slate-900 uppercase tracking-tighter">
+                    Informações da Loja
+                  </DialogTitle>
                 </DialogHeader>
                 <div className="space-y-6 pt-4">
                   <div className="flex items-center gap-4 bg-slate-50 p-6 rounded-[1.5rem]">
@@ -112,20 +107,28 @@ export function StoreHeader({ store }: { store: any }) {
                       </span>
                     )}
                     <div>
-                      <h3 className="font-black text-xl text-slate-900 uppercase tracking-tight">{store.name}</h3>
+                      <h3 className="font-black text-xl text-slate-900 uppercase tracking-tight">
+                        {store.name}
+                      </h3>
                       {store.description && (
-                        <p className="text-sm text-slate-500 mt-1 font-medium">{store.description}</p>
+                        <p className="text-sm text-slate-500 mt-1 font-medium">
+                          {store.description}
+                        </p>
                       )}
                     </div>
                   </div>
 
                   {(store.address || store.city || store.state) && (
                     <div className="space-y-3 bg-slate-50/50 p-6 rounded-[1.5rem]">
-                      <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest px-1">Localização</h4>
+                      <h4 className="text-xs font-black text-slate-400 uppercase tracking-widest px-1">
+                        Localização
+                      </h4>
                       <div className="flex items-start gap-3">
                         <MapPin className="h-5 w-5 text-slate-400 mt-0.5" />
                         <div className="text-sm text-slate-600 font-medium">
-                          {store.address && <p className="text-slate-900 font-bold">{store.address}</p>}
+                          {store.address && (
+                            <p className="text-slate-900 font-bold">{store.address}</p>
+                          )}
                           {(store.city || store.state) && (
                             <p>
                               {[store.city, store.state].filter(Boolean).join(", ")}
@@ -149,9 +152,9 @@ export function StoreHeader({ store }: { store: any }) {
                         </Button>
                       )}
                       {store.instagram && (
-                        <Button 
-                          onClick={openInstagram} 
-                          variant="outline" 
+                        <Button
+                          onClick={openInstagram}
+                          variant="outline"
                           className="w-full h-14 rounded-full font-bold border-slate-200 hover:bg-slate-50"
                         >
                           <Instagram className="mr-2 h-5 w-5" />
@@ -164,9 +167,9 @@ export function StoreHeader({ store }: { store: any }) {
               </DialogContent>
             </Dialog>
 
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all duration-300 active:scale-90 hover:scale-110 h-10 w-10 sm:h-11 sm:w-11 relative cursor-pointer active:bg-slate-200/80 hover:shadow-sm"
               title="Favoritos"
             >
@@ -178,14 +181,10 @@ export function StoreHeader({ store }: { store: any }) {
               )}
             </Button>
 
-            <Link
-              to="/loja/$slug/carrinho"
-              params={{ slug: store.slug }}
-              className="relative"
-            >
-              <Button 
-                variant="ghost" 
-                size="icon" 
+            <Link to="/loja/$slug/carrinho" params={{ slug: store.slug }} className="relative">
+              <Button
+                variant="ghost"
+                size="icon"
                 className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all duration-300 active:scale-90 hover:scale-110 h-10 w-10 sm:h-11 sm:w-11 cursor-pointer active:bg-slate-200/80 hover:shadow-sm"
                 title="Carrinho"
                 asChild

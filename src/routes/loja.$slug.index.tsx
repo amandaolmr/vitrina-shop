@@ -5,22 +5,17 @@ import { useState, useMemo, useRef } from "react";
 import { useStore } from "@/lib/store-context";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { 
-  Search, 
-  ChevronLeft, 
-  ChevronRight, 
-  ArrowRight, 
-  LayoutGrid, 
-  User as UserIcon, 
-  Sparkles,
-  Filter
-} from "lucide-react";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  Search,
+  ChevronLeft,
+  ChevronRight,
+  ArrowRight,
+  LayoutGrid,
+  User as UserIcon,
+  Sparkles,
+  Filter,
+} from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ProductCard } from "@/components/ProductCard";
 import { StoreBanner } from "@/components/StoreBanner";
 import { ShippingBanner } from "@/components/ShippingBanner";
@@ -115,19 +110,22 @@ function StorefrontPage() {
 
   const getCategoryIcon = (name: string) => {
     const lowerName = name.toLowerCase();
-    if (lowerName.includes("masculino") || lowerName.includes("homem")) return <UserIcon className="h-4 w-4" />;
-    if (lowerName.includes("feminino") || lowerName.includes("mulher")) return <Sparkles className="h-4 w-4" />;
-    if (lowerName.includes("beleza") || lowerName.includes("cosmético")) return <Sparkles className="h-4 w-4" />;
+    if (lowerName.includes("masculino") || lowerName.includes("homem"))
+      return <UserIcon className="h-4 w-4" />;
+    if (lowerName.includes("feminino") || lowerName.includes("mulher"))
+      return <Sparkles className="h-4 w-4" />;
+    if (lowerName.includes("beleza") || lowerName.includes("cosmético"))
+      return <Sparkles className="h-4 w-4" />;
     return <LayoutGrid className="h-4 w-4" />;
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/30 pb-20 font-sans">
-      <main>
+    <div className="min-h-screen bg-slate-50/30 pb-20 font-sans overflow-x-hidden w-full">
+      <main className="w-full">
         <ShippingBanner />
         <StoreBanner />
 
-        <StoreFilters 
+        <StoreFilters
           categories={cats as any[]}
           activeDept={activeDept}
           setActiveDept={setActiveDept}
@@ -135,10 +133,10 @@ function StorefrontPage() {
           setActiveCat={setActiveCat}
         />
 
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12 w-full">
           {/* Search Bar - Pill Style */}
-          <div className="max-w-2xl mx-auto mb-10 sm:mb-16">
-            <div className="relative group">
+          <div className="max-w-2xl mx-auto mb-10 sm:mb-16 w-full">
+            <div className="relative group w-full">
               <div className="absolute inset-0 bg-emerald-500/5 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
               <Search className="absolute left-6 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
               <Input
@@ -160,7 +158,9 @@ function StorefrontPage() {
             <section className="mb-20">
               <div className="mb-8 flex items-end justify-between px-2 sm:px-0">
                 <div>
-                  <h2 className="text-2xl sm:text-4xl font-black tracking-tighter text-slate-900 uppercase">Em Destaque</h2>
+                  <h2 className="text-2xl sm:text-4xl font-black tracking-tighter text-slate-900 uppercase">
+                    Em Destaque
+                  </h2>
                   <div className="h-1.5 w-16 bg-slate-900 mt-2 rounded-full" />
                 </div>
                 <div className="flex gap-2">
@@ -182,7 +182,7 @@ function StorefrontPage() {
                   </Button>
                 </div>
               </div>
-              
+
               <div
                 ref={(el) => {
                   scrollContainerRef.current["featured"] = el;
@@ -190,7 +190,10 @@ function StorefrontPage() {
                 className="flex gap-3 sm:gap-6 overflow-x-auto pb-8 pt-2 snap-x snap-mandatory scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0"
               >
                 {featured.map((p: any) => (
-                  <div key={p.id} className="flex-none w-[46%] sm:w-[45%] md:w-[30%] lg:w-[23%] snap-start">
+                  <div
+                    key={p.id}
+                    className="flex-none w-[46%] sm:w-[45%] md:w-[30%] lg:w-[23%] snap-start"
+                  >
                     <ProductCard p={p} slug={store.slug} />
                   </div>
                 ))}
@@ -208,10 +211,14 @@ function StorefrontPage() {
                 <p className="text-slate-500 max-w-xs mx-auto">
                   Tente ajustar sua busca ou mudar os filtros para encontrar o que procura.
                 </p>
-                <Button 
-                  variant="link" 
+                <Button
+                  variant="link"
                   className="mt-4 text-slate-900 font-bold"
-                  onClick={() => {setQ(""); setActiveCat(null); setActiveDept(null);}}
+                  onClick={() => {
+                    setQ("");
+                    setActiveCat(null);
+                    setActiveDept(null);
+                  }}
                 >
                   Limpar todos os filtros
                 </Button>
@@ -226,17 +233,20 @@ function StorefrontPage() {
                     <div key={categoryId}>
                       <div className="mb-8 flex items-end justify-between px-2 sm:px-0">
                         <div>
-                          <h2 className="text-2xl sm:text-4xl font-black tracking-tighter text-slate-900 uppercase">{categoryName}</h2>
+                          <h2 className="text-2xl sm:text-4xl font-black tracking-tighter text-slate-900 uppercase">
+                            {categoryName}
+                          </h2>
                           <div className="h-1.5 w-16 bg-slate-900 mt-2 rounded-full" />
                         </div>
                         <button
                           onClick={() => setViewAllCategory({ id: categoryId, name: categoryName })}
                           className="group flex items-center gap-2 text-sm font-bold text-emerald-600 transition-all hover:gap-3 bg-emerald-50 px-4 py-2 rounded-full"
                         >
-                          Ver todos <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                          Ver todos{" "}
+                          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                         </button>
                       </div>
-                      
+
                       <div className="relative group">
                         <div
                           ref={(el) => {
@@ -291,25 +301,28 @@ function StorefrontPage() {
                   <DialogTitle className="text-3xl sm:text-5xl font-black tracking-tighter text-slate-900 uppercase">
                     {viewAllCategory?.name}
                   </DialogTitle>
-                  <p className="text-slate-500 text-base mt-2 font-medium">Explore todos os produtos desta categoria</p>
+                  <p className="text-slate-500 text-base mt-2 font-medium">
+                    Explore todos os produtos desta categoria
+                  </p>
                 </div>
                 <div className="text-slate-400 text-sm font-bold uppercase tracking-widest">
                   {viewAllCategory && productsByCategory.get(viewAllCategory.id)?.length} Itens
                 </div>
               </div>
             </DialogHeader>
-            
+
             <div className="flex-1 overflow-y-auto p-6 sm:p-12 bg-slate-50/50">
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-10">
-                {viewAllCategory && productsByCategory.get(viewAllCategory.id)?.map((p: any) => (
-                  <ProductCard key={p.id} p={p} slug={store.slug} />
-                ))}
+                {viewAllCategory &&
+                  productsByCategory
+                    .get(viewAllCategory.id)
+                    ?.map((p: any) => <ProductCard key={p.id} p={p} slug={store.slug} />)}
               </div>
             </div>
-            
+
             <div className="p-6 border-t bg-white shrink-0 text-center lg:hidden">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full rounded-full h-14 font-black text-slate-900 border-slate-200 uppercase tracking-tight"
                 onClick={() => setViewAllCategory(null)}
               >

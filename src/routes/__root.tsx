@@ -44,12 +44,18 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         <p className="mt-2 text-sm text-muted-foreground">{error.message}</p>
         <div className="mt-6 flex justify-center gap-2">
           <button
-            onClick={() => { router.invalidate(); reset(); }}
+            onClick={() => {
+              router.invalidate();
+              reset();
+            }}
             className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
           >
             Tentar novamente
           </button>
-          <a href="/" className="rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-accent">
+          <a
+            href="/"
+            className="rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-accent"
+          >
             Início
           </a>
         </div>
@@ -67,10 +73,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "Crie um catálogo digital lindo, com pedidos via WhatsApp." },
       { property: "og:title", content: "Vitrina — Catálogo digital para sua loja" },
       { name: "twitter:title", content: "Vitrina — Catálogo digital para sua loja" },
-      { property: "og:description", content: "Crie um catálogo digital lindo, com pedidos via WhatsApp." },
-      { name: "twitter:description", content: "Crie um catálogo digital lindo, com pedidos via WhatsApp." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b7c5474a-6b8e-4861-a1af-cd1fefc7ecb6/id-preview-c2ea7d4f--60119d7e-2053-4617-bc21-40e0fde42bcc.lovable.app-1778164135817.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b7c5474a-6b8e-4861-a1af-cd1fefc7ecb6/id-preview-c2ea7d4f--60119d7e-2053-4617-bc21-40e0fde42bcc.lovable.app-1778164135817.png" },
+      {
+        property: "og:description",
+        content: "Crie um catálogo digital lindo, com pedidos via WhatsApp.",
+      },
+      {
+        name: "twitter:description",
+        content: "Crie um catálogo digital lindo, com pedidos via WhatsApp.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b7c5474a-6b8e-4861-a1af-cd1fefc7ecb6/id-preview-c2ea7d4f--60119d7e-2053-4617-bc21-40e0fde42bcc.lovable.app-1778164135817.png",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b7c5474a-6b8e-4861-a1af-cd1fefc7ecb6/id-preview-c2ea7d4f--60119d7e-2053-4617-bc21-40e0fde42bcc.lovable.app-1778164135817.png",
+      },
       { name: "twitter:card", content: "summary_large_image" },
       { property: "og:type", content: "website" },
     ],
@@ -92,9 +112,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR">
-      <head><HeadContent /></head>
-      <body>
+    <html lang="pt-BR" className="overflow-x-hidden">
+      <head>
+        <HeadContent />
+      </head>
+      <body className="overflow-x-hidden max-w-[100vw] w-full">
         {children}
         <Scripts />
       </body>

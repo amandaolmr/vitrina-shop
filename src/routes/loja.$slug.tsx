@@ -43,7 +43,7 @@ function StoreLayout() {
 
   return (
     <StoreCtx.Provider value={store as any}>
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background overflow-x-hidden w-full">
         <StoreHeader store={store} />
         <Outlet />
         <footer className="mt-16 border-t border-border py-8 text-center text-xs text-muted-foreground">

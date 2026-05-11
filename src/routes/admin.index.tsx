@@ -7,19 +7,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { 
-  Plus, 
-  Package, 
-  Tags, 
-  Settings, 
-  ArrowUpRight, 
+import {
+  Plus,
+  Package,
+  Tags,
+  Settings,
+  ArrowUpRight,
   ShoppingBag,
   ExternalLink,
   Users,
-  Eye,
   TrendingUp,
   Image as ImageIcon,
-  LayoutDashboard
+  LayoutDashboard,
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -43,11 +42,19 @@ function AdminHome() {
   const navigate = useNavigate();
   const [busy, setBusy] = useState(false);
 
-  const { data: store, isLoading, refetch } = useQuery({
+  const {
+    data: store,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ["my-store", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data } = await supabase.from("stores").select("*").eq("owner_id", user!.id).maybeSingle();
+      const { data } = await supabase
+        .from("stores")
+        .select("*")
+        .eq("owner_id", user!.id)
+        .maybeSingle();
       return data;
     },
   });
@@ -58,20 +65,26 @@ function AdminHome() {
     queryFn: async () => {
       const { count: productsCount } = await supabase
         .from("products")
-        .select("*", { count: 'exact', head: true })
+        .select("*", { count: "exact", head: true })
         .eq("store_id", store!.id);
-        
+
+      const { count: activeProductsCount } = await supabase
+        .from("products")
+        .select("*", { count: "exact", head: true })
+        .eq("store_id", store!.id)
+        .eq("active", true);
+
       const { count: categoriesCount } = await supabase
         .from("categories")
-        .select("*", { count: 'exact', head: true })
+        .select("*", { count: "exact", head: true })
         .eq("store_id", store!.id);
 
       return {
         products: productsCount || 0,
+        activeProducts: activeProductsCount || 0,
         categories: categoriesCount || 0,
-        views: Math.floor(Math.random() * 1000) + 100 // Mock data for now
       };
-    }
+    },
   });
 
   async function createStore(e: React.FormEvent<HTMLFormElement>) {
@@ -111,32 +124,62 @@ function AdminHome() {
         <Card className="border-border/60 shadow-xl shadow-black/[0.03] overflow-hidden">
           <CardHeader className="bg-muted/30 border-b border-border/40 pb-6">
             <CardTitle>Configuração Inicial</CardTitle>
-            <CardDescription>Estes dados aparecerão para seus clientes na sua vitrine.</CardDescription>
+            <CardDescription>
+              Estes dados aparecerão para seus clientes na sua vitrine.
+            </CardDescription>
           </CardHeader>
           <CardContent className="pt-8">
             <form onSubmit={createStore} className="space-y-6">
               <div className="space-y-2.5">
-                <Label htmlFor="name" className="text-sm font-semibold">Nome da Loja</Label>
-                <Input id="name" name="name" required placeholder="Ex: Boutique Glamour" className="h-11 rounded-xl border-border/60" />
+                <Label htmlFor="name" className="text-sm font-semibold">
+                  Nome da Loja
+                </Label>
+                <Input
+                  id="name"
+                  name="name"
+                  required
+                  placeholder="Ex: Boutique Glamour"
+                  className="h-11 rounded-xl border-border/60"
+                />
               </div>
               <div className="space-y-2.5">
-                <Label htmlFor="slug" className="text-sm font-semibold">URL da sua Vitrine</Label>
+                <Label htmlFor="slug" className="text-sm font-semibold">
+                  URL da sua Vitrine
+                </Label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-4 pr-1 pointer-events-none border-r border-border/40 bg-muted/30 group-focus-within:bg-muted/50 rounded-l-xl transition-colors">
-                    <span className="text-xs font-medium text-muted-foreground">vitrina.app/loja/</span>
+                    <span className="text-xs font-medium text-muted-foreground">
+                      vitrina.app/loja/
+                    </span>
                   </div>
-                  <Input id="slug" name="slug" placeholder="minha-loja" className="h-11 pl-[125px] rounded-xl border-border/60" />
+                  <Input
+                    id="slug"
+                    name="slug"
+                    placeholder="minha-loja"
+                    className="h-11 pl-[125px] rounded-xl border-border/60"
+                  />
                 </div>
               </div>
               <div className="space-y-2.5">
-                <Label htmlFor="whatsapp" className="text-sm font-semibold">WhatsApp para Pedidos</Label>
-                <Input id="whatsapp" name="whatsapp" placeholder="Ex: 11999998888" className="h-11 rounded-xl border-border/60" />
+                <Label htmlFor="whatsapp" className="text-sm font-semibold">
+                  WhatsApp para Pedidos
+                </Label>
+                <Input
+                  id="whatsapp"
+                  name="whatsapp"
+                  placeholder="Ex: 11999998888"
+                  className="h-11 rounded-xl border-border/60"
+                />
                 <p className="text-[10px] text-muted-foreground flex items-center gap-1.5 ml-1">
                   <TrendingUp className="h-3 w-3" />
                   Seus clientes enviarão o carrinho diretamente para este número.
                 </p>
               </div>
-              <Button type="submit" className="w-full h-11 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98]" disabled={busy}>
+              <Button
+                type="submit"
+                className="w-full h-11 rounded-xl font-bold shadow-lg shadow-primary/20 transition-all active:scale-[0.98]"
+                disabled={busy}
+              >
                 Criar Minha Loja Agora
               </Button>
             </form>
@@ -152,11 +195,16 @@ function AdminHome() {
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight text-foreground">{store.name}</h1>
           <div className="mt-1 flex items-center gap-2">
-            <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 py-0 text-[10px] font-bold uppercase tracking-wider">Online</Badge>
-            <a 
-              className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1" 
-              href={`/loja/${store.slug}`} 
-              target="_blank" 
+            <Badge
+              variant="outline"
+              className="bg-emerald-50 text-emerald-700 border-emerald-200 py-0 text-[10px] font-bold uppercase tracking-wider"
+            >
+              Online
+            </Badge>
+            <a
+              className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
+              href={`/loja/${store.slug}`}
+              target="_blank"
               rel="noreferrer"
             >
               vitrina.app/loja/{store.slug}
@@ -186,7 +234,7 @@ function AdminHome() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card className="border-border/60 shadow-sm overflow-hidden group hover:border-primary/30 transition-all duration-300">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-2">
@@ -204,13 +252,20 @@ function AdminHome() {
         <Card className="border-border/60 shadow-sm overflow-hidden group hover:border-primary/30 transition-all duration-300">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-2">
-              <div className="h-10 w-10 bg-indigo-500/10 rounded-xl flex items-center justify-center group-hover:bg-indigo-500/20 transition-colors">
-                <Eye className="h-5 w-5 text-indigo-600" />
+              <div className="h-10 w-10 bg-emerald-500/10 rounded-xl flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
+                <ShoppingBag className="h-5 w-5 text-emerald-600" />
               </div>
+              <Badge
+                variant="outline"
+                className="bg-emerald-50 text-emerald-700 border-emerald-200 px-2 py-0 text-[9px] font-bold"
+              >
+                ATIVOS
+              </Badge>
             </div>
             <div className="space-y-0.5">
-              <p className="text-sm font-medium text-muted-foreground">Visitas este mês</p>
-              <h3 className="text-2xl font-bold tracking-tight">{stats?.views || 0}</h3>
+              <p className="text-sm font-medium text-muted-foreground">Produtos Visíveis</p>
+              <h3 className="text-2xl font-bold tracking-tight">{stats?.activeProducts || 0}</h3>
+              <p className="text-xs text-muted-foreground/70">de {stats?.products || 0} total</p>
             </div>
           </CardContent>
         </Card>
@@ -225,33 +280,46 @@ function AdminHome() {
             </h2>
           </div>
           <div className="grid gap-3">
-            <Link to="/admin/produtos" className="flex items-center justify-between p-4 rounded-2xl bg-white border border-border/60 hover:border-primary/40 hover:shadow-md hover:shadow-primary/[0.02] transition-all group">
+            <Link
+              to="/admin/produtos"
+              className="flex items-center justify-between p-4 rounded-2xl bg-white border border-border/60 hover:border-primary/40 hover:shadow-md hover:shadow-primary/[0.02] transition-all group"
+            >
               <div className="flex items-center gap-4">
                 <div className="h-12 w-12 bg-muted/50 rounded-xl flex items-center justify-center group-hover:bg-primary/5 transition-colors">
                   <Package className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
                 </div>
                 <div>
                   <h4 className="font-bold text-sm">Gerenciar Produtos</h4>
-                  <p className="text-xs text-muted-foreground">Adicione, edite e controle estoque.</p>
+                  <p className="text-xs text-muted-foreground">
+                    Adicione, edite e controle estoque.
+                  </p>
                 </div>
               </div>
               <ArrowUpRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </Link>
 
-            <Link to="/admin/categorias" className="flex items-center justify-between p-4 rounded-2xl bg-white border border-border/60 hover:border-primary/40 hover:shadow-md hover:shadow-primary/[0.02] transition-all group">
+            <Link
+              to="/admin/categorias"
+              className="flex items-center justify-between p-4 rounded-2xl bg-white border border-border/60 hover:border-primary/40 hover:shadow-md hover:shadow-primary/[0.02] transition-all group"
+            >
               <div className="flex items-center gap-4">
                 <div className="h-12 w-12 bg-muted/50 rounded-xl flex items-center justify-center group-hover:bg-amber-500/5 transition-colors">
                   <Tags className="h-6 w-6 text-muted-foreground group-hover:text-amber-600 transition-colors" />
                 </div>
                 <div>
                   <h4 className="font-bold text-sm">Organizar Categorias</h4>
-                  <p className="text-xs text-muted-foreground">Crie departamentos e subcategorias.</p>
+                  <p className="text-xs text-muted-foreground">
+                    Crie departamentos e subcategorias.
+                  </p>
                 </div>
               </div>
               <ArrowUpRight className="h-5 w-5 text-muted-foreground group-hover:text-amber-600 transition-all group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </Link>
 
-            <Link to="/admin/loja" className="flex items-center justify-between p-4 rounded-2xl bg-white border border-border/60 hover:border-primary/40 hover:shadow-md hover:shadow-primary/[0.02] transition-all group">
+            <Link
+              to="/admin/loja"
+              className="flex items-center justify-between p-4 rounded-2xl bg-white border border-border/60 hover:border-primary/40 hover:shadow-md hover:shadow-primary/[0.02] transition-all group"
+            >
               <div className="flex items-center gap-4">
                 <div className="h-12 w-12 bg-muted/50 rounded-xl flex items-center justify-center group-hover:bg-indigo-500/5 transition-colors">
                   <Settings className="h-6 w-6 text-muted-foreground group-hover:text-indigo-600 transition-colors" />
@@ -280,7 +348,9 @@ function AdminHome() {
               </div>
               <div>
                 <h5 className="text-sm font-bold">Fotos de Qualidade</h5>
-                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">Produtos com fotos claras e bem iluminadas vendem até 70% mais via WhatsApp.</p>
+                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                  Produtos com fotos claras e bem iluminadas vendem até 70% mais via WhatsApp.
+                </p>
               </div>
             </div>
 
@@ -290,7 +360,9 @@ function AdminHome() {
               </div>
               <div>
                 <h5 className="text-sm font-bold">Descrições Vendedoras</h5>
-                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">Detalhe materiais, medidas e benefícios para reduzir dúvidas dos clientes.</p>
+                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                  Detalhe materiais, medidas e benefícios para reduzir dúvidas dos clientes.
+                </p>
               </div>
             </div>
 
@@ -300,7 +372,9 @@ function AdminHome() {
               </div>
               <div>
                 <h5 className="text-sm font-bold">Compartilhe sua Vitrine</h5>
-                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">Coloque o link da sua vitrine na bio do Instagram e no status do WhatsApp.</p>
+                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+                  Coloque o link da sua vitrine na bio do Instagram e no status do WhatsApp.
+                </p>
               </div>
             </div>
           </CardContent>
