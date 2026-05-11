@@ -24,6 +24,7 @@ import {
 import { ProductCard } from "@/components/ProductCard";
 import { StoreBanner } from "@/components/StoreBanner";
 import { ShippingBanner } from "@/components/ShippingBanner";
+import { StoreFilters } from "@/components/StoreFilters";
 
 export const Route = createFileRoute("/loja/$slug/")({
   component: StorefrontPage,
@@ -126,6 +127,14 @@ function StorefrontPage() {
         <ShippingBanner />
         <StoreBanner />
 
+        <StoreFilters 
+          categories={cats as any[]}
+          activeDept={activeDept}
+          setActiveDept={setActiveDept}
+          activeCat={activeCat}
+          setActiveCat={setActiveCat}
+        />
+
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           {/* Search Bar - Pill Style */}
           <div className="max-w-2xl mx-auto mb-10 sm:mb-16">
@@ -145,74 +154,6 @@ function StorefrontPage() {
               </div>
             </div>
           </div>
-
-          {/* Category Pill Buttons */}
-          {departments.length > 0 && (
-            <div className="mb-12">
-              <div className="flex flex-wrap items-center justify-center gap-3">
-                <button
-                  onClick={() => {
-                    setActiveDept(null);
-                    setActiveCat(null);
-                  }}
-                  className={`flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all duration-300 shadow-sm hover:shadow-md ${
-                    !activeDept 
-                      ? "bg-slate-900 text-white" 
-                      : "bg-white text-slate-600 border border-slate-100 hover:border-slate-200"
-                  }`}
-                >
-                  <LayoutGrid className="h-4 w-4" />
-                  Todos
-                </button>
-                {departments.map((d: any) => (
-                  <button
-                    key={d.id}
-                    onClick={() => {
-                      setActiveDept(d.id);
-                      setActiveCat(null);
-                    }}
-                    className={`flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition-all duration-300 shadow-sm hover:shadow-md ${
-                      activeDept === d.id 
-                        ? "bg-slate-900 text-white" 
-                        : "bg-white text-slate-600 border border-slate-100 hover:border-slate-200"
-                    }`}
-                  >
-                    {getCategoryIcon(d.name)}
-                    {d.name}
-                  </button>
-                ))}
-              </div>
-
-              {/* Subcategories */}
-              {activeDept && subcats.length > 0 && (
-                <div className="mt-6 flex flex-wrap justify-center gap-2">
-                  <button
-                    onClick={() => setActiveCat(null)}
-                    className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all ${
-                      !activeCat 
-                        ? "bg-slate-100 text-slate-900 shadow-sm" 
-                        : "text-slate-500 hover:bg-slate-50"
-                    }`}
-                  >
-                    Todas
-                  </button>
-                  {subcats.map((c: any) => (
-                    <button
-                      key={c.id}
-                      onClick={() => setActiveCat(c.id)}
-                      className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all whitespace-nowrap ${
-                        activeCat === c.id 
-                          ? "bg-slate-100 text-slate-900 shadow-sm" 
-                          : "text-slate-500 hover:bg-slate-50"
-                      }`}
-                    >
-                      {c.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
 
           {/* Featured Carousel */}
           {featured.length > 0 && !q && !activeCat && !activeDept && (
