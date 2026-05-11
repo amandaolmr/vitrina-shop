@@ -45,38 +45,38 @@ export function StoreHeader({ store }: { store: any }) {
 
   return (
     <header className="sticky top-0 z-[100] w-full bg-white/80 backdrop-blur-md border-b border-slate-100 shadow-sm transition-all duration-300">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 sm:h-20 items-center justify-between">
+      <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
+        <div className="flex h-16 sm:h-20 items-center justify-between gap-2">
           {/* Logo */}
           <Link 
             to="/loja/$slug" 
             params={{ slug: store.slug }} 
-            className="flex items-center gap-2 group shrink-0"
+            className="flex items-center gap-1.5 sm:gap-3 group min-w-0"
           >
             {store.logo_url ? (
               <img
                 src={store.logo_url}
                 alt={store.name}
-                className="h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover shadow-sm group-hover:scale-105 transition-transform"
+                className="h-9 w-9 sm:h-12 sm:w-12 rounded-full object-cover shadow-sm group-hover:scale-105 transition-transform shrink-0"
               />
             ) : (
-              <span className="grid h-10 w-10 sm:h-12 sm:w-12 place-items-center rounded-full bg-slate-900 text-white font-black text-lg group-hover:scale-105 transition-transform">
+              <span className="grid h-9 w-9 sm:h-12 sm:w-12 shrink-0 place-items-center rounded-full bg-slate-900 text-white font-black text-lg group-hover:scale-105 transition-transform">
                 {store.name.charAt(0).toUpperCase()}
               </span>
             )}
-            <h1 className="text-xl sm:text-2xl font-black tracking-tighter text-slate-900 uppercase">
+            <h1 className="text-lg sm:text-2xl font-black tracking-tighter text-slate-900 uppercase truncate">
               {store.name}
             </h1>
           </Link>
 
           {/* Right Icons */}
-          <div className="flex items-center gap-1 sm:gap-4">
+          <div className="flex items-center gap-0.5 sm:gap-2 shrink-0">
             {store.instagram && (
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={openInstagram}
-                className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 transition-all"
+                className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 transition-all scale-[0.85] sm:scale-100"
                 title="Instagram"
               >
                 <Instagram className="h-5 w-5" />
@@ -88,7 +88,7 @@ export function StoreHeader({ store }: { store: any }) {
                 <Button 
                   variant="ghost" 
                   size="icon" 
-                  className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 transition-all"
+                  className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 transition-all scale-[0.85] sm:scale-100"
                   title="Informações"
                 >
                   <Info className="h-5 w-5" />
@@ -167,7 +167,7 @@ export function StoreHeader({ store }: { store: any }) {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="hidden sm:flex rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 transition-all relative"
+              className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 transition-all relative scale-[0.85] sm:scale-100"
               title="Favoritos"
             >
               <Heart className="h-5 w-5" />
@@ -186,7 +186,7 @@ export function StoreHeader({ store }: { store: any }) {
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 transition-all"
+                className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100/50 transition-all scale-[0.85] sm:scale-100"
                 title="Carrinho"
                 asChild
               >
