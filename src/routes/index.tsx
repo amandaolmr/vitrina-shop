@@ -23,7 +23,7 @@ function Landing() {
           </Link>
           <nav className="flex items-center gap-2">
             <Link to="/auth"><Button variant="ghost" size="sm">Entrar</Button></Link>
-            <a href="https://wa.me/5583994043126" target="_blank" rel="noopener noreferrer">
+            <a href="https://api.whatsapp.com/send/?phone=5583994043126&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
               <Button size="sm" className="gap-2 hover:scale-105 transition-all duration-300">
                 <MessageCircle className="h-4 w-4" />
                 Falar no WhatsApp
@@ -45,7 +45,7 @@ function Landing() {
             Cadastre produtos com cores, tamanhos e numeração. Compartilhe um link e receba pedidos direto no WhatsApp.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <a href="https://wa.me/5583994043126" target="_blank" rel="noopener noreferrer">
+            <a href="https://api.whatsapp.com/send/?phone=5583994043126&text&type=phone_number&app_absent=0" target="_blank" rel="noopener noreferrer">
               <Button size="lg" className="gap-2 px-8 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-95">
                 <MessageCircle className="h-5 w-5" />
                 Falar no WhatsApp
