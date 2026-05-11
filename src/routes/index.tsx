@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, Smartphone, Zap, Layers } from "lucide-react";
+import { ShoppingBag, Smartphone, Zap, Layers, MessageCircle } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -23,7 +23,12 @@ function Landing() {
           </Link>
           <nav className="flex items-center gap-2">
             <Link to="/auth"><Button variant="ghost" size="sm">Entrar</Button></Link>
-            <Link to="/auth"><Button size="sm">Criar loja grátis</Button></Link>
+            <a href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer">
+              <Button size="sm" className="gap-2 hover:scale-105 transition-all duration-300">
+                <MessageCircle className="h-4 w-4" />
+                Falar no WhatsApp
+              </Button>
+            </a>
           </nav>
         </div>
       </header>
@@ -40,7 +45,12 @@ function Landing() {
             Cadastre produtos com cores, tamanhos e numeração. Compartilhe um link e receba pedidos direto no WhatsApp.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link to="/auth"><Button size="lg">Começar agora</Button></Link>
+            <a href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer">
+              <Button size="lg" className="gap-2 px-8 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-95">
+                <MessageCircle className="h-5 w-5" />
+                Falar no WhatsApp
+              </Button>
+            </a>
             <a href="#features"><Button size="lg" variant="outline">Como funciona</Button></a>
           </div>
         </div>
