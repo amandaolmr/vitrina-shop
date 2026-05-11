@@ -135,5 +135,5 @@ export function whatsappLink(phone: string, message: string) {
   if (clean.length === 10 || clean.length === 11) {
     clean = "55" + clean;
   }
-  return `https://wa.me/${clean}?text=${encodeURIComponent(message)}`;
+  return `https://api.whatsapp.com/send/?phone=${clean}&text=${encodeURIComponent(message)}&type=phone_number&app_absent=0`;
 }
