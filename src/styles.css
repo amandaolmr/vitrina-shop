@@ -172,3 +172,11 @@
 .dark .bg-white {
   background-color: oklch(0.24 0.015 270) !important;
 }
+
+/* Filtros Sticky com Blur */
+.sticky-filters-active {
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px -5px rgba(0, 0, 0, 0.05);
+}
