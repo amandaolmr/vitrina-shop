@@ -1,15 +1,16 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
-import { ShoppingBag, Smartphone, Zap, Layers, MessageCircle } from "lucide-react";
+import { ShoppingBag, Smartphone, Zap, Layers, Store } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Vitrina — Catálogo digital com pedidos no WhatsApp" },
+      { title: "Vitrina Shop — Sua loja online" },
       {
         name: "description",
-        content:
-          "Monte sua loja online em minutos. Catálogo público, variações de produto, controle de estoque e checkout direto no WhatsApp.",
+        content: "Catálogo digital com variações de produto e checkout direto no WhatsApp.",
       },
     ],
   }),
@@ -17,6 +18,18 @@ export const Route = createFileRoute("/")({
 });
 
 function Landing() {
+  const navigate = useNavigate();
+  const [storeSlug, setStoreSlug] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Buscar a loja cadastrada
+    const fetchStore = async () => {
+      const { data } = await supabase.from("stores").select("slug").limit(1).single();
+      if (data) setStoreSlug(data.slug);
+    };
+    fetchStore();
+  }, []);
+
   return (
     <div className="min-h-screen bg-background overflow-x-hidden w-full">
       <header className="border-b border-border/60 backdrop-blur overflow-x-hidden">
@@ -28,21 +41,17 @@ function Landing() {
             Vitrina
           </Link>
           <nav className="flex items-center gap-2">
+            {storeSlug && (
+              <Link to={`/loja/${storeSlug}`}>
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <Store className="h-4 w-4" />
+                  Ver Loja
+                </Button>
+              </Link>
+            )}
             <Link to="/auth">
-              <Button variant="ghost" size="sm">
-                Entrar
-              </Button>
+              <Button size="sm">Entrar</Button>
             </Link>
-            <a
-              href={`https://api.whatsapp.com/send?phone=5583994043126&text=${encodeURIComponent("Ola! Gostaria mais de saber sobre a plataforma de vitrine online!")}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button size="sm" className="gap-2 hover:scale-105 transition-all duration-300">
-                <MessageCircle className="h-4 w-4" />
-                Fale Conosco
-              </Button>
-            </a>
           </nav>
         </div>
       </header>
@@ -62,19 +71,26 @@ function Landing() {
             direto no WhatsApp.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <a
-              href={`https://api.whatsapp.com/send?phone=5583994043126&text=${encodeURIComponent("Ola! Gostaria mais de saber sobre a plataforma de vitrine online!")}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button
-                size="lg"
-                className="gap-2 px-8 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-95"
-              >
-                <MessageCircle className="h-5 w-5" />
-                Fale Conosco
-              </Button>
-            </a>
+            {storeSlug ? (
+              <Link to={`/loja/${storeSlug}`}>
+                <Button
+                  size="lg"
+                  className="gap-2 px-8 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-95"
+                >
+                  <Store className="h-5 w-5" />
+                  Visitar Loja
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/auth">
+                <Button
+                  size="lg"
+                  className="gap-2 px-8 hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-95"
+                >
+                  Começar Agora
+                </Button>
+              </Link>
+            )}
             <a href="#features">
               <Button size="lg" variant="outline">
                 Como funciona

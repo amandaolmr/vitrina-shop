@@ -5,7 +5,6 @@ import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/auth")({
@@ -20,20 +19,6 @@ function AuthPage() {
   useEffect(() => {
     if (!loading && user) navigate({ to: "/admin" });
   }, [user, loading, navigate]);
-
-  async function handleSignUp(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setBusy(true);
-    const fd = new FormData(e.currentTarget);
-    const { error } = await supabase.auth.signUp({
-      email: String(fd.get("email")),
-      password: String(fd.get("password")),
-      options: { emailRedirectTo: window.location.origin + "/admin" },
-    });
-    setBusy(false);
-    if (error) toast.error(error.message);
-    else toast.success("Conta criada! Você já pode entrar.");
-  }
 
   async function handleSignIn(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -50,30 +35,39 @@ function AuthPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-secondary/40 px-4">
       <div className="w-full max-w-md">
-        <Link to="/" className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">← Voltar</Link>
+        <Link
+          to="/"
+          className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+        >
+          ← Voltar
+        </Link>
         <div className="rounded-2xl border border-border bg-card p-8 shadow-sm">
-          <h1 className="text-2xl font-bold">Acesse sua loja</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Crie uma conta ou faça login para gerenciar seu catálogo.</p>
-          <Tabs defaultValue="signin" className="mt-6">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">Entrar</TabsTrigger>
-              <TabsTrigger value="signup">Criar conta</TabsTrigger>
-            </TabsList>
-            <TabsContent value="signin">
-              <form onSubmit={handleSignIn} className="space-y-4 pt-4">
-                <div className="space-y-2"><Label>Email</Label><Input name="email" type="email" required /></div>
-                <div className="space-y-2"><Label>Senha</Label><Input name="password" type="password" required /></div>
-                <Button type="submit" className="w-full" disabled={busy}>Entrar</Button>
-              </form>
-            </TabsContent>
-            <TabsContent value="signup">
-              <form onSubmit={handleSignUp} className="space-y-4 pt-4">
-                <div className="space-y-2"><Label>Email</Label><Input name="email" type="email" required /></div>
-                <div className="space-y-2"><Label>Senha</Label><Input name="password" type="password" minLength={6} required /></div>
-                <Button type="submit" className="w-full" disabled={busy}>Criar conta</Button>
-              </form>
-            </TabsContent>
-          </Tabs>
+          <div className="mb-6 text-center">
+            <h1 className="text-3xl font-bold">Painel Administrativo</h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Acesso restrito ao gerenciamento do estabelecimento
+            </p>
+          </div>
+
+          <form onSubmit={handleSignIn} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" name="email" type="email" placeholder="seu@email.com" required />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
+              <Input
+                id="password"
+                name="password"
+                type="password"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={busy}>
+              {busy ? "Entrando..." : "Entrar"}
+            </Button>
+          </form>
         </div>
       </div>
     </div>
