@@ -156,12 +156,12 @@ function StorefrontPage() {
           {/* Featured Carousel */}
           {featured.length > 0 && !q && !activeCat && !activeDept && (
             <section className="mb-20">
-              <div className="mb-8 flex items-end justify-between px-2 sm:px-0">
+              <div className="mb-5 flex items-end justify-between px-2 sm:px-0">
                 <div>
-                  <h2 className="text-2xl sm:text-4xl font-black tracking-tighter text-slate-900 uppercase">
+                  <h2 className="text-lg sm:text-2xl font-bold tracking-tight text-slate-900 uppercase">
                     Em Destaque
                   </h2>
-                  <div className="h-1.5 w-16 bg-slate-900 mt-2 rounded-full" />
+                  <div className="h-1 w-10 bg-slate-900 mt-1.5 rounded-full" />
                 </div>
                 <div className="flex gap-2">
                   <Button
@@ -231,12 +231,12 @@ function StorefrontPage() {
 
                   return (
                     <div key={categoryId}>
-                      <div className="mb-8 flex items-end justify-between px-2 sm:px-0">
+                      <div className="mb-5 flex items-end justify-between px-2 sm:px-0">
                         <div>
-                          <h2 className="text-2xl sm:text-4xl font-black tracking-tighter text-slate-900 uppercase">
+                          <h2 className="text-lg sm:text-2xl font-bold tracking-tight text-slate-900 uppercase">
                             {categoryName}
                           </h2>
-                          <div className="h-1.5 w-16 bg-slate-900 mt-2 rounded-full" />
+                          <div className="h-1 w-10 bg-slate-900 mt-1.5 rounded-full" />
                         </div>
                         <button
                           onClick={() => setViewAllCategory({ id: categoryId, name: categoryName })}
