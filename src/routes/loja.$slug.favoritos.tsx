@@ -52,9 +52,7 @@ function FavoritesPage() {
       {/* Header */}
       <div className="mb-8 sm:mb-10 flex items-end justify-between gap-4">
         <div>
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-rose-500">
-            Sua seleção
-          </p>
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-rose-500">Sua seleção</p>
           <h1 className="text-3xl sm:text-5xl font-black tracking-tighter text-slate-900 uppercase">
             Favoritos
           </h1>
