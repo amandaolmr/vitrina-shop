@@ -167,19 +167,24 @@ export function StoreHeader({ store }: { store: any }) {
               </DialogContent>
             </Dialog>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all duration-300 active:scale-90 hover:scale-110 h-10 w-10 sm:h-11 sm:w-11 relative cursor-pointer active:bg-slate-200/80 hover:shadow-sm"
-              title="Favoritos"
-            >
-              <Heart className="h-5 w-5" />
-              {favCount > 0 && (
-                <span className="absolute -top-1 -right-1 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white ring-2 ring-white px-1 animate-in zoom-in-75">
-                  {favCount}
-                </span>
-              )}
-            </Button>
+            <Link to="/loja/$slug/favoritos" params={{ slug: store.slug }} className="relative">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all duration-300 active:scale-90 hover:scale-110 h-10 w-10 sm:h-11 sm:w-11 cursor-pointer active:bg-slate-200/80 hover:shadow-sm"
+                title="Favoritos"
+                asChild
+              >
+                <div>
+                  <Heart className="h-5 w-5" />
+                  {favCount > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white ring-2 ring-white px-1 animate-in zoom-in-75">
+                      {favCount}
+                    </span>
+                  )}
+                </div>
+              </Button>
+            </Link>
 
             <Link to="/loja/$slug/carrinho" params={{ slug: store.slug }} className="relative">
               <Button

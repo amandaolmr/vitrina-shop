@@ -18,6 +18,7 @@ import { Route as AdminLojaRouteImport } from './routes/admin.loja'
 import { Route as AdminCategoriasRouteImport } from './routes/admin.categorias'
 import { Route as LojaSlugIndexRouteImport } from './routes/loja.$slug.index'
 import { Route as AdminProdutosIndexRouteImport } from './routes/admin.produtos.index'
+import { Route as LojaSlugFavoritosRouteImport } from './routes/loja.$slug.favoritos'
 import { Route as LojaSlugCarrinhoRouteImport } from './routes/loja.$slug.carrinho'
 import { Route as AdminProdutosNovoRouteImport } from './routes/admin.produtos.novo'
 import { Route as AdminProdutosIdRouteImport } from './routes/admin.produtos.$id'
@@ -68,6 +69,11 @@ const AdminProdutosIndexRoute = AdminProdutosIndexRouteImport.update({
   path: '/produtos/',
   getParentRoute: () => AdminRoute,
 } as any)
+const LojaSlugFavoritosRoute = LojaSlugFavoritosRouteImport.update({
+  id: '/favoritos',
+  path: '/favoritos',
+  getParentRoute: () => LojaSlugRoute,
+} as any)
 const LojaSlugCarrinhoRoute = LojaSlugCarrinhoRouteImport.update({
   id: '/carrinho',
   path: '/carrinho',
@@ -101,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/novo': typeof AdminProdutosNovoRoute
   '/loja/$slug/carrinho': typeof LojaSlugCarrinhoRoute
+  '/loja/$slug/favoritos': typeof LojaSlugFavoritosRoute
   '/admin/produtos/': typeof AdminProdutosIndexRoute
   '/loja/$slug/': typeof LojaSlugIndexRoute
   '/loja/$slug/produto/$productId': typeof LojaSlugProdutoProductIdRoute
@@ -114,6 +121,7 @@ export interface FileRoutesByTo {
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/novo': typeof AdminProdutosNovoRoute
   '/loja/$slug/carrinho': typeof LojaSlugCarrinhoRoute
+  '/loja/$slug/favoritos': typeof LojaSlugFavoritosRoute
   '/admin/produtos': typeof AdminProdutosIndexRoute
   '/loja/$slug': typeof LojaSlugIndexRoute
   '/loja/$slug/produto/$productId': typeof LojaSlugProdutoProductIdRoute
@@ -130,6 +138,7 @@ export interface FileRoutesById {
   '/admin/produtos/$id': typeof AdminProdutosIdRoute
   '/admin/produtos/novo': typeof AdminProdutosNovoRoute
   '/loja/$slug/carrinho': typeof LojaSlugCarrinhoRoute
+  '/loja/$slug/favoritos': typeof LojaSlugFavoritosRoute
   '/admin/produtos/': typeof AdminProdutosIndexRoute
   '/loja/$slug/': typeof LojaSlugIndexRoute
   '/loja/$slug/produto/$productId': typeof LojaSlugProdutoProductIdRoute
@@ -147,6 +156,7 @@ export interface FileRouteTypes {
     | '/admin/produtos/$id'
     | '/admin/produtos/novo'
     | '/loja/$slug/carrinho'
+    | '/loja/$slug/favoritos'
     | '/admin/produtos/'
     | '/loja/$slug/'
     | '/loja/$slug/produto/$productId'
@@ -160,6 +170,7 @@ export interface FileRouteTypes {
     | '/admin/produtos/$id'
     | '/admin/produtos/novo'
     | '/loja/$slug/carrinho'
+    | '/loja/$slug/favoritos'
     | '/admin/produtos'
     | '/loja/$slug'
     | '/loja/$slug/produto/$productId'
@@ -175,6 +186,7 @@ export interface FileRouteTypes {
     | '/admin/produtos/$id'
     | '/admin/produtos/novo'
     | '/loja/$slug/carrinho'
+    | '/loja/$slug/favoritos'
     | '/admin/produtos/'
     | '/loja/$slug/'
     | '/loja/$slug/produto/$productId'
@@ -252,6 +264,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminProdutosIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/loja/$slug/favoritos': {
+      id: '/loja/$slug/favoritos'
+      path: '/favoritos'
+      fullPath: '/loja/$slug/favoritos'
+      preLoaderRoute: typeof LojaSlugFavoritosRouteImport
+      parentRoute: typeof LojaSlugRoute
+    }
     '/loja/$slug/carrinho': {
       id: '/loja/$slug/carrinho'
       path: '/carrinho'
@@ -305,12 +324,14 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface LojaSlugRouteChildren {
   LojaSlugCarrinhoRoute: typeof LojaSlugCarrinhoRoute
+  LojaSlugFavoritosRoute: typeof LojaSlugFavoritosRoute
   LojaSlugIndexRoute: typeof LojaSlugIndexRoute
   LojaSlugProdutoProductIdRoute: typeof LojaSlugProdutoProductIdRoute
 }
 
 const LojaSlugRouteChildren: LojaSlugRouteChildren = {
   LojaSlugCarrinhoRoute: LojaSlugCarrinhoRoute,
+  LojaSlugFavoritosRoute: LojaSlugFavoritosRoute,
   LojaSlugIndexRoute: LojaSlugIndexRoute,
   LojaSlugProdutoProductIdRoute: LojaSlugProdutoProductIdRoute,
 }
