@@ -6,7 +6,6 @@
   "main": "src/server.ts",
   "kv_namespaces": [
     {
-      // Run `wrangler kv namespace create ANALYTICS_KV` and paste the id below.
       "binding": "ANALYTICS_KV",
       "id": "0c2cc769f0594e93963b1e3a4dd7f359",
     },

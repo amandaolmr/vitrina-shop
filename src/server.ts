@@ -14,7 +14,7 @@ interface KVNamespace {
 }
 
 interface AnalyticsEnv {
-  ANALYTICS_KV?: KVNamespace;
+  KV?: KVNamespace;
 }
 
 function getDateRange(period: string): string[] {
@@ -50,22 +50,22 @@ async function handleAnalyticsRequest(
         isNewVisitor?: boolean;
       };
       const { storeId, productId, type } = body;
-      if (type === "product_view" && storeId && productId && env.ANALYTICS_KV) {
+      if (type === "product_view" && storeId && productId && env.KV) {
         const today = new Date().toISOString().slice(0, 10);
         const kvKey = `product:${storeId}:${productId}:${today}`;
-        const current = Number((await env.ANALYTICS_KV.get(kvKey)) ?? "0");
-        await env.ANALYTICS_KV.put(kvKey, String(current + 1));
+        const current = Number((await env.KV.get(kvKey)) ?? "0");
+        await env.KV.put(kvKey, String(current + 1));
       }
-      if (type === "visit" && storeId && env.ANALYTICS_KV) {
+      if (type === "visit" && storeId && env.KV) {
         const today = new Date().toISOString().slice(0, 10);
         const kvKey = `analytics:${storeId}:${today}`;
-        const raw = await env.ANALYTICS_KV.get(kvKey);
+        const raw = await env.KV.get(kvKey);
         const current: { visitors: number; pageviews: number } = raw
           ? (JSON.parse(raw) as { visitors: number; pageviews: number })
           : { visitors: 0, pageviews: 0 };
         current.pageviews += 1;
         if (body.isNewVisitor) current.visitors += 1;
-        await env.ANALYTICS_KV.put(kvKey, JSON.stringify(current));
+        await env.KV.put(kvKey, JSON.stringify(current));
       }
     } catch {
       // ignore parse errors
@@ -80,13 +80,13 @@ async function handleAnalyticsRequest(
   ) {
     const storeId = url.searchParams.get("storeId");
     const period = url.searchParams.get("period") ?? "7d";
-    if (!storeId || !env.ANALYTICS_KV) {
+    if (!storeId || !env.KV) {
       return Response.json({ visitors: 0, pageviews: 0, viewsPerVisit: 0, daily: [] });
     }
     const dates = getDateRange(period);
     const daily = await Promise.all(
       dates.map(async (date) => {
-        const raw = await env.ANALYTICS_KV!.get(`analytics:${storeId}:${date}`);
+        const raw = await env.KV!.get(`analytics:${storeId}:${date}`);
         const d = raw
           ? (JSON.parse(raw) as { visitors: number; pageviews: number })
           : { visitors: 0, pageviews: 0 };
@@ -108,16 +108,16 @@ async function handleAnalyticsRequest(
   if (request.method === "GET" && url.pathname === "/api/analytics/products/top") {
     const storeId = url.searchParams.get("storeId");
     const limit = Math.min(Number(url.searchParams.get("limit") ?? "5"), 50);
-    if (!storeId || !env.ANALYTICS_KV) {
+    if (!storeId || !env.KV) {
       return Response.json([]);
     }
-    const list = await env.ANALYTICS_KV.list({ prefix: `product:${storeId}:` });
+    const list = await env.KV.list({ prefix: `product:${storeId}:` });
     const viewMap = new Map<string, number>();
     for (const key of list.keys) {
       const parts = key.name.split(":");
       const productId = parts[2];
       if (!productId) continue;
-      const count = Number((await env.ANALYTICS_KV.get(key.name)) ?? "0");
+      const count = Number((await env.KV.get(key.name)) ?? "0");
       viewMap.set(productId, (viewMap.get(productId) ?? 0) + count);
     }
     const sorted = Array.from(viewMap.entries())
