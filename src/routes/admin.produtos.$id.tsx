@@ -25,24 +25,25 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { 
-  ArrowLeft, 
-  Plus, 
-  Trash2, 
-  Save, 
-  Copy, 
+import {
+  ArrowLeft,
+  Plus,
+  Trash2,
+  Save,
+  Copy,
   ExternalLink,
   ChevronRight,
   Package,
   Image as ImageIcon,
   Settings,
   Tag,
-  BadgeDollarSign
+  BadgeDollarSign,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin/produtos/$id")({
   component: ProductEditor,
@@ -64,8 +65,13 @@ function ProductEditor() {
   const [colorImages, setColorImages] = useState<Record<string, string[]>>({});
   const [busy, setBusy] = useState(false);
   const [showDuplicateDialog, setShowDuplicateDialog] = useState(false);
+  const [colorActive, setColorActive] = useState<Record<string, boolean>>({});
 
-  const { data: product, refetch, isLoading: loadingProduct } = useQuery({
+  const {
+    data: product,
+    refetch,
+    isLoading: loadingProduct,
+  } = useQuery({
     queryKey: ["product", id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -145,6 +151,15 @@ function ProductEditor() {
         ci[c.color] = ci[c.color] ? [...ci[c.color], c.image_url] : [c.image_url];
       }
       setColorImages(ci);
+
+      const ca: Record<string, boolean> = {};
+      for (const v of product.product_variants ?? []) {
+        const color = ((v as any).color ?? "").trim();
+        if (color && !(color in ca)) {
+          ca[color] = (v as any).is_active !== false;
+        }
+      }
+      setColorActive(ca);
     }
   }, [product]);
 
@@ -195,6 +210,7 @@ function ProductEditor() {
           size: v.size || null,
           color: v.color || null,
           numbering: v.numbering || null,
+          is_active: v.color ? (colorActive[v.color] ?? true) : true,
         })),
       );
     }
@@ -231,7 +247,7 @@ function ProductEditor() {
 
     // Criar cópia do produto
     if (!product) return;
-    
+
     const { data: newProduct, error: productError } = await supabase
       .from("products")
       .insert({
@@ -269,6 +285,7 @@ function ProductEditor() {
           size: v.size || null,
           color: v.color || null,
           numbering: v.numbering || null,
+          is_active: v.color ? (colorActive[v.color] ?? true) : true,
         })),
       );
     }
@@ -296,20 +313,32 @@ function ProductEditor() {
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Link to="/admin/produtos" className="hover:text-foreground">Produtos</Link>
+            <Link to="/admin/produtos" className="hover:text-foreground">
+              Produtos
+            </Link>
             <ChevronRight className="h-4 w-4" />
             <span>Editar Produto</span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            {form.name || "Sem nome"}
-          </h1>
+          <h1 className="text-2xl font-bold tracking-tight">{form.name || "Sem nome"}</h1>
         </div>
-        
+
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => setShowDuplicateDialog(true)} disabled={busy} className="hidden sm:flex">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowDuplicateDialog(true)}
+            disabled={busy}
+            className="hidden sm:flex"
+          >
             <Copy className="mr-2 h-4 w-4" /> Duplicar
           </Button>
-          <Button variant="outline" size="sm" onClick={remove} disabled={busy} className="text-destructive hover:bg-destructive/10">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={remove}
+            disabled={busy}
+            className="text-destructive hover:bg-destructive/10"
+          >
             <Trash2 className="mr-2 h-4 w-4" /> Excluir
           </Button>
           <Button size="sm" onClick={save} disabled={busy}>
@@ -323,7 +352,8 @@ function ProductEditor() {
           <AlertDialogHeader>
             <AlertDialogTitle>Duplicar produto?</AlertDialogTitle>
             <AlertDialogDescription>
-              Isso criará uma cópia completa deste produto. O novo produto ficará como rascunho por padrão.
+              Isso criará uma cópia completa deste produto. O novo produto ficará como rascunho por
+              padrão.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -347,11 +377,11 @@ function ProductEditor() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Nome do produto</Label>
-                <Input 
+                <Input
                   id="name"
                   placeholder="Ex: Camiseta Oversized Algodão"
-                  value={form.name} 
-                  onChange={(e) => setForm({ ...form, name: e.target.value })} 
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
@@ -390,7 +420,9 @@ function ProductEditor() {
                   Grade de Cores e Tamanhos
                 </div>
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="has_variations" className="text-xs font-normal">Possui variações?</Label>
+                  <Label htmlFor="has_variations" className="text-xs font-normal">
+                    Possui variações?
+                  </Label>
                   <Switch
                     id="has_variations"
                     checked={form.has_variations}
@@ -399,18 +431,20 @@ function ProductEditor() {
                 </div>
               </CardTitle>
               <CardDescription>
-                {form.has_variations 
-                  ? "Gerencie as cores e tamanhos disponíveis para este produto" 
+                {form.has_variations
+                  ? "Gerencie as cores e tamanhos disponíveis para este produto"
                   : "Este produto será vendido como item único"}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               {form.has_variations ? (
-                <VariantsEditor 
-                  variants={variants} 
+                <VariantsEditor
+                  variants={variants}
                   setVariants={setVariants}
                   colorImages={colorImages}
                   setColorImages={setColorImages}
+                  colorActive={colorActive}
+                  setColorActive={setColorActive}
                 />
               ) : (
                 <p className="text-sm text-muted-foreground italic">
@@ -449,7 +483,9 @@ function ProductEditor() {
                   onChange={(e) => setForm({ ...form, compare_at_price: e.target.value })}
                   placeholder="Ex: 199.90"
                 />
-                <p className="text-[10px] text-muted-foreground">Exibe o preço riscado (promoção)</p>
+                <p className="text-[10px] text-muted-foreground">
+                  Exibe o preço riscado (promoção)
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -481,7 +517,9 @@ function ProductEditor() {
                   <SelectContent>
                     <SelectItem value="none">Sem departamento</SelectItem>
                     {departments.map((d: any) => (
-                      <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
+                      <SelectItem key={d.id} value={d.id}>
+                        {d.name}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -494,12 +532,16 @@ function ProductEditor() {
                   disabled={!departmentId}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder={departmentId ? "Selecione" : "Escolha um departamento"} />
+                    <SelectValue
+                      placeholder={departmentId ? "Selecione" : "Escolha um departamento"}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">Sem categoria</SelectItem>
                     {subcategories.map((c: any) => (
-                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                      <SelectItem key={c.id} value={c.id}>
+                        {c.name}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -540,7 +582,11 @@ function ProductEditor() {
           {/* Ver na loja */}
           {product && (
             <Button variant="outline" className="w-full" asChild>
-              <a href={`/loja/${store?.slug}/produto/${product.id}`} target="_blank" rel="noreferrer">
+              <a
+                href={`/loja/${store?.slug}/produto/${product.id}`}
+                target="_blank"
+                rel="noreferrer"
+              >
                 <ExternalLink className="mr-2 h-4 w-4" /> Ver na vitrine
               </a>
             </Button>
@@ -551,39 +597,51 @@ function ProductEditor() {
   );
 }
 
-const COMMON_SIZES = ["PP", "P", "M", "G", "GG", "XG"];
+const COMMON_SIZES = ["PP", "P", "M", "G", "GG", "XG", "Único"];
 
 function VariantsEditor({
   variants,
   setVariants,
   colorImages,
   setColorImages,
+  colorActive,
+  setColorActive,
 }: {
   variants: Variant[];
   setVariants: (v: Variant[]) => void;
   colorImages: Record<string, string[]>;
   setColorImages: (v: Record<string, string[]>) => void;
+  colorActive: Record<string, boolean>;
+  setColorActive: (v: Record<string, boolean>) => void;
 }) {
   const [newColorAdded, setNewColorAdded] = useState<string | null>(null);
+  const [recentColor, setRecentColor] = useState<string | null>(null);
   const colorRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   // group by color
   const colors = Array.from(new Set(variants.map((v) => (v.color ?? "").trim()).filter(Boolean)));
 
   useEffect(() => {
-    if (newColorAdded && colorRefs.current[newColorAdded]) {
-      colorRefs.current[newColorAdded]?.scrollIntoView({ behavior: "smooth", block: "center" });
-      const input = colorRefs.current[newColorAdded]?.querySelector("input");
-      if (input) (input as HTMLInputElement).focus();
+    if (!newColorAdded) return;
+    const id = requestAnimationFrame(() => {
+      const el = colorRefs.current[newColorAdded];
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        el.querySelector<HTMLInputElement>("input")?.focus({ preventScroll: true });
+      }
       setNewColorAdded(null);
-    }
-  }, [newColorAdded, colors]);
+    });
+    return () => cancelAnimationFrame(id);
+  }, [newColorAdded]);
 
   function addColor(name: string) {
     const color = name.trim();
     if (!color || colors.includes(color)) return;
-    setVariants([...variants, { size: "", color, numbering: "" }]);
+    setVariants([{ size: "", color, numbering: "" }, ...variants]);
+    setColorActive({ ...colorActive, [color]: true });
     setNewColorAdded(color);
+    setRecentColor(color);
+    setTimeout(() => setRecentColor(null), 1500);
   }
 
   function removeColor(color: string) {
@@ -591,19 +649,27 @@ function VariantsEditor({
     const nextImages = { ...colorImages };
     delete nextImages[color];
     setColorImages(nextImages);
+    const nextActive = { ...colorActive };
+    delete nextActive[color];
+    setColorActive(nextActive);
   }
 
   function renameColor(oldName: string, newName: string) {
     const next = newName.trim();
     if (!next || next === oldName) return;
     setVariants(variants.map((v) => (v.color === oldName ? { ...v, color: next } : v)));
-    
+
     if (colorImages[oldName]) {
       const nextImages = { ...colorImages };
       nextImages[next] = nextImages[oldName];
       delete nextImages[oldName];
       setColorImages(nextImages);
     }
+
+    const nextActive = { ...colorActive };
+    nextActive[next] = nextActive[oldName] ?? true;
+    delete nextActive[oldName];
+    setColorActive(nextActive);
   }
 
   function updateRow(target: Variant, patch: Partial<Variant>) {
@@ -647,34 +713,66 @@ function VariantsEditor({
           const sizeRows = rows.filter((r) => r.size);
           const numberingRows = rows.filter((r) => !r.size);
           return (
-            <div 
-              key={color} 
-              ref={el => { colorRefs.current[color] = el; }}
-              className="rounded-xl border border-border bg-card overflow-hidden"
+            <div
+              key={color}
+              ref={(el) => {
+                colorRefs.current[color] = el;
+              }}
+              className={cn(
+                "rounded-xl border bg-card overflow-hidden transition-all duration-300",
+                colorActive[color] === false && "opacity-50",
+                color === recentColor
+                  ? "border-primary/50 ring-2 ring-primary/20"
+                  : "border-border",
+              )}
             >
               <div className="p-4 border-b border-border bg-muted/30">
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 flex-1">
-                    <div 
-                      className="w-4 h-4 rounded-full border border-border" 
-                      style={{ backgroundColor: color.toLowerCase() }} 
+                    <div
+                      className="w-4 h-4 rounded-full border border-border"
+                      style={{ backgroundColor: color.toLowerCase() }}
                     />
                     <Input
                       defaultValue={color}
                       onBlur={(e) => renameColor(color, e.target.value)}
                       className="h-8 max-w-[200px] font-bold bg-transparent border-none focus-visible:ring-0 px-0 text-base"
                     />
+                    {colorActive[color] === false && (
+                      <Badge
+                        variant="outline"
+                        className="text-xs text-destructive border-destructive/30 shrink-0"
+                      >
+                        Inativo
+                      </Badge>
+                    )}
                   </div>
-                  <Button type="button" variant="ghost" size="sm" onClick={() => removeColor(color)} className="text-destructive hover:text-destructive hover:bg-destructive/10">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={colorActive[color] !== false}
+                      onCheckedChange={(checked) =>
+                        setColorActive({ ...colorActive, [color]: checked })
+                      }
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeColor(color)}
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
 
               <div className="p-4 space-y-6">
                 {/* Imagens da Cor */}
                 <div className="space-y-3">
-                  <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">Fotos desta cor</Label>
+                  <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">
+                    Fotos desta cor
+                  </Label>
                   <MultiImageUpload
                     values={colorImages[color] ?? []}
                     onChange={(urls) => {
@@ -690,8 +788,10 @@ function VariantsEditor({
 
                 {/* Tamanhos */}
                 <div className="space-y-4">
-                  <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">Grade de Tamanhos</Label>
-                  
+                  <Label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">
+                    Grade de Tamanhos
+                  </Label>
+
                   <div className="flex flex-wrap gap-2">
                     {COMMON_SIZES.map((s) => {
                       const active = sizeRows.some((r) => r.size === s);
@@ -713,7 +813,10 @@ function VariantsEditor({
                   {sizeRows.length > 0 && (
                     <div className="flex flex-wrap gap-2">
                       {sizeRows.map((v, i) => (
-                        <div key={i} className="flex items-center gap-2 p-2 rounded-lg border border-border bg-muted/10">
+                        <div
+                          key={i}
+                          className="flex items-center gap-2 p-2 rounded-lg border border-border bg-muted/10"
+                        >
                           <span className="w-8 h-8 flex items-center justify-center rounded bg-muted text-xs font-bold">
                             {v.size}
                           </span>
@@ -736,7 +839,10 @@ function VariantsEditor({
                       <p className="text-xs text-muted-foreground">Numeração Personalizada</p>
                       <div className="grid gap-2 sm:grid-cols-2">
                         {numberingRows.map((v, i) => (
-                          <div key={i} className="flex items-center gap-2 p-2 rounded-lg border border-border bg-muted/10">
+                          <div
+                            key={i}
+                            className="flex items-center gap-2 p-2 rounded-lg border border-border bg-muted/10"
+                          >
                             <Input
                               placeholder="Nº"
                               value={v.numbering}

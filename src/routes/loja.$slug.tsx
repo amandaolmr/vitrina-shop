@@ -1,8 +1,10 @@
-import { createFileRoute, Outlet, notFound } from "@tanstack/react-router";
+import { createFileRoute, Outlet, notFound, useRouterState } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { StoreHeader } from "@/components/store-header";
 import { StoreCtx, useStore } from "@/lib/store-context";
+import { trackStoreVisit } from "@/lib/store-analytics";
 
 export { useStore };
 
@@ -12,6 +14,7 @@ export const Route = createFileRoute("/loja/$slug")({
 
 function StoreLayout() {
   const { slug } = Route.useParams();
+  const path = useRouterState({ select: (s) => s.location.pathname });
   const {
     data: store,
     isLoading,
@@ -29,6 +32,11 @@ function StoreLayout() {
       return data;
     },
   });
+
+  // Track a store visit on every in-store page navigation
+  useEffect(() => {
+    if (store?.id) trackStoreVisit(store.id);
+  }, [path, store?.id]);
 
   if (isLoading)
     return (

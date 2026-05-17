@@ -2,17 +2,18 @@ import { createFileRoute, Outlet, Link, useNavigate, useRouterState } from "@tan
 import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
-import { 
-  Store, 
-  Package, 
-  Tags, 
-  LogOut, 
-  ExternalLink, 
-  Menu, 
+import {
+  Store,
+  Package,
+  Tags,
+  LogOut,
+  ExternalLink,
+  Menu,
   X,
   LayoutDashboard,
   Settings,
-  ChevronRight
+  ChevronRight,
+  BarChart2,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -62,6 +63,7 @@ function AdminLayout() {
     { to: "/admin/produtos", label: "Produtos", icon: Package },
     { to: "/admin/categorias", label: "Categorias", icon: Tags },
     { to: "/admin/loja", label: "Configurações", icon: Settings },
+    { to: "/admin/analytics", label: "Analytics", icon: BarChart2 },
   ];
 
   const SidebarContent = () => (
@@ -88,8 +90,8 @@ function AdminLayout() {
                 to={it.to}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-all duration-200 ${
-                  active 
-                    ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20 translate-x-1" 
+                  active
+                    ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20 translate-x-1"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 }`}
               >
@@ -112,20 +114,22 @@ function AdminLayout() {
             >
               <div className="flex flex-col">
                 <span className="text-xs font-semibold text-foreground">Sua Loja</span>
-                <span className="text-[10px] text-muted-foreground truncate max-w-[120px]">/{store.slug}</span>
+                <span className="text-[10px] text-muted-foreground truncate max-w-[120px]">
+                  /{store.slug}
+                </span>
               </div>
               <div className="h-8 w-8 rounded-lg bg-background flex items-center justify-center border border-border group-hover:bg-primary group-hover:text-primary-foreground transition-colors shadow-sm">
                 <ExternalLink className="h-3.5 w-3.5" />
               </div>
             </a>
           )}
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="sm"
-            className="w-full justify-start text-muted-foreground hover:text-destructive hover:bg-destructive/5 px-2 h-9" 
+            className="w-full justify-start text-muted-foreground hover:text-destructive hover:bg-destructive/5 px-2 h-9"
             onClick={() => signOut()}
           >
-            <LogOut className="mr-2 h-4 w-4" /> 
+            <LogOut className="mr-2 h-4 w-4" />
             <span className="text-xs font-medium">Sair da conta</span>
           </Button>
         </div>
@@ -165,7 +169,9 @@ function AdminLayout() {
         <div className="mx-auto min-h-screen max-w-6xl px-4 py-8 md:px-10 md:py-12">
           {/* Breadcrumbs for desktop */}
           <nav className="mb-6 hidden items-center gap-1.5 text-xs font-medium text-muted-foreground md:flex">
-            <Link to="/admin" className="hover:text-foreground">Admin</Link>
+            <Link to="/admin" className="hover:text-foreground">
+              Admin
+            </Link>
             {path !== "/admin" && (
               <>
                 <ChevronRight className="h-3 w-3" />
@@ -173,7 +179,7 @@ function AdminLayout() {
               </>
             )}
           </nav>
-          
+
           <Outlet />
         </div>
       </main>

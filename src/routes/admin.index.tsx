@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { TopProductsCard } from "@/components/admin/TopProductsCard";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminHome,
@@ -219,56 +220,43 @@ function AdminHome() {
         </Button>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="border-border/60 shadow-sm overflow-hidden group hover:border-primary/30 transition-all duration-300">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-2">
-              <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                <Package className="h-5 w-5 text-primary" />
-              </div>
-              <TrendingUp className="h-4 w-4 text-emerald-500" />
-            </div>
-            <div className="space-y-0.5">
-              <p className="text-sm font-medium text-muted-foreground">Total de Produtos</p>
-              <h3 className="text-2xl font-bold tracking-tight">{stats?.products || 0}</h3>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 grid-cols-2">
+          <Link to="/admin/produtos" className="block">
+            <Card className="border-border/60 shadow-sm overflow-hidden group hover:border-primary/30 transition-all duration-300 h-full">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="h-10 w-10 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                    <Package className="h-5 w-5 text-primary" />
+                  </div>
+                  <TrendingUp className="h-4 w-4 text-emerald-500" />
+                </div>
+                <div className="space-y-0.5">
+                  <p className="text-sm font-medium text-muted-foreground">Total de Produtos</p>
+                  <h3 className="text-2xl font-bold tracking-tight">{stats?.products || 0}</h3>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
 
-        <Card className="border-border/60 shadow-sm overflow-hidden group hover:border-primary/30 transition-all duration-300">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-2">
-              <div className="h-10 w-10 bg-amber-500/10 rounded-xl flex items-center justify-center group-hover:bg-amber-500/20 transition-colors">
-                <Tags className="h-5 w-5 text-amber-600" />
-              </div>
-            </div>
-            <div className="space-y-0.5">
-              <p className="text-sm font-medium text-muted-foreground">Categorias Ativas</p>
-              <h3 className="text-2xl font-bold tracking-tight">{stats?.categories || 0}</h3>
-            </div>
-          </CardContent>
-        </Card>
+          <Link to="/admin/categorias" className="block">
+            <Card className="border-border/60 shadow-sm overflow-hidden group hover:border-primary/30 transition-all duration-300 h-full">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="h-10 w-10 bg-amber-500/10 rounded-xl flex items-center justify-center group-hover:bg-amber-500/20 transition-colors">
+                    <Tags className="h-5 w-5 text-amber-600" />
+                  </div>
+                </div>
+                <div className="space-y-0.5">
+                  <p className="text-sm font-medium text-muted-foreground">Categorias Ativas</p>
+                  <h3 className="text-2xl font-bold tracking-tight">{stats?.categories || 0}</h3>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        </div>
 
-        <Card className="border-border/60 shadow-sm overflow-hidden group hover:border-primary/30 transition-all duration-300">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between mb-2">
-              <div className="h-10 w-10 bg-emerald-500/10 rounded-xl flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
-                <ShoppingBag className="h-5 w-5 text-emerald-600" />
-              </div>
-              <Badge
-                variant="outline"
-                className="bg-emerald-50 text-emerald-700 border-emerald-200 px-2 py-0 text-[9px] font-bold"
-              >
-                ATIVOS
-              </Badge>
-            </div>
-            <div className="space-y-0.5">
-              <p className="text-sm font-medium text-muted-foreground">Produtos Visíveis</p>
-              <h3 className="text-2xl font-bold tracking-tight">{stats?.activeProducts || 0}</h3>
-              <p className="text-xs text-muted-foreground/70">de {stats?.products || 0} total</p>
-            </div>
-          </CardContent>
-        </Card>
+        <TopProductsCard storeId={store?.id} />
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
@@ -333,52 +321,6 @@ function AdminHome() {
             </Link>
           </div>
         </section>
-
-        <Card className="border-border/60 shadow-sm h-full">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-primary" />
-              Dicas de Crescimento
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex gap-4 p-3 rounded-xl bg-primary/[0.03] border border-primary/10">
-              <div className="h-10 w-10 shrink-0 bg-primary/10 rounded-lg flex items-center justify-center">
-                <ImageIcon className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <h5 className="text-sm font-bold">Fotos de Qualidade</h5>
-                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                  Produtos com fotos claras e bem iluminadas vendem até 70% mais via WhatsApp.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4 p-3 rounded-xl bg-amber-500/[0.03] border border-amber-500/10">
-              <div className="h-10 w-10 shrink-0 bg-amber-500/10 rounded-lg flex items-center justify-center">
-                <ShoppingBag className="h-5 w-5 text-amber-600" />
-              </div>
-              <div>
-                <h5 className="text-sm font-bold">Descrições Vendedoras</h5>
-                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                  Detalhe materiais, medidas e benefícios para reduzir dúvidas dos clientes.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4 p-3 rounded-xl bg-indigo-500/[0.03] border border-indigo-500/10">
-              <div className="h-10 w-10 shrink-0 bg-indigo-500/10 rounded-lg flex items-center justify-center">
-                <Users className="h-5 w-5 text-indigo-600" />
-              </div>
-              <div>
-                <h5 className="text-sm font-bold">Compartilhe sua Vitrine</h5>
-                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                  Coloque o link da sua vitrine na bio do Instagram e no status do WhatsApp.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
